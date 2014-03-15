@@ -28,3 +28,30 @@ This document specifies the backend REST API and backend designs for Hint. The f
 			'light':'light', 
 			'dark':'dark'
 		}
+		
+- enum_expiries :
+	
+		{
+			current_look : 24, 
+			event: 24, 
+			connection: 24
+		}
+		
+- enum_flags :
+	
+		{
+			collect_venue_category : true
+		}
+		
+- enum_defaults :
+	
+		{
+			venue_categoty: {
+				flirt_options : {
+					simple:'', 
+					forward:'', 
+					risky:''
+				}, 
+				image:''
+			}
+		}
