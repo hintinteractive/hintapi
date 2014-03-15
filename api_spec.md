@@ -72,6 +72,7 @@ This document specifies the backend REST API and backend designs for Hint. The f
 				'method': {type: String, "default": 'GET'},
 				access_time: {type: Date, "default": Date.now}
 			}
+			
 	- Additional Info:
 		- Add a entry to this collection every time a api end point is accessed.
 		- Write heavy, read only needs for analytics purpose.
