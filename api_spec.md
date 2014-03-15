@@ -74,16 +74,21 @@ This document specifies the backend REST API and backend designs for Hint. The f
 			}
 			
 	3. Request headers: 
-				{
-					Content-Type : "application/json", 
-					Accept : "application/json"
-				}
+	
+			{
+				Content-Type : "application/json", 
+				Accept : "application/json"
+			}
 				
 	4. Response: 
+	
 			{
 				user: {
 					userId : "Facebook:fb_id"
 				},
 				authenticationToken: 'auth_token'
 			}
-	5. Details: auth_token is valid for 30 days, so cache it in the application. It is necessary to make any api calls. If it is invalid log off the user.
+	5. Additional Info: 
+		-	auth_token is valid for 30 days, so cache it in the application. 
+		-	auth_token is necessary to make any api calls. 
+		-	If auth_token is invalid log off the user.
