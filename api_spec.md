@@ -88,6 +88,7 @@ This document specifies the backend REST API and backend designs for Hint. The f
 				},
 				authenticationToken: 'auth_token'
 			}
+	
 	5. Additional Info: 
 		-	auth_token is valid for 30 days, so cache it in the application. 
 		-	auth_token is necessary to make any api calls. 
