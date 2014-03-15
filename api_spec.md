@@ -4,3 +4,11 @@ This document specifies the backend REST API and backend designs for Hint. The f
 ## Enums
 
 - enum_user_statuses :
+
+	{
+		'admin':'admin',
+		'active':'active', 
+		'inactive':'inactive', 
+		'banned' : 'inactive', 
+		'debug' : 'debug'
+	}
