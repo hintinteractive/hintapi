@@ -57,20 +57,24 @@ This document specifies the backend REST API and backend designs for Hint. The f
 		}
 
 
-## Schemas
+## Models
 
-- api_access (collection name api_accesses)
+- api_access :
+	- Collection name : api_accesses
+	- Schema :
 	
-		{
-			social_user: {
-				provider: String,
-				id: String
-			},
-			api_name: String,
-			'method': {type: String, "default": 'GET'},
-			access_time: {type: Date, "default": Date.now}
-		}
-	
+			{
+				social_user: {
+					provider: String,
+					id: String
+				},
+				api_name: String,
+				'method': {type: String, "default": 'GET'},
+				access_time: {type: Date, "default": Date.now}
+			}
+	- Additional Info:
+		- Add a entry to this collection every time a api end point is accessed.
+		- Write heavy, read only needs for analytics purpose.
 	
 
 ## API Endpoints
