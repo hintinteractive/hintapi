@@ -76,6 +76,29 @@ This document specifies the backend REST API and backend designs for Hint. The f
 	- Additional Info:
 		- Add a entry to this collection every time a api end point is accessed.
 		- Write heavy, read only needs for analytics purpose.
+		
+- venue_category :
+	- Collection name : venue_categories
+	- Schema :
+	
+			{
+				social_category: {
+					provider : String, 
+					id : String
+				},
+				name : String, 
+				flirt_options : {
+					simple : String, 
+					forward : String, 
+					risky : String
+				}, 
+				image: String
+			}
+			
+	- Additional Info:
+		- Search the collection with a list of social_category.id for each GET /api/venue call.
+		- Read heavy (normal situations).
+		- Read and Write heavy (when enum_flags.collect_venue_category is true)
 	
 
 ## API Endpoints
