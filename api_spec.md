@@ -138,31 +138,32 @@ This document specifies the backend REST API and backend designs for Hint. The f
 			}
 	
 	5. Additional Info: 
-		-	Get the venue info from facebook.
-		- 	A typical venue object is of the following format:
+		-	Get the venue list from facebook.
+		- 	A typical facebook venue object is of the following format:
 		
-			{
-				 "category": "Health/beauty",
-				 "category_list": [
-					{
-					   "id": "139225689474222",
-					   "name": "Spa, Beauty & Personal Care"
-					}
-				 ],
-				 "location": {
-					"street": "225 Bush St, 20th Floor",
-					"city": "San Francisco",
-					"state": "CA",
-					"country": "United States",
-					"zip": "94104",
-					"latitude": 37.791090500712,
-					"longitude": -122.40105336454
-				 },
-				 "name": "Benefit Cosmetics",
-				 "id": "48879913147"
-			  }
+				{
+					 "category": "Health/beauty",
+					 "category_list": [
+						{
+						   "id": "139225689474222",
+						   "name": "Spa, Beauty & Personal Care"
+						}
+					 ],
+					 "location": {
+						"street": "225 Bush St, 20th Floor",
+						"city": "San Francisco",
+						"state": "CA",
+						"country": "United States",
+						"zip": "94104",
+						"latitude": 37.791090500712,
+						"longitude": -122.40105336454
+					 },
+					 "name": "Benefit Cosmetics",
+					 "id": "48879913147"
+				  }
 		
-		-	The category info come from our database.
-		-	If 
-		-	If enum_flags.collect_venue_category is true then when retriving category info, if category 
-		-	If auth_token is invalid log off the user.
+		-	After receving the venue list, query our database to get the category info.
+		-	If the category is not found, return the enum_defaults.venue_categoty
+		-	If the category is not found and enum_flags.collect_venue_category is true, then update the venue_categories collection with enum_defaults.venue_categoty for this category and return it.  
+		-	Contruct the response object from these info.
+		-	The response array will be sorted by distance.
