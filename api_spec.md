@@ -57,6 +57,22 @@ This document specifies the backend REST API and backend designs for Hint. The f
 		}
 
 
+## Schemas
+
+- api_access (collection name api_accesses)
+	
+	{
+		social_user: {
+			provider: String,
+			id: String
+		},
+		api_name: String,
+		'method': {type: String, "default": 'GET'},
+		access_time: {type: Date, "default": Date.now}
+	}
+	
+	
+
 ## API Endpoints
 
 - POST /login/facebook : login the user to our system
