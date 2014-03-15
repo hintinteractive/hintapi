@@ -68,14 +68,16 @@ This document specifies the backend REST API and backend designs for Hint. The f
 		-	receives the access_token from facebook
 		-	call this endpoint with the access_token.
 	2. Request param: 
+	
 			{ 
 				access_token : "facebook_access_token"
 			}
+			
 	3. Request headers: 
-			{
-				Content-Type : "application/json", 
-				Accept : "application/json"
-			}
+				{
+					Content-Type : "application/json", 
+					Accept : "application/json"
+				}
 				
 	4. Response: 
 			{
