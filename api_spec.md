@@ -61,7 +61,12 @@ This document specifies the backend REST API and backend designs for Hint. The f
 
 - POST /login/facebook 
 
-	- Trigger: the login button clicked, fire up facebook sdk, after successful login with basic permissions, receives the access_token from facebook and then call this endpoint.
+	- Trigger: 
+		-	click login button
+		-	fire up facebook sdk 
+		-	after successful login with basic permissions
+		-	receives the access_token from facebook
+		-	call this endpoint with the access_token.
 	- request param: { "access_token" : facebook_access_token}
 	- request headers: {"Content-Type": "application/json", "Accept": "application/json"}
 	- response: {"user":{"userId":"Facebook:fb_id"},"authenticationToken":auth_token}
