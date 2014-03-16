@@ -127,7 +127,8 @@ This document specifies the backend REST API and backend designs for Hint. The f
 				gender : String, 
 				interested_in : [String], 
 				status : String,
-				black_list : [String]
+				black_list : [String],
+				photo_url: String
 			}
 			
 	- Additional Info:
@@ -426,7 +427,8 @@ This document specifies the backend REST API and backend designs for Hint. The f
 				gender : String, 
 				interested_in : [String], 
 				status : String,
-				black_list : [String]
+				black_list : [String],
+				photo_url: String
 			}
 	
 	5. Additional Info: 
