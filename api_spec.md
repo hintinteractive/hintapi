@@ -432,10 +432,14 @@ This document specifies the backend REST API and backend designs for Hint. The f
 				photo_url: String
 			}
 	
+	5. After Action : 
+		-	If the user status is banned, show a message saying that he is banned from the app and log him out.
+		-	Update the user's info in the app.
+	
 	5. Additional Info: 
 		-	Get the user from databse from the userid embedded in the header.
-		-	If the user doesn't exists, call facebook with the access_token embedded in the header to get user's basic info.
-		-	Update the database with info facebook.
+		-	If the user doesn't exists, call facebook with the access_token embedded in the header to get user's basic info and update the database with info facebook
+		-	If the user exists but his status is inactive then update the database and make the status active.
 		- 	Return user's info.
 		
 				
