@@ -81,7 +81,7 @@ This document specifies the backend REST API and backend designs for Hint. The f
 	
 			{
 				user: {
-					id: String
+					social_id: String
 				},
 				api_name: String,
 				'method': {type: String, "default": 'GET'},
