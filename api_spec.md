@@ -291,7 +291,10 @@ This document specifies the backend REST API and backend designs for Hint. The f
 					name : String, 
 					address : String
 				},
-				message : String,
+				flirt_options : {
+					type: String,
+					text: String
+				},
 				status : String,
 				time : Date,
 				expiry : Date
@@ -299,6 +302,54 @@ This document specifies the backend REST API and backend designs for Hint. The f
 			
 	- Additional Info:
 		- 
+
+
+- connection :
+	- Collection name : connections
+	- Schema :
+	
+			{
+				users: [{
+					social_id : String, 
+					name : String, 
+					hair_color : String, 
+					gender : String, 
+					interested_in : [String],
+					current_look : {
+						photo_url : String, 
+						identifier: {
+							type : String, 
+							brand : String, 
+							color : String
+						}
+					}
+				}],
+				social_venue : {
+					social_id : String, 
+					name : String, 
+					address : String
+				},
+				messages : [{
+					user :{
+						social_id : String
+					},
+					text: String,
+					time: Date
+				}],
+				keep_alive : {
+					flag : Boolean,
+					user :{
+						social_id : String
+					}
+				}
+				time : Date,
+				expiry : Date
+			}
+			
+	- Additional Info:
+		- 
+
+
 
 ## API Endpoints
 
