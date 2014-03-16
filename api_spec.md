@@ -41,7 +41,8 @@ This document specifies the backend REST API and backend designs for Hint. The f
 	
 		{
 			light : 'light', 
-			dark : 'dark'
+			dark : 'dark',
+			undefined: 'undefined'
 		}
 		
 - enum_expiries :
