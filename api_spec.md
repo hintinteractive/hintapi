@@ -82,8 +82,7 @@ This document specifies the backend REST API and backend designs for Hint. The f
 	- Schema :
 	
 			{
-				_Id : ObjectId,
-				(virtual) id : String,
+				social_id : String,
 				name : String, 
 				flirt_options : {
 					simple : String, 
@@ -153,9 +152,10 @@ This document specifies the backend REST API and backend designs for Hint. The f
 			{
 				user : {
 					social_id : String, 
+					name : String, 
 					hair_color : String, 
 					gender : String, 
-					interested_in : String, 
+					interested_in : [String],
 					current_look : {
 						photo_url : String, 
 						identifier: {
