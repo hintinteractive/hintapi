@@ -149,8 +149,7 @@ This document specifies the backend REST API and backend designs for Hint. The f
 			{ 
 				lat : 'user lat',
 				lng : 'user lng',
-				name : 'name search string',
-				cat : 'cat search string',
+				search : 'search string',
 				limit : 'number of results, default 25',
 				radius : 'radius of the search'
 			}
