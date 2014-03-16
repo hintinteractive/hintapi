@@ -383,10 +383,59 @@ This document specifies the backend REST API and backend designs for Hint. The f
 				authenticationToken: 'auth_token'
 			}
 	
+	5. After Action : 
+		-	Call GET /api/user upon successful login and update the current user info in the client.
+		
 	5. Additional Info: 
 		-	auth_token is valid for 30 days, so cache it in the application. 
 		-	auth_token is necessary to make any api calls. 
 		-	If auth_token is invalid log off the user.
+		
+- GET /api/user : get the current user info, if user doesn't exists call facebook and update user info 
+
+	1. Trigger: 
+		-	after user logged in to the system.
+		- 	afer user comes to the user settings page.
+		-	after user refresh his information.
+		
+	2. Request param: 
+	
+			{ 
+			}
+			
+	3. Request headers: 
+	
+			{
+				Content-Type : "application/json", 
+				Accept : "application/json",
+				X-ZUMO-AUTH : "auth_token"
+			}
+			
+				
+	4. Response: 
+	
+			{
+				id : String,
+				social_id : String, 
+				name : String, 
+				contact: {
+					email : String, 
+					phone : String
+				}, 
+				hair_color : String, 
+				gender : String, 
+				interested_in : [String], 
+				status : String,
+				black_list : [String]
+			}
+	
+	5. Additional Info: 
+		-	Get the user from databse from the userid embedded in the header.
+		-	If the user doesn't exists, call facebook with the access_token embedded in the header to get user's basic info.
+		-	Update the database with info facebook.
+		- 	Return user's info.
+		
+				
 	
 - GET /api/venue : get a list of venues 
 
