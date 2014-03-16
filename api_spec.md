@@ -12,6 +12,13 @@ This document specifies the backend REST API and backend designs for Hint. The f
 			banned : 'inactive', 
 			debug : 'debug'
 		}
+		
+- enum_hint_statuses :
+
+		{
+			sent : 'sent',
+			accepted : 'accepted'
+		}
 
 - enum_user_genders :
 
@@ -181,6 +188,55 @@ This document specifies the backend REST API and backend designs for Hint. The f
 					forward : String, 
 					risky : String
 				}, 
+				checkin_time : Date,
+				expiry : Date
+			}
+			
+	- Additional Info:
+		- 
+	
+- hint :
+	- Collection name : hints
+	- Schema :
+	
+			{
+				user_from : {
+					social_id : String, 
+					name : String, 
+					hair_color : String, 
+					gender : String, 
+					interested_in : [String],
+					current_look : {
+						photo_url : String, 
+						identifier: {
+							type : String, 
+							brand : String, 
+							color : String
+						}
+					}
+				},
+				user_to : {
+					social_id : String, 
+					name : String, 
+					hair_color : String, 
+					gender : String, 
+					interested_in : [String],
+					current_look : {
+						photo_url : String, 
+						identifier: {
+							type : String, 
+							brand : String, 
+							color : String
+						}
+					}
+				},
+				social_venue : {
+					social_id : String, 
+					name : String, 
+					address : String
+				}
+				status : String,
+				hint_time : Date,
 				expiry : Date
 			}
 			
