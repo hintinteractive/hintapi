@@ -159,7 +159,7 @@ This document specifies the backend REST API and backend designs for Hint. The f
 					current_look : {
 						photo_url : String, 
 						identifier: {
-							cloth_type : String, 
+							type : String, 
 							brand : String, 
 							color : String
 						}
