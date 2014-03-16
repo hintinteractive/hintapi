@@ -146,8 +146,8 @@ This document specifies the backend REST API and backend designs for Hint. The f
 	- Additional Info:
 		- 
 
-- event :
-	- Collection name : events
+- checkin :
+	- Collection name : checkins
 	- Schema :
 	
 			{
