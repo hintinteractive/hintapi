@@ -19,6 +19,14 @@ This document specifies the backend REST API and backend designs for Hint. The f
 			sent : 'sent',
 			accepted : 'accepted'
 		}
+		
+- enum_flirt_statuses :
+
+		{
+			sent : 'sent',
+			accepted : 'accepted',
+			rejected : 'rejected'
+		}
 
 - enum_user_genders :
 
@@ -188,7 +196,7 @@ This document specifies the backend REST API and backend designs for Hint. The f
 					forward : String, 
 					risky : String
 				}, 
-				checkin_time : Date,
+				time : Date,
 				expiry : Date
 			}
 			
@@ -236,7 +244,56 @@ This document specifies the backend REST API and backend designs for Hint. The f
 					address : String
 				}
 				status : String,
-				hint_time : Date,
+				time : Date,
+				expiry : Date
+			}
+			
+	- Additional Info:
+		- 
+		
+- flirt :
+	- Collection name : flirts
+	- Schema :
+	
+			{
+				user_from : {
+					social_id : String, 
+					name : String, 
+					hair_color : String, 
+					gender : String, 
+					interested_in : [String],
+					current_look : {
+						photo_url : String, 
+						identifier: {
+							type : String, 
+							brand : String, 
+							color : String
+						}
+					}
+				},
+				user_to : {
+					social_id : String, 
+					name : String, 
+					hair_color : String, 
+					gender : String, 
+					interested_in : [String],
+					current_look : {
+						photo_url : String, 
+						identifier: {
+							type : String, 
+							brand : String, 
+							color : String
+						}
+					}
+				},
+				social_venue : {
+					social_id : String, 
+					name : String, 
+					address : String
+				},
+				message : String,
+				status : String,
+				time : Date,
 				expiry : Date
 			}
 			
