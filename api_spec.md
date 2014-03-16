@@ -111,7 +111,8 @@ This document specifies the backend REST API and backend designs for Hint. The f
 				hair_color : String, 
 				gender : String, 
 				interested_in : [String], 
-				status : String
+				status : String,
+				black_list : [String]
 			}
 			
 	- Additional Info:
