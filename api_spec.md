@@ -53,7 +53,8 @@ This document specifies the backend REST API and backend designs for Hint. The f
 					risky:''
 				}, 
 				image:''
-			}
+			},
+			venue_search_results : 35
 		}
 
 
@@ -150,7 +151,7 @@ This document specifies the backend REST API and backend designs for Hint. The f
 				lat : 'user lat',
 				lng : 'user lng',
 				search : 'search string',
-				limit : 'number of results, default 25',
+				limit : 'number of results, default enum_defaults.venue_search_results',
 				radius : 'radius of the search'
 			}
 			
