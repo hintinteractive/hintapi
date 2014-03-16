@@ -242,7 +242,7 @@ This document specifies the backend REST API and backend designs for Hint. The f
 					social_id : String, 
 					name : String, 
 					address : String
-				}
+				},
 				status : String,
 				time : Date,
 				expiry : Date
@@ -341,7 +341,7 @@ This document specifies the backend REST API and backend designs for Hint. The f
 					user :{
 						social_id : String
 					}
-				}
+				},
 				time : Date,
 				expiry : Date
 			}
