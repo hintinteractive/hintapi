@@ -166,7 +166,7 @@ This document specifies the backend REST API and backend designs for Hint. The f
 				
 	4. Response: 
 	
-			{
+			[{
 				id : 'Facebook:fb_id', 
 				name : 'name of the place', 
 				address : 'address of the place', 
@@ -179,7 +179,7 @@ This document specifies the backend REST API and backend designs for Hint. The f
 					}
 					image : 'image link'
 				}
-			}
+			}]
 	
 	5. Additional Info: 
 		-	Get the venue list from facebook.
