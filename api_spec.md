@@ -164,7 +164,7 @@ This document specifies the backend REST API and backend designs for Hint. The f
 	4. Response: 
 	
 			[{
-				id : 'Facebook:fb_id', 
+				social_id : 'Facebook:fb_id', 
 				name : 'name of the place', 
 				address : 'address of the place', 
 				distance: 'calculated distance in miles', 
