@@ -97,7 +97,54 @@ This document specifies the backend REST API and backend designs for Hint. The f
 		- Search the collection with a list of social_category.id for each GET /api/venue call.
 		- Read heavy (normal situations).
 		- Read and Write heavy (when enum_flags.collect_venue_category is true)
+		
+- user :
+	- Collection name : users
+	- Schema :
 	
+			{
+				social_id : String, 
+				name : String, 
+				contact: {
+					email : String, 
+					phone : String
+				}, 
+				hair_color : String, 
+				gender : String, 
+				interested_in : [String], 
+				status : String
+			}
+			
+	- Additional Info:
+		- 
+	
+- event :
+	- Collection name : events
+	- Schema :
+	
+			{ 
+				social_id: String, 
+				title : String, 
+				social_venue: {
+					social_id: String, 
+					name : String, 
+					address : String, 
+					image : String
+				}, 
+				owners:[{
+					social_id : String
+				}], 
+				start : Date, 
+				expiry : Date, 
+				flirt_options : {
+					simple : String, 
+					forward : String, 
+					risky : String
+				}
+			}
+			
+	- Additional Info:
+		- 
 
 ## API Endpoints
 
