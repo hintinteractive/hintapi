@@ -146,6 +146,46 @@ This document specifies the backend REST API and backend designs for Hint. The f
 	- Additional Info:
 		- 
 
+- event :
+	- Collection name : events
+	- Schema :
+	
+			{
+				user : {
+					social_id : String, 
+					hair_color : String, 
+					gender : String, 
+					interested_in : String, 
+					current_look : {
+						photo_url : String, 
+						identifier: {
+							cloth_type : String, 
+							brand : String, 
+							color : String
+						}
+					}
+				}, 
+				event : {
+					social_id : String, 
+					title : String
+				},
+				social_venue : {
+					social_id : String, 
+					name : String, 
+					address : String, 
+					image : String
+				},
+				flirt_options : {
+					simple : String, 
+					forward : String, 
+					risky : String
+				}, 
+				expiry : Date
+			}
+			
+	- Additional Info:
+		- 
+
 ## API Endpoints
 
 - POST /login/facebook : login the user to our system
