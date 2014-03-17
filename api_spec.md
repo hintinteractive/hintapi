@@ -438,13 +438,69 @@ This document specifies the backend REST API and backend designs for Hint. The f
 		-	If the user status is banned, show a message saying that he is banned from the app and log him out.
 		-	Update the user's info in the app.
 	
-	5. Additional Info: 
+	6. Additional Info: 
 		-	Get the user from databse from the userid embedded in the header.
 		-	If the user doesn't exists, call facebook with the access_token embedded in the header to get user's basic info and update the database with info facebook
 		-	If the user exists but his status is inactive then update the database and make the status active.
 		- 	Return user's info.
 		
+- PATCH /api/user : update the user's info 
+
+	1. Trigger: 
+		-	user updates his info in the user settings page.
+		- 	user uploads a photo (only if the url is different, trigger this call).
+		
+	2. Request param: 
+	
+			{ 
+			}
+			
+	3. Request body: 
+		All of these properties are optional.
+	
+			{
+				name : 'users name', 
+				contact: {
+					email : 'users email', 
+					phone : 'users phone'
+				}, 
+				hair_color : 'dark or light', 
+				gender : 'male female or other', 
+				interested_in : ['male'], 
+				photo_url: String
+			}
+			
+	4. Request headers: 
+	
+			{
+				Content-Type : "application/json", 
+				Accept : "application/json",
+				X-ZUMO-AUTH : "auth_token"
+			}
+			
 				
+	5. Response: 
+		Updated user.
+	
+			{
+				id : String,
+				social_id : String, 
+				name : String, 
+				contact: {
+					email : String, 
+					phone : String
+				}, 
+				hair_color : String, 
+				gender : String, 
+				interested_in : [String], 
+				status : String,
+				black_list : [String],
+				photo_url: String
+			}
+	
+
+		
+					
 	
 - GET /api/venue : get a list of venues 
 
