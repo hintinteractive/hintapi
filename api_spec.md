@@ -499,6 +499,31 @@ This document specifies the backend REST API and backend designs for Hint. The f
 			}
 	
 
+- DELETE /api/user : deactivite a user
+
+	1. Trigger: 
+		-	user clicks the deactivate account button.
+		
+	2. Request param: 
+	
+			{ 
+			}
+			
+	4. Request headers: 
+	
+			{
+				Content-Type : "application/json", 
+				Accept : "application/json",
+				X-ZUMO-AUTH : "auth_token"
+			}
+			
+				
+	5. Response: 
+	
+			{
+				success : Boolean
+			}
+	
 		
 					
 	
