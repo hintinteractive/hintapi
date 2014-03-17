@@ -149,7 +149,9 @@ This document specifies the backend REST API and backend designs for Hint. The f
 					image : String
 				}, 
 				owners:[{
-					social_id : String
+					user :{
+						social_id : String
+					}
 				}], 
 				start : Date, 
 				expiry : Date, 
