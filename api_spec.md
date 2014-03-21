@@ -3,7 +3,7 @@ This document specifies the backend REST API and backend designs for Hint. The f
 
 ## Enums
 
-- enum_user_statuses :
+- `enum_user_statuses` :
 
 		{
 			admin : 'admin',
@@ -13,14 +13,14 @@ This document specifies the backend REST API and backend designs for Hint. The f
 			debug : 'debug'
 		}
 
-- enum_hint_statuses :
+- `enum_hint_statuses` :
 
 		{
 			sent : 'sent',
 			accepted : 'accepted'
 		}
 
-- enum_flirt_statuses :
+- `enum_flirt_statuses` :
 
 		{
 			sent : 'sent',
@@ -37,7 +37,7 @@ This document specifies the backend REST API and backend designs for Hint. The f
 			undefined : 'undefined'
 		}
 
-- enum_user_hair_colors :
+- `enum_user_hair_colors` :
 
 		{
 			light : 'light',
@@ -45,21 +45,22 @@ This document specifies the backend REST API and backend designs for Hint. The f
 			undefined: 'undefined'
 		}
 
-- enum_expiries :
+- `enum_expiries` :
 
 		{
 			current_look : 24,
 			event: 24,
-			connection: 24
+			connection: 24,
+			checkin: 4
 		}
 
-- enum_flags :
+- `enum_flags` :
 
 		{
 			collect_venue_category : true
 		}
 
-- enum_defaults :
+- `enum_defaults` :
 
 		{
 			venue_categoty: {
@@ -171,48 +172,54 @@ This document specifies the backend REST API and backend designs for Hint. The f
 	- Schema :
 
 			{
-				user : {
-					social_id : String,
-					name : String,
-					hair_color : String,
-					gender : String,
-					interested_in : [String],
-					current_look : {
-						photo_url : String,
-						identifier: {
-							type : String,
-							brand : String,
-							color : String
-						}
-					}
+			    user : {
+			        social_id : String, 
+			        name : String, 
+			        hair_color : String, 
+			        gender : String, 
+			        interested_in : [String],
+			        current_look : {
+			            photo_url : String, 
+			            identifier: {
+			                type : String, 
+			                brand : String, 
+			                color : String
+			            }
+			        }
+			    }, 
+			    event : {
+			        social_id : String, 
+			        title : String
+			    },
+			    social_venue : {
+			        social_id : String, 
+			        name : String, 
+			        address : String, 
+			        image : String
+			    },
+			    flirt_options : {
+			        simple : String, 
+			        forward : String, 
+			        risky : String
+			    }, 
+			    time : {type: Date, "default": Date.now},
+			    expiry : Date,
+			    received_flirts : {
+			    	type: [{
+				        user:{
+				            social_id : String
+				        }
+				    }],
+				    "default": []
 				},
-				event : {
-					social_id : String,
-					title : String
-				},
-				social_venue : {
-					social_id : String,
-					name : String,
-					address : String,
-					image : String
-				},
-				flirt_options : {
-					simple : String,
-					forward : String,
-					risky : String
-				},
-				time : Date,
-				expiry : Date,
-				received_flirts : [{
-					user:{
-						social_id : String
-					}
-				}],
-				received_hints : [{
-					user:{
-						social_id : String
-					}
-				}]
+			    received_hints : {
+			    	type: [{
+				        user:{
+				            social_id : String
+				        }
+				    }],
+				    "default": []
+				}
 			}
 
 	- Additional Info:
@@ -605,8 +612,7 @@ This document specifies the backend REST API and backend designs for Hint. The f
 			}
 
 	6. Additional Info:
-		- social_id is filled up by the server, all the other info will be available in the client.
-		- If it is a checkin to the event, then set flirt_options, expiry
+		- user.social_id is filled up by the server, all the other info will be available in the client.
 		- If the event object is present (social_venue is ignored), then the necessary info for the collection will be taken from the event object. However, the expiry can be no more than enum_expiries.event.
 		- If the event object is null, social_venue object will be used for the necessary info for the collection, the missing info will be taken from the enums.
 		- Trying to check into an event before its start time will generate an internal server error.
@@ -665,7 +671,10 @@ This document specifies the backend REST API and backend designs for Hint. The f
 
 			{
 				social_venue_id: 'Facebook:id',
+                event_social_id: 'facebook:id',
 				hair_color : 'optional: if not provided ignore',
+                interested_in : [String],
+                search : 'search string in identifier',
 				limit : 'number of results, default enum_defaults.checkin_search_results',
 			}
 
@@ -729,9 +738,12 @@ This document specifies the backend REST API and backend designs for Hint. The f
 		          }
 		      }]
 			}]
+            
 	5. Additional Info:
-		-	search for checkins with social_venue_id = social_venue.social_id
+		-	if event_social_id is provided, search with it, otherwise search checkins with social_venue_id, if none provided a 500 error is generated.
 		-	if limit parameter is not provided, then enum_defaults.checkin_search_results is used to determine how many checkins will be returned.
+        -   if interested_in,hair_color,search are not provided then search all.
+        -   TODO: optimize the search
 
 - `GET /api/venue` : get a list of venues
 
