@@ -70,7 +70,8 @@ This document specifies the backend REST API and backend designs for Hint. The f
 				},
 				image:''
 			},
-			venue_search_results : 35
+			venue_search_results : 35,
+			checkin_search_results : 20
 		}
 
 
@@ -201,7 +202,17 @@ This document specifies the backend REST API and backend designs for Hint. The f
 					risky : String
 				},
 				time : Date,
-				expiry : Date
+				expiry : Date,
+				received_flirts : [{
+					user:{
+						social_id : String
+					}
+				}],
+				received_hints : [{
+					user:{
+						social_id : String
+					}
+				}]
 			}
 
 	- Additional Info:
@@ -415,7 +426,6 @@ This document specifies the backend REST API and backend designs for Hint. The f
 				X-ZUMO-AUTH : "auth_token"
 			}
 
-
 	4. Response:
 
 			{
@@ -478,7 +488,6 @@ This document specifies the backend REST API and backend designs for Hint. The f
 				X-ZUMO-AUTH : "auth_token"
 			}
 
-
 	5. Response: (Updated user)
 
 			{
@@ -496,7 +505,6 @@ This document specifies the backend REST API and backend designs for Hint. The f
 				black_list : [String],
 				photo_url: String
 			}
-
 
 - `DELETE /api/user` : deactivite a user
 
@@ -516,6 +524,79 @@ This document specifies the backend REST API and backend designs for Hint. The f
 				X-ZUMO-AUTH : "auth_token"
 			}
 
+	5. Response:
+
+			{
+				success : Boolean
+			}
+
+- `POST /api/checkin` : checkin to a venue
+
+	1. Trigger:
+		-	user clicks the checkin button
+
+	2. Request param:
+
+			{
+			}
+
+	3. Request body:
+
+			{
+				user : {
+					name : String,
+					hair_color : String,
+					gender : String,
+					interested_in : [String],
+					current_look : {
+						photo_url : String,
+						identifier: {
+							type : String,
+							brand : String,
+							color : String
+						}
+					}
+				},
+				event : {
+				    social_id: String,
+				    title : String,
+				    social_venue: {
+				        social_id: String,
+				        name : String,
+				        address : String,
+				        image : String
+				    },
+				    start : Date,
+				    expiry : Date,
+				    flirt_options : {
+				        simple : String,
+				        forward : String,
+				        risky : String
+				    }
+				},
+				social_venue : {
+				   social_id : 'Facebook:fb_id',
+				   name : 'name of the place',
+				   address : 'address of the place',
+				   distance: 'calculated distance in miles',
+				   category: {
+				       flirt_options : {
+				           simple : 'simple flirt',
+				           forward : 'forward flirt',
+				           risky : 'risky flirt'
+				       }
+				       image : 'image link'
+				   }
+				}
+			}
+
+	4. Request headers:
+
+			{
+				Content-Type : "application/json",
+				Accept : "application/json",
+				X-ZUMO-AUTH : "auth_token"
+			}
 
 	5. Response:
 
@@ -523,8 +604,134 @@ This document specifies the backend REST API and backend designs for Hint. The f
 				success : Boolean
 			}
 
+	6. Additional Info:
+		- social_id is filled up by the server, all the other info will be available in the client.
+		- If it is a checkin to the event, then set flirt_options, expiry
+		- If the event object is present (social_venue is ignored), then the necessary info for the collection will be taken from the event object. However, the expiry can be no more than enum_expiries.event.
+		- If the event object is null, social_venue object will be used for the necessary info for the collection, the missing info will be taken from the enums.
+		- Trying to check into an event before its start time will generate an internal server error.
+		- The time field of the collection will be current system time.
+		- If one of event.social_venue.social_id and social_venue.social_id is not provided, then an internal server error will be generated.
+		- received_flirts and received_hints will be empty arrays.
 
+- `PATCH /api/checkin` : add to received_flirts and received_hints array
 
+	1. Trigger:
+		-	user sends a hint
+		-	user sends a flirt
+
+	2. Request param:
+
+			{
+				id: 'MongoDB ObjectId'
+			}
+
+	3. Request body:
+
+			{
+				flirt:{
+					user:{
+					  social_id : String
+					}
+				},
+				hint:{
+					user:{
+					  social_id : String
+					}
+				}
+			}
+
+	4. Request headers:
+
+			{
+				Content-Type : "application/json",
+				Accept : "application/json",
+				X-ZUMO-AUTH : "auth_token"
+			}
+
+	5. Response:
+
+			{
+				success : Boolean
+			}
+
+- `GET /api/checkin` : get a list of checkins for a venue
+
+	1. Trigger:
+		-	user comes to the "Who is Here?" landing page.
+		-	refresh of the "Who is Here?" landing page.
+
+	2. Request param:
+
+			{
+				social_venue_id: 'Facebook:id',
+				hair_color : 'optional: if not provided ignore',
+				limit : 'number of results, default enum_defaults.checkin_search_results',
+			}
+
+	3. Request body:
+
+			{
+
+			}
+
+	4. Request headers:
+
+			{
+				Content-Type : "application/json",
+				Accept : "application/json",
+				X-ZUMO-AUTH : "auth_token"
+			}
+
+	5. Response:
+
+			[{
+		      user : {
+		          social_id : String,
+		          name : String,
+		          hair_color : String,
+		          gender : String,
+		          interested_in : [String],
+		          current_look : {
+		              photo_url : String,
+		              identifier: {
+		                  type : String,
+		                  brand : String,
+		                  color : String
+		              }
+		          }
+		      },
+		      event : {
+		          social_id : String,
+		          title : String
+		      },
+		      social_venue : {
+		          social_id : String,
+		          name : String,
+		          address : String,
+		          image : String
+		      },
+		      flirt_options : {
+		          simple : String,
+		          forward : String,
+		          risky : String
+		      },
+		      time : Date,
+		      expiry : Date,
+		      received_flirts : [{
+		          user:{
+		              social_id : String
+		          }
+		      }],
+		      received_hints : [{
+		          user:{
+		              social_id : String
+		          }
+		      }]
+			}]
+	5. Additional Info:
+		-	search for checkins with social_venue_id = social_venue.social_id
+		-	if limit parameter is not provided, then enum_defaults.checkin_search_results is used to determine how many checkins will be returned.
 
 - `GET /api/venue` : get a list of venues
 
@@ -549,7 +756,6 @@ This document specifies the backend REST API and backend designs for Hint. The f
 				Accept : "application/json",
 				X-ZUMO-AUTH : "auth_token"
 			}
-
 
 	4. Response:
 
