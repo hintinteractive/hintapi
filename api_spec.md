@@ -7,19 +7,19 @@ This document specifies the backend REST API and backend designs for Hint. The f
 
 		{
 			admin : 'admin',
-			active : 'active', 
-			inactive : 'inactive', 
-			banned : 'inactive', 
+			active : 'active',
+			inactive : 'inactive',
+			banned : 'inactive',
 			debug : 'debug'
 		}
-		
+
 - enum_hint_statuses :
 
 		{
 			sent : 'sent',
 			accepted : 'accepted'
 		}
-		
+
 - enum_flirt_statuses :
 
 		{
@@ -31,43 +31,43 @@ This document specifies the backend REST API and backend designs for Hint. The f
 - enum_user_genders :
 
 		{
-			male : 'male', 
-			female : 'female', 
-			other : 'other', 
+			male : 'male',
+			female : 'female',
+			other : 'other',
 			undefined : 'undefined'
 		}
 
 - enum_user_hair_colors :
-	
+
 		{
-			light : 'light', 
+			light : 'light',
 			dark : 'dark',
 			undefined: 'undefined'
 		}
-		
+
 - enum_expiries :
-	
+
 		{
-			current_look : 24, 
-			event: 24, 
+			current_look : 24,
+			event: 24,
 			connection: 24
 		}
-		
+
 - enum_flags :
-	
+
 		{
 			collect_venue_category : true
 		}
-		
+
 - enum_defaults :
-	
+
 		{
 			venue_categoty: {
 				flirt_options : {
-					simple:'', 
-					forward:'', 
+					simple:'',
+					forward:'',
 					risky:''
-				}, 
+				},
 				image:''
 			},
 			venue_search_results : 35
@@ -79,7 +79,7 @@ This document specifies the backend REST API and backend designs for Hint. The f
 - api_access :
 	- Collection name : api_accesses
 	- Schema :
-	
+
 			{
 				user: {
 					social_id: String
@@ -88,211 +88,211 @@ This document specifies the backend REST API and backend designs for Hint. The f
 				'method': {type: String, "default": 'GET'},
 				access_time: {type: Date, "default": Date.now}
 			}
-			
+
 	- Additional Info:
 		- Add a entry to this collection every time a api end point is accessed.
 		- Write heavy, read only needs for analytics purpose.
-		
+
 - venue_category :
 	- Collection name : venue_categories
 	- Schema :
-	
+
 			{
 				social_id : String,
-				name : String, 
+				name : String,
 				flirt_options : {
-					simple : String, 
-					forward : String, 
+					simple : String,
+					forward : String,
 					risky : String
-				}, 
+				},
 				image: String
 			}
-			
+
 	- Additional Info:
 		- Search the collection with a list of social_category.id for each GET /api/venue call.
 		- Read heavy (normal situations).
 		- Read and Write heavy (when enum_flags.collect_venue_category is true)
-		
+
 - user :
 	- Collection name : users
 	- Schema :
-	
+
 			{
-				social_id : String, 
-				name : String, 
+				social_id : String,
+				name : String,
 				contact: {
-					email : String, 
+					email : String,
 					phone : String
-				}, 
-				hair_color : String, 
-				gender : String, 
-				interested_in : [String], 
+				},
+				hair_color : String,
+				gender : String,
+				interested_in : [String],
 				status : String,
 				black_list : [String],
 				photo_url: String
 			}
-			
+
 	- Additional Info:
-		- 
-	
+		-
+
 - event :
 	- Collection name : events
 	- Schema :
-	
-			{ 
-				social_id: String, 
-				title : String, 
+
+			{
+				social_id: String,
+				title : String,
 				social_venue: {
-					social_id: String, 
-					name : String, 
-					address : String, 
+					social_id: String,
+					name : String,
+					address : String,
 					image : String
-				}, 
+				},
 				owners:[{
 					user :{
 						social_id : String
 					}
-				}], 
-				start : Date, 
-				expiry : Date, 
+				}],
+				start : Date,
+				expiry : Date,
 				flirt_options : {
-					simple : String, 
-					forward : String, 
+					simple : String,
+					forward : String,
 					risky : String
 				}
 			}
-			
+
 	- Additional Info:
-		- 
+		-
 
 - checkin :
 	- Collection name : checkins
 	- Schema :
-	
+
 			{
 				user : {
-					social_id : String, 
-					name : String, 
-					hair_color : String, 
-					gender : String, 
+					social_id : String,
+					name : String,
+					hair_color : String,
+					gender : String,
 					interested_in : [String],
 					current_look : {
-						photo_url : String, 
+						photo_url : String,
 						identifier: {
-							type : String, 
-							brand : String, 
+							type : String,
+							brand : String,
 							color : String
 						}
 					}
-				}, 
+				},
 				event : {
-					social_id : String, 
+					social_id : String,
 					title : String
 				},
 				social_venue : {
-					social_id : String, 
-					name : String, 
-					address : String, 
+					social_id : String,
+					name : String,
+					address : String,
 					image : String
 				},
 				flirt_options : {
-					simple : String, 
-					forward : String, 
+					simple : String,
+					forward : String,
 					risky : String
-				}, 
+				},
 				time : Date,
 				expiry : Date
 			}
-			
+
 	- Additional Info:
-		- 
-	
+		-
+
 - hint :
 	- Collection name : hints
 	- Schema :
-	
+
 			{
 				user_from : {
-					social_id : String, 
-					name : String, 
-					hair_color : String, 
-					gender : String, 
+					social_id : String,
+					name : String,
+					hair_color : String,
+					gender : String,
 					interested_in : [String],
 					current_look : {
-						photo_url : String, 
+						photo_url : String,
 						identifier: {
-							type : String, 
-							brand : String, 
+							type : String,
+							brand : String,
 							color : String
 						}
 					}
 				},
 				user_to : {
-					social_id : String, 
-					name : String, 
-					hair_color : String, 
-					gender : String, 
+					social_id : String,
+					name : String,
+					hair_color : String,
+					gender : String,
 					interested_in : [String],
 					current_look : {
-						photo_url : String, 
+						photo_url : String,
 						identifier: {
-							type : String, 
-							brand : String, 
+							type : String,
+							brand : String,
 							color : String
 						}
 					}
 				},
 				social_venue : {
-					social_id : String, 
-					name : String, 
+					social_id : String,
+					name : String,
 					address : String
 				},
 				status : String,
 				time : Date,
 				expiry : Date
 			}
-			
+
 	- Additional Info:
-		- 
-		
+		-
+
 - flirt :
 	- Collection name : flirts
 	- Schema :
-	
+
 			{
 				user_from : {
-					social_id : String, 
-					name : String, 
-					hair_color : String, 
-					gender : String, 
+					social_id : String,
+					name : String,
+					hair_color : String,
+					gender : String,
 					interested_in : [String],
 					current_look : {
-						photo_url : String, 
+						photo_url : String,
 						identifier: {
-							type : String, 
-							brand : String, 
+							type : String,
+							brand : String,
 							color : String
 						}
 					}
 				},
 				user_to : {
-					social_id : String, 
-					name : String, 
-					hair_color : String, 
-					gender : String, 
+					social_id : String,
+					name : String,
+					hair_color : String,
+					gender : String,
 					interested_in : [String],
 					current_look : {
-						photo_url : String, 
+						photo_url : String,
 						identifier: {
-							type : String, 
-							brand : String, 
+							type : String,
+							brand : String,
 							color : String
 						}
 					}
 				},
 				social_venue : {
-					social_id : String, 
-					name : String, 
+					social_id : String,
+					name : String,
 					address : String
 				},
 				flirt_options : {
@@ -303,34 +303,34 @@ This document specifies the backend REST API and backend designs for Hint. The f
 				time : Date,
 				expiry : Date
 			}
-			
+
 	- Additional Info:
-		- 
+		-
 
 
 - connection :
 	- Collection name : connections
 	- Schema :
-	
+
 			{
 				users: [{
-					social_id : String, 
-					name : String, 
-					hair_color : String, 
-					gender : String, 
+					social_id : String,
+					name : String,
+					hair_color : String,
+					gender : String,
 					interested_in : [String],
 					current_look : {
-						photo_url : String, 
+						photo_url : String,
 						identifier: {
-							type : String, 
-							brand : String, 
+							type : String,
+							brand : String,
 							color : String
 						}
 					}
 				}],
 				social_venue : {
-					social_id : String, 
-					name : String, 
+					social_id : String,
+					name : String,
 					address : String
 				},
 				messages : [{
@@ -349,230 +349,229 @@ This document specifies the backend REST API and backend designs for Hint. The f
 				time : Date,
 				expiry : Date
 			}
-			
+
 	- Additional Info:
-		- 
+		-
 
 
 
 ## API Endpoints
 
-- POST /login/facebook : login the user to our system
+- `POST /login/facebook` : login the user to our system
 
-	1. Trigger: 
+	1. Trigger:
 		-	click login button
-		-	fire up facebook sdk 
+		-	fire up facebook sdk
 		-	after successful login with basic permissions
 		-	receives the access_token from facebook
 		-	call this endpoint with the access_token.
-	2. Request param: 
-	
-			{ 
+	2. Request param:
+
+			{
 				access_token : "facebook_access_token"
 			}
-			
-	3. Request headers: 
-	
+
+	3. Request headers:
+
 			{
-				Content-Type : "application/json", 
+				Content-Type : "application/json",
 				Accept : "application/json"
 			}
-				
-	4. Response: 
-	
+
+	4. Response:
+
 			{
 				user: {
 					userId : "Facebook:fb_id"
 				},
 				authenticationToken: 'auth_token'
 			}
-	
-	5. After Action : 
-		-	Call GET /api/user upon successful login and update the current user info in the client.
-		
-	5. Additional Info: 
-		-	auth_token is valid for 30 days, so cache it in the application. 
-		-	auth_token is necessary to make any api calls. 
-		-	If auth_token is invalid log off the user.
-		
-- GET /api/user : get the current user info, if user doesn't exists call facebook and update user info 
 
-	1. Trigger: 
+	5. After Action :
+		-	Call GET /api/user upon successful login and update the current user info in the client.
+
+	5. Additional Info:
+		-	auth_token is valid for 30 days, so cache it in the application.
+		-	auth_token is necessary to make any api calls.
+		-	If auth_token is invalid log off the user.
+
+- `GET /api/user` : get the current user info, if user doesn't exists call facebook and update user info
+
+	1. Trigger:
 		-	after user logged in to the system.
-		- 	afer user comes to the user settings page.
+		- 	after user comes to the user settings page.
 		-	after user refresh his information.
-		
-	2. Request param: 
-	
-			{ 
-			}
-			
-	3. Request headers: 
-	
+
+	2. Request param:
+
 			{
-				Content-Type : "application/json", 
+			}
+
+	3. Request headers:
+
+			{
+				Content-Type : "application/json",
 				Accept : "application/json",
 				X-ZUMO-AUTH : "auth_token"
 			}
-			
-				
-	4. Response: 
-	
+
+
+	4. Response:
+
 			{
 				id : String,
-				social_id : String, 
-				name : String, 
+				social_id : String,
+				name : String,
 				contact: {
-					email : String, 
+					email : String,
 					phone : String
-				}, 
-				hair_color : String, 
-				gender : String, 
-				interested_in : [String], 
+				},
+				hair_color : String,
+				gender : String,
+				interested_in : [String],
 				status : String,
 				black_list : [String],
 				photo_url: String
 			}
-	
-	5. After Action : 
+
+	5. After Action :
 		-	If the user status is banned, show a message saying that he is banned from the app and log him out.
 		-	Update the user's info in the app.
-	
-	6. Additional Info: 
+
+	6. Additional Info:
 		-	Get the user from databse from the userid embedded in the header.
 		-	If the user doesn't exists, call facebook with the access_token embedded in the header to get user's basic info and update the database with info facebook
 		-	If the user exists but his status is inactive then update the database and make the status active.
 		- 	Return user's info.
-		
-- PATCH /api/user : update the user's info 
 
-	1. Trigger: 
+- `PATCH /api/user` : update the user's info
+
+	1. Trigger:
 		-	user updates his info in the user settings page.
 		- 	user uploads a photo (only if the url is different, trigger this call).
-		
-	2. Request param: 
-	
-			{ 
-			}
-			
-	3. Request body: 
-		All of these properties are optional.
-	
+
+	2. Request param:
+
 			{
-				name : 'users name', 
+			}
+
+	3. Request body:
+		All of these properties are optional.
+
+			{
+				name : 'users name',
 				contact: {
-					email : 'users email', 
+					email : 'users email',
 					phone : 'users phone'
-				}, 
-				hair_color : 'dark or light', 
-				gender : 'male female or other', 
-				interested_in : ['male'], 
+				},
+				hair_color : 'dark or light',
+				gender : 'male female or other',
+				interested_in : ['male'],
 				photo_url: String
 			}
-			
-	4. Request headers: 
-	
+
+	4. Request headers:
+
 			{
-				Content-Type : "application/json", 
+				Content-Type : "application/json",
 				Accept : "application/json",
 				X-ZUMO-AUTH : "auth_token"
 			}
-			
-				
-	5. Response: 
-		Updated user.
-	
+
+
+	5. Response: (Updated user)
+
 			{
 				id : String,
-				social_id : String, 
-				name : String, 
+				social_id : String,
+				name : String,
 				contact: {
-					email : String, 
+					email : String,
 					phone : String
-				}, 
-				hair_color : String, 
-				gender : String, 
-				interested_in : [String], 
+				},
+				hair_color : String,
+				gender : String,
+				interested_in : [String],
 				status : String,
 				black_list : [String],
 				photo_url: String
 			}
-	
 
-- DELETE /api/user : deactivite a user
 
-	1. Trigger: 
+- `DELETE /api/user` : deactivite a user
+
+	1. Trigger:
 		-	user clicks the deactivate account button.
-		
-	2. Request param: 
-	
-			{ 
-			}
-			
-	4. Request headers: 
-	
+
+	2. Request param:
+
 			{
-				Content-Type : "application/json", 
+			}
+
+	4. Request headers:
+
+			{
+				Content-Type : "application/json",
 				Accept : "application/json",
 				X-ZUMO-AUTH : "auth_token"
 			}
-			
-				
-	5. Response: 
-	
+
+
+	5. Response:
+
 			{
 				success : Boolean
 			}
-	
-		
-					
-	
-- GET /api/venue : get a list of venues 
 
-	1. Trigger: 
+
+
+
+- `GET /api/venue` : get a list of venues
+
+	1. Trigger:
 		-	user comes to the venue list page.
 		-	user refresh the venue list page.
 		-	user search for venues (either by name or category)
-	2. Request param: 
-	
-			{ 
+	2. Request param:
+
+			{
 				lat : 'user lat',
 				lng : 'user lng',
 				search : 'search string',
 				limit : 'number of results, default enum_defaults.venue_search_results',
 				radius : 'radius of the search'
 			}
-			
-	3. Request headers: 
-	
+
+	3. Request headers:
+
 			{
-				Content-Type : "application/json", 
+				Content-Type : "application/json",
 				Accept : "application/json",
 				X-ZUMO-AUTH : "auth_token"
 			}
-			
-				
-	4. Response: 
-	
+
+
+	4. Response:
+
 			[{
-				social_id : 'Facebook:fb_id', 
-				name : 'name of the place', 
-				address : 'address of the place', 
-				distance: 'calculated distance in miles', 
+				social_id : 'Facebook:fb_id',
+				name : 'name of the place',
+				address : 'address of the place',
+				distance: 'calculated distance in miles',
 				category: {
 					flirt_options : {
-						simple : 'simple flirt', 
-						forward : 'forward flirt', 
+						simple : 'simple flirt',
+						forward : 'forward flirt',
 						risky : 'risky flirt'
 					}
 					image : 'image link'
 				}
 			}]
-	
-	5. Additional Info: 
+
+	5. Additional Info:
 		-	Get the venue list from facebook.
 		- 	A typical facebook venue object is of the following format:
-		
+
 				{
 					 "category": "Health/beauty",
 					 "category_list": [
@@ -593,7 +592,7 @@ This document specifies the backend REST API and backend designs for Hint. The f
 					 "name": "Benefit Cosmetics",
 					 "id": "48879913147"
 				  }
-		
+
 		-	After receving the venue list, query our database to get the category info.
 		-	If the category is not found, return the enum_defaults.venue_categoty
 		-	If the category is not found and enum_flags.collect_venue_category is true, then update the venue_categories collection with enum_defaults.venue_categoty for this category and return it.  
