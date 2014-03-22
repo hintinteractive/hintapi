@@ -51,7 +51,9 @@ This document specifies the backend REST API and backend designs for Hint. The f
 			current_look : 24,
 			event: 24,
 			connection: 24,
-			checkin: 4
+			checkin: 4,
+			flirt: 24,
+			hint: 24
 		}
 
 - `enum_flags` :
@@ -173,35 +175,35 @@ This document specifies the backend REST API and backend designs for Hint. The f
 
 			{
 			    user : {
-			        social_id : String, 
-			        name : String, 
-			        hair_color : String, 
-			        gender : String, 
+			        social_id : String,
+			        name : String,
+			        hair_color : String,
+			        gender : String,
 			        interested_in : [String],
 			        current_look : {
-			            photo_url : String, 
+			            photo_url : String,
 			            identifier: {
-			                type : String, 
-			                brand : String, 
+			                type : String,
+			                brand : String,
 			                color : String
 			            }
 			        }
-			    }, 
+			    },
 			    event : {
-			        social_id : String, 
+			        social_id : String,
 			        title : String
 			    },
 			    social_venue : {
-			        social_id : String, 
-			        name : String, 
-			        address : String, 
+			        social_id : String,
+			        name : String,
+			        address : String,
 			        image : String
 			    },
 			    flirt_options : {
-			        simple : String, 
-			        forward : String, 
+			        simple : String,
+			        forward : String,
 			        risky : String
-			    }, 
+			    },
 			    time : {type: Date, "default": Date.now},
 			    expiry : Date,
 			    received_flirts : {
@@ -585,7 +587,6 @@ This document specifies the backend REST API and backend designs for Hint. The f
 				   social_id : 'Facebook:fb_id',
 				   name : 'name of the place',
 				   address : 'address of the place',
-				   distance: 'calculated distance in miles',
 				   category: {
 				       flirt_options : {
 				           simple : 'simple flirt',
@@ -738,7 +739,7 @@ This document specifies the backend REST API and backend designs for Hint. The f
 		          }
 		      }]
 			}]
-            
+
 	5. Additional Info:
 		-	if event_social_id is provided, search with it, otherwise search checkins with social_venue_id, if none provided a 500 error is generated.
 		-	if limit parameter is not provided, then enum_defaults.checkin_search_results is used to determine how many checkins will be returned.
@@ -811,8 +812,291 @@ This document specifies the backend REST API and backend designs for Hint. The f
 					 "id": "48879913147"
 				  }
 
-		-	After receving the venue list, query our database to get the category info.
+		-	After receiving the venue list, query our database to get the category info.
 		-	If the category is not found, return the enum_defaults.venue_categoty
 		-	If the category is not found and enum_flags.collect_venue_category is true, then update the venue_categories collection with enum_defaults.venue_categoty for this category and return it.  
-		-	Contruct the response object from these info.
+		-	Construct the response object from these info.
 		-	The response array will be sorted by distance.
+
+- `POST /api/flirt` : sends a flirt
+
+	1. Trigger:
+		-	user sends a flirt to another user
+
+	2. Request param:
+
+			{
+			}
+
+	3. Request body:
+
+			{
+				user_from : {
+					name : String,
+					hair_color : String,
+					gender : String,
+					interested_in : [String],
+					current_look : {
+						photo_url : String,
+						identifier: {
+							type : String,
+							brand : String,
+							color : String
+						}
+					}
+				},
+				user_to : {
+					social_id : String,
+					name : String,
+					hair_color : String,
+					gender : String,
+					interested_in : [String],
+					current_look : {
+						photo_url : String,
+						identifier: {
+							type : String,
+							brand : String,
+							color : String
+						}
+					}
+				},
+				social_venue : {
+					social_id : String,
+					name : String,
+					address : String
+				},
+				flirt_options : {
+					type: String,
+					text: String
+				}
+			}
+
+	4. Request headers:
+
+			{
+				Content-Type : "application/json",
+				Accept : "application/json",
+				X-ZUMO-AUTH : "auth_token"
+			}
+
+	5. Response:
+
+			{
+				success : Boolean
+			}
+
+	6. Additional Info:
+		- user_from.social_id will be filled out by the server (current login)
+		- flirt_options.type is either simple, forward, or risky
+		- status will be enum_flirt_statuses.sent
+		- time will be current system time
+		- expiry will br set according to enum_expiries.flirt
+		- sends a push notification to the recipient.
+		- patch the checkin collection to add to sent_flirts
+
+- `PATCH /api/flirt` : user accepts or rejects a flirt
+
+	1. Trigger:
+		-	user accepts a flirt
+		-	user rejects a flirt
+
+	2. Request param:
+
+			{
+				id: 'MongoDB ObjectId'
+			}
+
+	3. Request body:
+
+			{
+				action: 'accept or reject'
+			}
+
+	4. Request headers:
+
+			{
+				Content-Type : "application/json",
+				Accept : "application/json",
+				X-ZUMO-AUTH : "auth_token"
+			}
+
+	5. Response:
+
+			{
+				success : Boolean
+			}
+	6. Additional Info:
+		- if  action == 'accept', change status=enum_flirt_statuses.accepted, create a connection, send a push notification to the other person.
+		- if  action == 'reject', change status=enum_flirt_statuses.rejected, send a push notification to the other person.
+
+- `POST /api/hint` : sends a hint
+
+	1. Trigger:
+		-	user sends a hint to another user
+
+	2. Request param:
+
+			{
+			}
+
+	3. Request body:
+
+			{
+				user_from : {
+					name : String,
+					hair_color : String,
+					gender : String,
+					interested_in : [String],
+					current_look : {
+						photo_url : String,
+						identifier: {
+							type : String,
+							brand : String,
+							color : String
+						}
+					}
+				},
+				user_to : {
+					social_id : String,
+					name : String,
+					hair_color : String,
+					gender : String,
+					interested_in : [String],
+					current_look : {
+						photo_url : String,
+						identifier: {
+							type : String,
+							brand : String,
+							color : String
+						}
+					}
+				},
+				social_venue : {
+					social_id : String,
+					name : String,
+					address : String
+				}
+			}
+
+	4. Request headers:
+
+			{
+				Content-Type : "application/json",
+				Accept : "application/json",
+				X-ZUMO-AUTH : "auth_token"
+			}
+
+	5. Response:
+
+			{
+				success : Boolean
+			}
+
+	6. Additional Info:
+		- user_from.social_id will be filled out by the server (current login)
+		- status will be enum_hint_statuses.sent
+		- time will be current system time
+		- expiry will br set according to enum_expiries.hint
+		- patch the checkin collection to add to sent_hint.
+		- run the connection algorithm (check if there is an un-expired hint from the other persion in the same venue)
+		- if a connection is created, sends a push notification to both, otherwise send it to the recipient.
+
+- `GET /api/connection` : get a list of connections
+
+	1. Trigger:
+		-	user open up the right menu.
+		-	user click on a connection.
+
+	2. Request param:
+
+			{
+				id : 'optional, id of the connection, if provided the result array will have at most 1 element'
+			}
+
+	3. Request headers:
+
+			{
+				Content-Type : "application/json",
+				Accept : "application/json",
+				X-ZUMO-AUTH : "auth_token"
+			}
+
+	4. Response:
+
+			[{
+				users: [{
+					social_id : String,
+					name : String,
+					hair_color : String,
+					gender : String,
+					interested_in : [String],
+					current_look : {
+						photo_url : String,
+						identifier: {
+							type : String,
+							brand : String,
+							color : String
+						}
+					}
+				}],
+				social_venue : {
+					social_id : String,
+					name : String,
+					address : String
+				},
+				messages : [{
+					user :{
+						social_id : String
+					},
+					text: String,
+					time: Date
+				}],
+				keep_alive : {
+					flag : Boolean,
+					user :{
+						social_id : String
+					}
+				},
+				time : Date,
+				expiry : Date
+			}]
+
+	5. Additional Info:
+		-	filter unexpired connection by current logged in user_id and connection_id (if provided)
+
+- `PATCH /api/connection` : user sends a message(TODO: update expiry, and ask to keep connection alive)
+
+	1. Trigger:
+		-	user sends a message
+
+	2. Request param:
+
+			{
+				id: 'MongoDB ObjectId'
+			}
+
+	3. Request body:
+
+			{
+				message : {
+					text: String
+				}
+			}
+
+	4. Request headers:
+
+			{
+				Content-Type : "application/json",
+				Accept : "application/json",
+				X-ZUMO-AUTH : "auth_token"
+			}
+
+	5. Response:
+
+			{
+				success : Boolean
+			}
+
+	6. Additional Info:
+		- message.user.social_id will be filled up by the server
+		- time will be current expiry time
