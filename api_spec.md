@@ -9,7 +9,7 @@ This document specifies the backend REST API and backend designs for Hint. The f
 			admin : 'admin',
 			active : 'active',
 			inactive : 'inactive',
-			banned : 'inactive',
+			banned : 'banned',
 			debug : 'debug'
 		}
 
@@ -28,7 +28,7 @@ This document specifies the backend REST API and backend designs for Hint. The f
 			rejected : 'rejected'
 		}
 
-- enum_user_genders :
+- `enum_user_genders` :
 
 		{
 			male : 'male',
@@ -80,8 +80,8 @@ This document specifies the backend REST API and backend designs for Hint. The f
 
 ## Models
 
-- api_access :
-	- Collection name : api_accesses
+- `api_access` :
+	- Collection name : `api_accesses`
 	- Schema :
 
 			{
@@ -97,8 +97,8 @@ This document specifies the backend REST API and backend designs for Hint. The f
 		- Add a entry to this collection every time a api end point is accessed.
 		- Write heavy, read only needs for analytics purpose.
 
-- venue_category :
-	- Collection name : venue_categories
+- `venue_category` :
+	- Collection name : `venue_categories`
 	- Schema :
 
 			{
@@ -117,8 +117,8 @@ This document specifies the backend REST API and backend designs for Hint. The f
 		- Read heavy (normal situations).
 		- Read and Write heavy (when enum_flags.collect_venue_category is true)
 
-- user :
-	- Collection name : users
+- `user` :
+	- Collection name : `users`
 	- Schema :
 
 			{
@@ -139,8 +139,8 @@ This document specifies the backend REST API and backend designs for Hint. The f
 	- Additional Info:
 		-
 
-- event :
-	- Collection name : events
+- `event` :
+	- Collection name : `events`
 	- Schema :
 
 			{
@@ -169,8 +169,8 @@ This document specifies the backend REST API and backend designs for Hint. The f
 	- Additional Info:
 		-
 
-- checkin :
-	- Collection name : checkins
+- `checkin` :
+	- Collection name : `checkins`
 	- Schema :
 
 			{
@@ -206,7 +206,7 @@ This document specifies the backend REST API and backend designs for Hint. The f
 			    },
 			    time : {type: Date, "default": Date.now},
 			    expiry : Date,
-			    received_flirts : {
+			    flirts : {
 			    	type: [{
 				        user:{
 				            social_id : String
@@ -214,7 +214,7 @@ This document specifies the backend REST API and backend designs for Hint. The f
 				    }],
 				    "default": []
 				},
-			    received_hints : {
+			  hints : {
 			    	type: [{
 				        user:{
 				            social_id : String
@@ -227,8 +227,8 @@ This document specifies the backend REST API and backend designs for Hint. The f
 	- Additional Info:
 		-
 
-- hint :
-	- Collection name : hints
+- `hint` :
+	- Collection name : `hints`
 	- Schema :
 
 			{
@@ -268,15 +268,15 @@ This document specifies the backend REST API and backend designs for Hint. The f
 					address : String
 				},
 				status : String,
-				time : Date,
+				time : {type: Date, "default": Date.now},
 				expiry : Date
 			}
 
 	- Additional Info:
 		-
 
-- flirt :
-	- Collection name : flirts
+- `flirt` :
+	- Collection name : `flirts`
 	- Schema :
 
 			{
@@ -320,7 +320,7 @@ This document specifies the backend REST API and backend designs for Hint. The f
 					text: String
 				},
 				status : String,
-				time : Date,
+				time : {type: Date, "default": Date.now},
 				expiry : Date
 			}
 
@@ -328,8 +328,8 @@ This document specifies the backend REST API and backend designs for Hint. The f
 		-
 
 
-- connection :
-	- Collection name : connections
+- `connection` :
+	- Collection name : `connections`
 	- Schema :
 
 			{
@@ -831,6 +831,9 @@ This document specifies the backend REST API and backend designs for Hint. The f
 	3. Request body:
 
 			{
+				checkin : {
+					id: String
+				},
 				user_from : {
 					name : String,
 					hair_color : String,
@@ -998,7 +1001,7 @@ This document specifies the backend REST API and backend designs for Hint. The f
 		- time will be current system time
 		- expiry will br set according to enum_expiries.hint
 		- patch the checkin collection to add to sent_hint.
-		- run the connection algorithm (check if there is an un-expired hint from the other persion in the same venue)
+		- run the connection algorithm (check if there is an un-expired hint from the other person in the same venue)
 		- if a connection is created, sends a push notification to both, otherwise send it to the recipient.
 
 - `GET /api/connection` : get a list of connections
