@@ -1,5 +1,23 @@
-#API Specification
-This document specifies the backend REST API and backend designs for Hint. The frontend developers can refer to this.
+This document specifies the backend designs for Hint and the REST API. The document is intended for frontend developers to refer.
+
+## Technologies and SDKs
+Hint uses [MongoDB](https://www.mongodb.org/) as its data source and [Node.js](http://nodejs.org/) ([Express.js](http://expressjs.com/)) as the backend server. It uses [Mongoose](http://mongoosejs.com/) for the MongoDB object modeling. Hint backend is hosted on [Windows Azure as a Mobile Sevice](http://www.windowsazure.com/en-us/develop/mobile/). Hint backend is highly (horizontally) scalable, and secure (oAuth 2.0 flow).
+
+If you are building the client using Windows Phone Native, iOS Native, Android Native, Xamarin.iOS, Xamarin.Android, Sencha, or PhoneGap please refer to the [officially supported SDKs](http://www.windowsazure.com/en-us/documentation/articles/mobile-services-android-get-started/) by Windows Azure. However, this document will give you sufficient information to build your app with any client side technology, if you do not want to use one of those SDKs.
+
+## oAuth 2.0 Flow
+Please refer to [oAuth 2.0 specifications](http://oauth.net/2/) for more info. Please refer to [this](http://blog.rfaisal.com/2014/03/01/oauth-flow-for-mobile-apps-with-an-external-identity-server/) blog post to know more about the oAuth flow that is used in Hint.
+
+For Hint,
+-	The user’s identity is verified by Facebook, i.e., external authentication.
+-	The user’s access to a protected resource, i.e., an API endpoint, is determined by the Hint server, i.e., internal authorization. In other words, the resource server and the authorization server in the oAuth 2.0 specification is the same Hint server.
+
+The details of the oAuth flow for Hint is described below,
+
+-	The client, i.e., the mobile app, calls facebook native sdk and verifies the users identity. On a successful verification, it receives an token from facebook. We will call it authorization_grant.
+-	The client sends the authorization_grant to the Hint server for authorization. The Hint server has a trust relationship with facebook. So, it sends the authorization_grant to facebook. If facebook cannot verify the authorization_grant, it sends back 401 unauthorized to the Hint server, which it propagates to the client. If, however, facebook successfully verifies the authorization_grant, then it sends back the user info to the Hint server. The Hint server checks the permissions of the user (by querying the database) and generates a token. We will call it the access_token. A typical access_token contains the user’s identity, permissions, and an expiry time. The Hint server sends back this access_token to the client.
+-	The client embed this access_token with each request for the protected resource, i.e., calling API endpoint. Depending on if the user is allowed to access the resource, he either gets it or receives 401 unauthorized.
+
 
 ## Enums
 
