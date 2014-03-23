@@ -102,7 +102,7 @@ This document specifies the backend REST API and backend designs for Hint. The f
 	- Schema :
 
 			{
-				social_id : String,
+				social_id : { type: String, index: { unique: true}},
 				name : String,
 				flirt_options : {
 					simple : String,
@@ -122,7 +122,7 @@ This document specifies the backend REST API and backend designs for Hint. The f
 	- Schema :
 
 			{
-				social_id : String,
+				social_id : { type: String, index: { unique: true}},
 				name : String,
 				contact: {
 					email : String,
@@ -144,7 +144,7 @@ This document specifies the backend REST API and backend designs for Hint. The f
 	- Schema :
 
 			{
-				social_id: String,
+				social_id: { type: String, index: { unique: true}},
 				title : String,
 				social_venue: {
 					social_id: String,
@@ -232,6 +232,9 @@ This document specifies the backend REST API and backend designs for Hint. The f
 	- Schema :
 
 			{
+				checkin : {
+					id: String
+				},
 				user_from : {
 					social_id : String,
 					name : String,
@@ -280,6 +283,9 @@ This document specifies the backend REST API and backend designs for Hint. The f
 	- Schema :
 
 			{
+				checkin : {
+					id: String
+				},
 				user_from : {
 					social_id : String,
 					name : String,
@@ -380,25 +386,31 @@ This document specifies the backend REST API and backend designs for Hint. The f
 - `POST /login/facebook` : login the user to our system
 
 	1. Trigger:
-		-	click login button
-		-	fire up facebook sdk
-		-	after successful login with basic permissions
-		-	receives the access_token from facebook
-		-	call this endpoint with the access_token.
+		- Login:
+			-	click login button,
+			-	fire up facebook sdk
+			-	after successful login with basic permissions
+			-	receives the access_token from facebook
+			-	call this endpoint with the access_token.
 	2. Request param:
 
 			{
 				access_token : "facebook_access_token"
 			}
 
-	3. Request headers:
+	3. Request body:
+
+			{
+			}
+
+	4. Request headers:
 
 			{
 				Content-Type : "application/json",
 				Accept : "application/json"
 			}
 
-	4. Response:
+	5. Response:
 
 			{
 				user: {
@@ -407,27 +419,33 @@ This document specifies the backend REST API and backend designs for Hint. The f
 				authenticationToken: 'auth_token'
 			}
 
-	5. After Action :
-		-	Call GET /api/user upon successful login and update the current user info in the client.
+	6. After Action :
+		-	Call `GET /api/user `upon successful login, and from the response, update the current user info in the client (mobile app memory).
+		-	Cache the authenticationToken, i.e., auth_token as it is required for each api call.
 
-	5. Additional Info:
-		-	auth_token is valid for 30 days, so cache it in the application.
-		-	auth_token is necessary to make any api calls.
-		-	If auth_token is invalid log off the user.
+	7. Additional Info:
+		-	auth_token is valid for 30 days.
+		-	When calling any api with auth_token, if you get 401 unauthorized then log off the user.
+		-	Make sure you use basic permission only when log in with the facebook sdk.
 
 - `GET /api/user` : get the current user info, if user doesn't exists call facebook and update user info
 
 	1. Trigger:
-		-	after user logged in to the system.
-		- 	after user comes to the user settings page.
-		-	after user refresh his information.
+		-	After user login to the system (after action for `POST  /login/facebook` API call).
+		-	User enters the user settings page (because a refresh to the user info happens on enter).
+		-	User refresh his information (by pulling down the listview).
 
 	2. Request param:
 
 			{
 			}
 
-	3. Request headers:
+	3. Request body:
+
+			{
+			}
+
+	4. Request headers:
 
 			{
 				Content-Type : "application/json",
@@ -435,7 +453,7 @@ This document specifies the backend REST API and backend designs for Hint. The f
 				X-ZUMO-AUTH : "auth_token"
 			}
 
-	4. Response:
+	5. Response:
 
 			{
 				id : String,
@@ -453,39 +471,39 @@ This document specifies the backend REST API and backend designs for Hint. The f
 				photo_url: String
 			}
 
-	5. After Action :
-		-	If the user status is banned, show a message saying that he is banned from the app and log him out.
-		-	Update the user's info in the app.
+	6. After Action :
+		-	If the user status is `enum_user_statuses.banned`, show a message saying that he is banned from the app and log him out.
+		-	If the user status is `enum_user_statuses.admin`, show the admin panel otherwise hide the admin panel.
+		-	Update the user's info in the app memory.
 
-	6. Additional Info:
-		-	Get the user from databse from the userid embedded in the header.
-		-	If the user doesn't exists, call facebook with the access_token embedded in the header to get user's basic info and update the database with info facebook
-		-	If the user exists but his status is inactive then update the database and make the status active.
-		- 	Return user's info.
+	7. Additional Info:
+		-	(Server Side) Get the user from database from the userid embedded in the header.
+			-	If the user doesn't exists, call facebook with the access_token (embedded in the header) to get user's basic info and update the database with info from facebook.
+			-	If the user exists but his status is inactive then update the database and make the status active.
+			-	Return user's info.
 
 - `PATCH /api/user` : update the user's info
 
 	1. Trigger:
-		-	user updates his info in the user settings page.
-		- 	user uploads a photo (only if the url is different, trigger this call).
+		-	User updates his info in the user settings page.
+		-	User uploads a photo (only if the url is different, trigger this call).
 
 	2. Request param:
 
 			{
 			}
 
-	3. Request body:
-		All of these properties are optional.
+	3. Request body: (all of these properties are optional)
 
 			{
-				name : 'users name',
+				name : String,
 				contact: {
-					email : 'users email',
-					phone : 'users phone'
+					email : String,
+					phone : String
 				},
-				hair_color : 'dark or light',
-				gender : 'male female or other',
-				interested_in : ['male'],
+				hair_color : String,
+				gender : String,
+				interested_in : [String],
 				photo_url: String
 			}
 
@@ -497,7 +515,7 @@ This document specifies the backend REST API and backend designs for Hint. The f
 				X-ZUMO-AUTH : "auth_token"
 			}
 
-	5. Response: (Updated user)
+	5. Response: (updated user)
 
 			{
 				id : String,
@@ -514,6 +532,11 @@ This document specifies the backend REST API and backend designs for Hint. The f
 				black_list : [String],
 				photo_url: String
 			}
+	6. After Action :
+		-	Update the user's info in the app memory.
+	7. Additional Info:
+		-	Provide the property you want to update in the request body (if a property is missing then it keeps its original value).
+		-	(Server side) The user id is extracted from the X-ZUMO-AUTH header.
 
 - `DELETE /api/user` : deactivite a user
 
@@ -521,6 +544,11 @@ This document specifies the backend REST API and backend designs for Hint. The f
 		-	user clicks the deactivate account button.
 
 	2. Request param:
+
+			{
+			}
+
+	3. Request body:
 
 			{
 			}
@@ -538,6 +566,94 @@ This document specifies the backend REST API and backend designs for Hint. The f
 			{
 				success : Boolean
 			}
+
+	6. After Action :
+		-	Log off the user.
+
+	7. Additional Info:
+		-	(Server side) The user id is extracted from the X-ZUMO-AUTH header.
+
+
+- `GET /api/venue` : get a list of venues
+
+	1. Trigger:
+		-	User enters the Near By Places page.
+		-	User refresh the Near By Places page (by pulling down the listview)
+		-	User search for venues.
+	2. Request param:
+
+			{
+				lat : 'user lat',
+				lng : 'user lng',
+				search : 'search string',
+				limit : 'number of results, default enum_defaults.venue_search_results',
+				radius : 'radius of the search'
+			}
+
+	3. Request body:
+
+			{
+			}
+
+	3. Request headers:
+
+			{
+				Content-Type : "application/json",
+				Accept : "application/json",
+				X-ZUMO-AUTH : "auth_token"
+			}
+
+	4. Response:
+
+			[{
+				social_id : 'Facebook:fb_id',
+				name : 'name of the place',
+				address : 'address of the place',
+				distance: 'calculated distance in miles',
+				category: {
+					flirt_options : {
+						simple : 'simple flirt',
+						forward : 'forward flirt',
+						risky : 'risky flirt'
+					}
+					image : 'image link'
+				}
+			}]
+
+	5. Additional Info:
+		-	The response array will be sorted by distance.
+		-	`lat` and `lng` parameters are required.
+		-	if `search` parameter is not provided then search in all.
+		-	if `limit` parameter is not provided then use `enum_defaults.venue_search_results`.
+		-	if `radius` is not provided then the area where to search is not enforced.
+		-	(Server side) Implementation details:
+			-	Get the venue list from facebook.
+			-	A typical facebook venue object is of the following format:
+
+						{
+							"category": "Health/beauty",
+							"category_list": [{
+								"id": "139225689474222",
+								"name": "Spa, Beauty & Personal Care"
+							}],
+							"location": {
+								"street": "225 Bush St, 20th Floor",
+								"city": "San Francisco",
+								"state": "CA",
+								"country": "United States",
+								"zip": "94104",
+								"latitude": 37.791090500712,
+								"longitude": -122.40105336454
+							},
+							"name": "Benefit Cosmetics",
+							"id": "48879913147"
+						}
+
+			-	After receiving the venue list, query our database to get the category info.
+			-	If the category is not found, return the enum_defaults.venue_categoty
+			-	If the category is not found and enum_flags.collect_venue_category is true, then update the venue_categories collection with enum_defaults.venue_categoty for this category and return it.  
+			-	Construct the response object from these info.
+
 
 - `POST /api/checkin` : checkin to a venue
 
@@ -745,78 +861,6 @@ This document specifies the backend REST API and backend designs for Hint. The f
 		-	if limit parameter is not provided, then enum_defaults.checkin_search_results is used to determine how many checkins will be returned.
         -   if interested_in,hair_color,search are not provided then search all.
         -   TODO: optimize the search
-
-- `GET /api/venue` : get a list of venues
-
-	1. Trigger:
-		-	user comes to the venue list page.
-		-	user refresh the venue list page.
-		-	user search for venues (either by name or category)
-	2. Request param:
-
-			{
-				lat : 'user lat',
-				lng : 'user lng',
-				search : 'search string',
-				limit : 'number of results, default enum_defaults.venue_search_results',
-				radius : 'radius of the search'
-			}
-
-	3. Request headers:
-
-			{
-				Content-Type : "application/json",
-				Accept : "application/json",
-				X-ZUMO-AUTH : "auth_token"
-			}
-
-	4. Response:
-
-			[{
-				social_id : 'Facebook:fb_id',
-				name : 'name of the place',
-				address : 'address of the place',
-				distance: 'calculated distance in miles',
-				category: {
-					flirt_options : {
-						simple : 'simple flirt',
-						forward : 'forward flirt',
-						risky : 'risky flirt'
-					}
-					image : 'image link'
-				}
-			}]
-
-	5. Additional Info:
-		-	Get the venue list from facebook.
-		- 	A typical facebook venue object is of the following format:
-
-				{
-					 "category": "Health/beauty",
-					 "category_list": [
-						{
-						   "id": "139225689474222",
-						   "name": "Spa, Beauty & Personal Care"
-						}
-					 ],
-					 "location": {
-						"street": "225 Bush St, 20th Floor",
-						"city": "San Francisco",
-						"state": "CA",
-						"country": "United States",
-						"zip": "94104",
-						"latitude": 37.791090500712,
-						"longitude": -122.40105336454
-					 },
-					 "name": "Benefit Cosmetics",
-					 "id": "48879913147"
-				  }
-
-		-	After receiving the venue list, query our database to get the category info.
-		-	If the category is not found, return the enum_defaults.venue_categoty
-		-	If the category is not found and enum_flags.collect_venue_category is true, then update the venue_categories collection with enum_defaults.venue_categoty for this category and return it.  
-		-	Construct the response object from these info.
-		-	The response array will be sorted by distance.
 
 - `POST /api/flirt` : sends a flirt
 
