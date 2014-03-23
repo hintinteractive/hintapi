@@ -18,6 +18,9 @@ The details of the oAuth flow for Hint is described below,
 -	The client sends the authorization_grant to the Hint server for authorization. The Hint server has a trust relationship with facebook. So, it sends the authorization_grant to facebook. If facebook cannot verify the authorization_grant, it sends back 401 unauthorized to the Hint server, which it propagates to the client. If, however, facebook successfully verifies the authorization_grant, then it sends back the user info to the Hint server. The Hint server checks the permissions of the user (by querying the database) and generates a token. We will call it the access_token. A typical access_token contains the user’s identity, permissions, and an expiry time. The Hint server sends back this access_token to the client.
 -	The client embed this access_token with each request for the protected resource, i.e., calling API endpoint. Depending on if the user is allowed to access the resource, he either gets it or receives 401 unauthorized.
 
+![alt text](https://raw.githubusercontent.com/hintinteractive/hintapi/master/oauth_mobile_flow_hint.png "Hint oAuth 2.0 flow")
+
+
 
 ## Enums
 
