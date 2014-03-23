@@ -1,0 +1,1580 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Hintapi by hintinteractive</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/hintinteractive/hintapi">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/hintinteractive/hintapi/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/hintinteractive/hintapi/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>Hintapi</h1>
+          <p></p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/hintinteractive">hintinteractive</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+        </div>
+
+        <h1>
+<a name="api-specification" class="anchor" href="#api-specification"><span class="octicon octicon-link"></span></a>API Specification</h1>
+
+<p>This document specifies the backend REST API and backend designs for Hint. The frontend developers can refer to this.</p>
+
+<h2>
+<a name="enums" class="anchor" href="#enums"><span class="octicon octicon-link"></span></a>Enums</h2>
+
+<ul>
+<li>
+<p><code>enum_user_statuses</code> :</p>
+
+<pre><code>{
+    admin : 'admin',
+    active : 'active',
+    inactive : 'inactive',
+    banned : 'banned',
+    debug : 'debug'
+}
+</code></pre>
+</li>
+<li>
+<p><code>enum_hint_statuses</code> :</p>
+
+<pre><code>{
+    sent : 'sent',
+    accepted : 'accepted'
+}
+</code></pre>
+</li>
+<li>
+<p><code>enum_flirt_statuses</code> :</p>
+
+<pre><code>{
+    sent : 'sent',
+    accepted : 'accepted',
+    rejected : 'rejected'
+}
+</code></pre>
+</li>
+<li>
+<p><code>enum_user_genders</code> :</p>
+
+<pre><code>{
+    male : 'male',
+    female : 'female',
+    other : 'other',
+    undefined : 'undefined'
+}
+</code></pre>
+</li>
+<li>
+<p><code>enum_user_hair_colors</code> :</p>
+
+<pre><code>{
+    light : 'light',
+    dark : 'dark',
+    undefined: 'undefined'
+}
+</code></pre>
+</li>
+<li>
+<p><code>enum_expiries</code> :</p>
+
+<pre><code>{
+    current_look : 24,
+    event: 24,
+    connection: 24,
+    checkin: 4,
+    flirt: 24,
+    hint: 24
+}
+</code></pre>
+</li>
+<li>
+<p><code>enum_flags</code> :</p>
+
+<pre><code>{
+    collect_venue_category : true
+}
+</code></pre>
+</li>
+<li>
+<p><code>enum_defaults</code> :</p>
+
+<pre><code>{
+    venue_categoty: {
+        flirt_options : {
+            simple:'',
+            forward:'',
+            risky:''
+        },
+        image:''
+    },
+    venue_search_results : 35,
+    checkin_search_results : 20
+}
+</code></pre>
+</li>
+</ul><h2>
+<a name="models" class="anchor" href="#models"><span class="octicon octicon-link"></span></a>Models</h2>
+
+<ul>
+<li>
+<p><code>api_access</code> :</p>
+
+<ul>
+<li>Collection name : <code>api_accesses</code>
+</li>
+<li>
+<p>Schema :</p>
+
+<pre><code>{
+    user: {
+        social_id: String
+    },
+    api_name: String,
+    'method': {type: String, "default": 'GET'},
+    access_time: {type: Date, "default": Date.now}
+}
+</code></pre>
+</li>
+<li>
+<p>Additional Info:</p>
+
+<ul>
+<li>Add a entry to this collection every time a api end point is accessed.</li>
+<li>Write heavy, read only needs for analytics purpose.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><code>venue_category</code> :</p>
+
+<ul>
+<li>Collection name : <code>venue_categories</code>
+</li>
+<li>
+<p>Schema :</p>
+
+<pre><code>{
+    social_id : { type: String, index: { unique: true}},
+    name : String,
+    flirt_options : {
+        simple : String,
+        forward : String,
+        risky : String
+    },
+    image: String
+}
+</code></pre>
+</li>
+<li>
+<p>Additional Info:</p>
+
+<ul>
+<li>Search the collection with a list of social_category.id for each GET /api/venue call.</li>
+<li>Read heavy (normal situations).</li>
+<li>Read and Write heavy (when enum_flags.collect_venue_category is true)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><code>user</code> :</p>
+
+<ul>
+<li>Collection name : <code>users</code>
+</li>
+<li>
+<p>Schema :</p>
+
+<pre><code>{
+    social_id : { type: String, index: { unique: true}},
+    name : String,
+    contact: {
+        email : String,
+        phone : String
+    },
+    hair_color : String,
+    gender : String,
+    interested_in : [String],
+    status : String,
+    black_list : [String],
+    photo_url: String
+}
+</code></pre>
+</li>
+<li><h2>
+<a name="additional-info" class="anchor" href="#additional-info"><span class="octicon octicon-link"></span></a>Additional Info:</h2></li>
+</ul>
+</li>
+<li>
+<p><code>event</code> :</p>
+
+<ul>
+<li>Collection name : <code>events</code>
+</li>
+<li>
+<p>Schema :</p>
+
+<pre><code>{
+    social_id: { type: String, index: { unique: true}},
+    title : String,
+    social_venue: {
+        social_id: String,
+        name : String,
+        address : String,
+        image : String
+    },
+    owners:[{
+        user :{
+            social_id : String
+        }
+    }],
+    start : Date,
+    expiry : Date,
+    flirt_options : {
+        simple : String,
+        forward : String,
+        risky : String
+    }
+}
+</code></pre>
+</li>
+<li><h2>
+<a name="additional-info-1" class="anchor" href="#additional-info-1"><span class="octicon octicon-link"></span></a>Additional Info:</h2></li>
+</ul>
+</li>
+<li>
+<p><code>checkin</code> :</p>
+
+<ul>
+<li>Collection name : <code>checkins</code>
+</li>
+<li>
+<p>Schema :</p>
+
+<pre><code>{
+    user : {
+        social_id : String,
+        name : String,
+        hair_color : String,
+        gender : String,
+        interested_in : [String],
+        current_look : {
+            photo_url : String,
+            identifier: {
+                type : String,
+                brand : String,
+                color : String
+            }
+        }
+    },
+    event : {
+        social_id : String,
+        title : String
+    },
+    social_venue : {
+        social_id : String,
+        name : String,
+        address : String,
+        image : String
+    },
+    flirt_options : {
+        simple : String,
+        forward : String,
+        risky : String
+    },
+    time : {type: Date, "default": Date.now},
+    expiry : Date,
+    flirts : {
+        type: [{
+            user:{
+                social_id : String
+            }
+        }],
+        "default": []
+    },
+  hints : {
+        type: [{
+            user:{
+                social_id : String
+            }
+        }],
+        "default": []
+    }
+}
+</code></pre>
+</li>
+<li><h2>
+<a name="additional-info-2" class="anchor" href="#additional-info-2"><span class="octicon octicon-link"></span></a>Additional Info:</h2></li>
+</ul>
+</li>
+<li>
+<p><code>hint</code> :</p>
+
+<ul>
+<li>Collection name : <code>hints</code>
+</li>
+<li>
+<p>Schema :</p>
+
+<pre><code>{
+    checkin : {
+        id: String
+    },
+    user_from : {
+        social_id : String,
+        name : String,
+        hair_color : String,
+        gender : String,
+        interested_in : [String],
+        current_look : {
+            photo_url : String,
+            identifier: {
+                type : String,
+                brand : String,
+                color : String
+            }
+        }
+    },
+    user_to : {
+        social_id : String,
+        name : String,
+        hair_color : String,
+        gender : String,
+        interested_in : [String],
+        current_look : {
+            photo_url : String,
+            identifier: {
+                type : String,
+                brand : String,
+                color : String
+            }
+        }
+    },
+    social_venue : {
+        social_id : String,
+        name : String,
+        address : String
+    },
+    status : String,
+    time : {type: Date, "default": Date.now},
+    expiry : Date
+}
+</code></pre>
+</li>
+<li><h2>
+<a name="additional-info-3" class="anchor" href="#additional-info-3"><span class="octicon octicon-link"></span></a>Additional Info:</h2></li>
+</ul>
+</li>
+<li>
+<p><code>flirt</code> :</p>
+
+<ul>
+<li>Collection name : <code>flirts</code>
+</li>
+<li>
+<p>Schema :</p>
+
+<pre><code>{
+    checkin : {
+        id: String
+    },
+    user_from : {
+        social_id : String,
+        name : String,
+        hair_color : String,
+        gender : String,
+        interested_in : [String],
+        current_look : {
+            photo_url : String,
+            identifier: {
+                type : String,
+                brand : String,
+                color : String
+            }
+        }
+    },
+    user_to : {
+        social_id : String,
+        name : String,
+        hair_color : String,
+        gender : String,
+        interested_in : [String],
+        current_look : {
+            photo_url : String,
+            identifier: {
+                type : String,
+                brand : String,
+                color : String
+            }
+        }
+    },
+    social_venue : {
+        social_id : String,
+        name : String,
+        address : String
+    },
+    flirt_options : {
+        type: String,
+        text: String
+    },
+    status : String,
+    time : {type: Date, "default": Date.now},
+    expiry : Date
+}
+</code></pre>
+</li>
+<li><h2>
+<a name="additional-info-4" class="anchor" href="#additional-info-4"><span class="octicon octicon-link"></span></a>Additional Info:</h2></li>
+</ul>
+</li>
+<li>
+<p><code>connection</code> :</p>
+
+<ul>
+<li>Collection name : <code>connections</code>
+</li>
+<li>
+<p>Schema :</p>
+
+<pre><code>{
+    users: [{
+        social_id : String,
+        name : String,
+        hair_color : String,
+        gender : String,
+        interested_in : [String],
+        current_look : {
+            photo_url : String,
+            identifier: {
+                type : String,
+                brand : String,
+                color : String
+            }
+        }
+    }],
+    social_venue : {
+        social_id : String,
+        name : String,
+        address : String
+    },
+    messages : [{
+        user :{
+            social_id : String
+        },
+        text: String,
+        time: Date
+    }],
+    keep_alive : {
+        flag : Boolean,
+        user :{
+            social_id : String
+        }
+    },
+    time : Date,
+    expiry : Date
+}
+</code></pre>
+</li>
+<li><h2>
+<a name="additional-info-5" class="anchor" href="#additional-info-5"><span class="octicon octicon-link"></span></a>Additional Info:</h2></li>
+</ul>
+</li>
+</ul><h2>
+<a name="api-endpoints" class="anchor" href="#api-endpoints"><span class="octicon octicon-link"></span></a>API Endpoints</h2>
+
+<ul>
+<li>
+<p><code>POST /login/facebook</code> : login the user to our system</p>
+
+<ol>
+<li>Trigger:
+
+<ul>
+<li>Login:
+
+<ul>
+<li>  click login button,</li>
+<li>  fire up facebook sdk</li>
+<li>  after successful login with basic permissions</li>
+<li>  receives the access_token from facebook</li>
+<li>  call this endpoint with the access_token.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>Request param:</p>
+
+<pre><code>{
+    access_token : "facebook_access_token"
+}
+</code></pre>
+</li>
+<li>
+<p>Request body:</p>
+
+<pre><code>{
+}
+</code></pre>
+</li>
+<li>
+<p>Request headers:</p>
+
+<pre><code>{
+    Content-Type : "application/json",
+    Accept : "application/json"
+}
+</code></pre>
+</li>
+<li>
+<p>Response:</p>
+
+<pre><code>{
+    user: {
+        userId : "Facebook:fb_id"
+    },
+    authenticationToken: 'auth_token'
+}
+</code></pre>
+</li>
+<li>
+<p>After Action :</p>
+
+<ul>
+<li>  Call <code>GET /api/user</code>upon successful login, and from the response, update the current user info in the client (mobile app memory).</li>
+<li>  Cache the authenticationToken, i.e., auth_token as it is required for each api call.</li>
+</ul>
+</li>
+<li>
+<p>Additional Info:</p>
+
+<ul>
+<li>  auth_token is valid for 30 days.</li>
+<li>  When calling any api with auth_token, if you get 401 unauthorized then log off the user.</li>
+<li>  Make sure you use basic permission only when log in with the facebook sdk.</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul><ul>
+<li>
+<p><code>GET /api/user</code> : get the current user info, if user doesn't exists call facebook and update user info</p>
+
+<ol>
+<li>
+<p>Trigger:</p>
+
+<ul>
+<li>  After user login to the system (after action for <code>POST  /login/facebook</code> API call).</li>
+<li>  User enters the user settings page (because a refresh to the user info happens on enter).</li>
+<li>  User refresh his information (by pulling down the listview).</li>
+</ul>
+</li>
+<li>
+<p>Request param:</p>
+
+<pre><code>{
+}
+</code></pre>
+</li>
+<li>
+<p>Request body:</p>
+
+<pre><code>{
+}
+</code></pre>
+</li>
+<li>
+<p>Request headers:</p>
+
+<pre><code>{
+    Content-Type : "application/json",
+    Accept : "application/json",
+    X-ZUMO-AUTH : "auth_token"
+}
+</code></pre>
+</li>
+<li>
+<p>Response:</p>
+
+<pre><code>{
+    id : String,
+    social_id : String,
+    name : String,
+    contact: {
+        email : String,
+        phone : String
+    },
+    hair_color : String,
+    gender : String,
+    interested_in : [String],
+    status : String,
+    black_list : [String],
+    photo_url: String
+}
+</code></pre>
+</li>
+<li>
+<p>After Action :</p>
+
+<ul>
+<li>  If the user status is <code>enum_user_statuses.banned</code>, show a message saying that he is banned from the app and log him out.</li>
+<li>  If the user status is <code>enum_user_statuses.admin</code>, show the admin panel otherwise hide the admin panel.</li>
+<li>  Update the user's info in the app memory.</li>
+</ul>
+</li>
+<li>
+<p>Additional Info:</p>
+
+<ul>
+<li>  (Server Side) Get the user from database from the userid embedded in the header.
+
+<ul>
+<li>  If the user doesn't exists, call facebook with the access_token (embedded in the header) to get user's basic info and update the database with info from facebook.</li>
+<li>  If the user exists but his status is inactive then update the database and make the status active.</li>
+<li>  Return user's info.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul><ul>
+<li>
+<p><code>PATCH /api/user</code> : update the user's info</p>
+
+<ol>
+<li>
+<p>Trigger:</p>
+
+<ul>
+<li>  User updates his info in the user settings page.</li>
+<li>  User uploads a photo (only if the url is different, trigger this call).</li>
+</ul>
+</li>
+<li>
+<p>Request param:</p>
+
+<pre><code>{
+}
+</code></pre>
+</li>
+<li>
+<p>Request body: (all of these properties are optional)</p>
+
+<pre><code>{
+    name : String,
+    contact: {
+        email : String,
+        phone : String
+    },
+    hair_color : String,
+    gender : String,
+    interested_in : [String],
+    photo_url: String
+}
+</code></pre>
+</li>
+<li>
+<p>Request headers:</p>
+
+<pre><code>{
+    Content-Type : "application/json",
+    Accept : "application/json",
+    X-ZUMO-AUTH : "auth_token"
+}
+</code></pre>
+</li>
+<li>
+<p>Response: (updated user)</p>
+
+<pre><code>{
+    id : String,
+    social_id : String,
+    name : String,
+    contact: {
+        email : String,
+        phone : String
+    },
+    hair_color : String,
+    gender : String,
+    interested_in : [String],
+    status : String,
+    black_list : [String],
+    photo_url: String
+}
+</code></pre>
+</li>
+<li>After Action :
+
+<ul>
+<li>  Update the user's info in the app memory.</li>
+</ul>
+</li>
+<li>Additional Info:
+
+<ul>
+<li>  Provide the property you want to update in the request body (if a property is missing then it keeps its original value).</li>
+<li>  (Server side) The user id is extracted from the X-ZUMO-AUTH header.</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul><ul>
+<li>
+<p><code>DELETE /api/user</code> : deactivite a user</p>
+
+<ol>
+<li>
+<p>Trigger:</p>
+
+<ul>
+<li>  user clicks the deactivate account button.</li>
+</ul>
+</li>
+<li>
+<p>Request param:</p>
+
+<pre><code>{
+}
+</code></pre>
+</li>
+<li>
+<p>Request body:</p>
+
+<pre><code>{
+}
+</code></pre>
+</li>
+<li>
+<p>Request headers:</p>
+
+<pre><code>{
+    Content-Type : "application/json",
+    Accept : "application/json",
+    X-ZUMO-AUTH : "auth_token"
+}
+</code></pre>
+</li>
+<li>
+<p>Response:</p>
+
+<pre><code>{
+    success : Boolean
+}
+</code></pre>
+</li>
+<li>
+<p>After Action :</p>
+
+<ul>
+<li>  Log off the user.</li>
+</ul>
+</li>
+<li>
+<p>Additional Info:</p>
+
+<ul>
+<li>  (Server side) The user id is extracted from the X-ZUMO-AUTH header.</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul><ul>
+<li>
+<p><code>GET /api/venue</code> : get a list of venues</p>
+
+<ol>
+<li>Trigger:
+
+<ul>
+<li>  User enters the Near By Places page.</li>
+<li>  User refresh the Near By Places page (by pulling down the listview)</li>
+<li>  User search for venues.</li>
+</ul>
+</li>
+<li>
+<p>Request param:</p>
+
+<pre><code>{
+    lat : 'user lat',
+    lng : 'user lng',
+    search : 'search string',
+    limit : 'number of results, default enum_defaults.venue_search_results',
+    radius : 'radius of the search'
+}
+</code></pre>
+</li>
+<li>
+<p>Request body:</p>
+
+<pre><code>{
+}
+</code></pre>
+</li>
+<li>
+<p>Request headers:</p>
+
+<pre><code>{
+    Content-Type : "application/json",
+    Accept : "application/json",
+    X-ZUMO-AUTH : "auth_token"
+}
+</code></pre>
+</li>
+<li>
+<p>Response:</p>
+
+<pre><code>[{
+    social_id : 'Facebook:fb_id',
+    name : 'name of the place',
+    address : 'address of the place',
+    distance: 'calculated distance in miles',
+    category: {
+        flirt_options : {
+            simple : 'simple flirt',
+            forward : 'forward flirt',
+            risky : 'risky flirt'
+        }
+        image : 'image link'
+    }
+}]
+</code></pre>
+</li>
+<li>
+<p>Additional Info:</p>
+
+<ul>
+<li>  The response array will be sorted by distance.</li>
+<li>  <code>lat</code> and <code>lng</code> parameters are required.</li>
+<li>  if <code>search</code> parameter is not provided then search in all.</li>
+<li>  if <code>limit</code> parameter is not provided then use <code>enum_defaults.venue_search_results</code>.</li>
+<li>  if <code>radius</code> is not provided then the area where to search is not enforced.</li>
+<li>
+<p>(Server side) Implementation details:</p>
+
+<ul>
+<li>  Get the venue list from facebook.</li>
+<li>
+<p>A typical facebook venue object is of the following format:</p>
+
+<pre><code>    {
+        "category": "Health/beauty",
+        "category_list": [{
+            "id": "139225689474222",
+            "name": "Spa, Beauty &amp; Personal Care"
+        }],
+        "location": {
+            "street": "225 Bush St, 20th Floor",
+            "city": "San Francisco",
+            "state": "CA",
+            "country": "United States",
+            "zip": "94104",
+            "latitude": 37.791090500712,
+            "longitude": -122.40105336454
+        },
+        "name": "Benefit Cosmetics",
+        "id": "48879913147"
+    }
+</code></pre>
+</li>
+<li><p>After receiving the venue list, query our database to get the category info.</p></li>
+<li>  If the category is not found, return the enum_defaults.venue_categoty</li>
+<li>  If the category is not found and enum_flags.collect_venue_category is true, then update the venue_categories collection with enum_defaults.venue_categoty for this category and return it.<br>
+</li>
+<li>  Construct the response object from these info.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul><ul>
+<li>
+<p><code>POST /api/checkin</code> : checkin to a venue</p>
+
+<ol>
+<li>
+<p>Trigger:</p>
+
+<ul>
+<li>  user clicks the checkin button</li>
+</ul>
+</li>
+<li>
+<p>Request param:</p>
+
+<pre><code>{
+}
+</code></pre>
+</li>
+<li>
+<p>Request body:</p>
+
+<pre><code>{
+    user : {
+        name : String,
+        hair_color : String,
+        gender : String,
+        interested_in : [String],
+        current_look : {
+            photo_url : String,
+            identifier: {
+                type : String,
+                brand : String,
+                color : String
+            }
+        }
+    },
+    event : {
+        social_id: String,
+        title : String,
+        social_venue: {
+            social_id: String,
+            name : String,
+            address : String,
+            image : String
+        },
+        start : Date,
+        expiry : Date,
+        flirt_options : {
+            simple : String,
+            forward : String,
+            risky : String
+        }
+    },
+    social_venue : {
+       social_id : 'Facebook:fb_id',
+       name : 'name of the place',
+       address : 'address of the place',
+       category: {
+           flirt_options : {
+               simple : 'simple flirt',
+               forward : 'forward flirt',
+               risky : 'risky flirt'
+           }
+           image : 'image link'
+       }
+    }
+}
+</code></pre>
+</li>
+<li>
+<p>Request headers:</p>
+
+<pre><code>{
+    Content-Type : "application/json",
+    Accept : "application/json",
+    X-ZUMO-AUTH : "auth_token"
+}
+</code></pre>
+</li>
+<li>
+<p>Response:</p>
+
+<pre><code>{
+    success : Boolean
+}
+</code></pre>
+</li>
+<li>
+<p>Additional Info:</p>
+
+<ul>
+<li>user.social_id is filled up by the server, all the other info will be available in the client.</li>
+<li>If the event object is present (social_venue is ignored), then the necessary info for the collection will be taken from the event object. However, the expiry can be no more than enum_expiries.event.</li>
+<li>If the event object is null, social_venue object will be used for the necessary info for the collection, the missing info will be taken from the enums.</li>
+<li>Trying to check into an event before its start time will generate an internal server error.</li>
+<li>The time field of the collection will be current system time.</li>
+<li>If one of event.social_venue.social_id and social_venue.social_id is not provided, then an internal server error will be generated.</li>
+<li>received_flirts and received_hints will be empty arrays.</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul><ul>
+<li>
+<p><code>PATCH /api/checkin</code> : add to received_flirts and received_hints array</p>
+
+<ol>
+<li>
+<p>Trigger:</p>
+
+<ul>
+<li>  user sends a hint</li>
+<li>  user sends a flirt</li>
+</ul>
+</li>
+<li>
+<p>Request param:</p>
+
+<pre><code>{
+    id: 'MongoDB ObjectId'
+}
+</code></pre>
+</li>
+<li>
+<p>Request body:</p>
+
+<pre><code>{
+    flirt:{
+        user:{
+          social_id : String
+        }
+    },
+    hint:{
+        user:{
+          social_id : String
+        }
+    }
+}
+</code></pre>
+</li>
+<li>
+<p>Request headers:</p>
+
+<pre><code>{
+    Content-Type : "application/json",
+    Accept : "application/json",
+    X-ZUMO-AUTH : "auth_token"
+}
+</code></pre>
+</li>
+<li>
+<p>Response:</p>
+
+<pre><code>{
+    success : Boolean
+}
+</code></pre>
+</li>
+</ol>
+</li>
+</ul><ul>
+<li>
+<p><code>GET /api/checkin</code> : get a list of checkins for a venue</p>
+
+<ol>
+<li>
+<p>Trigger:</p>
+
+<ul>
+<li>  user comes to the "Who is Here?" landing page.</li>
+<li>  refresh of the "Who is Here?" landing page.</li>
+</ul>
+</li>
+<li>
+<p>Request param:</p>
+
+<pre><code>{
+    social_venue_id: 'Facebook:id',
+    event_social_id: 'facebook:id',
+    hair_color : 'optional: if not provided ignore',
+    interested_in : [String],
+    search : 'search string in identifier',
+    limit : 'number of results, default enum_defaults.checkin_search_results',
+}
+</code></pre>
+</li>
+<li>
+<p>Request body:</p>
+
+<pre><code>{
+
+}
+</code></pre>
+</li>
+<li>
+<p>Request headers:</p>
+
+<pre><code>{
+    Content-Type : "application/json",
+    Accept : "application/json",
+    X-ZUMO-AUTH : "auth_token"
+}
+</code></pre>
+</li>
+<li>
+<p>Response:</p>
+
+<pre><code>[{
+  user : {
+      social_id : String,
+      name : String,
+      hair_color : String,
+      gender : String,
+      interested_in : [String],
+      current_look : {
+          photo_url : String,
+          identifier: {
+              type : String,
+              brand : String,
+              color : String
+          }
+      }
+  },
+  event : {
+      social_id : String,
+      title : String
+  },
+  social_venue : {
+      social_id : String,
+      name : String,
+      address : String,
+      image : String
+  },
+  flirt_options : {
+      simple : String,
+      forward : String,
+      risky : String
+  },
+  time : Date,
+  expiry : Date,
+  received_flirts : [{
+      user:{
+          social_id : String
+      }
+  }],
+  received_hints : [{
+      user:{
+          social_id : String
+      }
+  }]
+}]
+</code></pre>
+</li>
+<li>
+<p>Additional Info:</p>
+
+<ul>
+<li>  if event_social_id is provided, search with it, otherwise search checkins with social_venue_id, if none provided a 500 error is generated.</li>
+<li>  if limit parameter is not provided, then enum_defaults.checkin_search_results is used to determine how many checkins will be returned.</li>
+<li>  if interested_in,hair_color,search are not provided then search all.</li>
+<li>  TODO: optimize the search</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul><ul>
+<li>
+<p><code>POST /api/flirt</code> : sends a flirt</p>
+
+<ol>
+<li>
+<p>Trigger:</p>
+
+<ul>
+<li>  user sends a flirt to another user</li>
+</ul>
+</li>
+<li>
+<p>Request param:</p>
+
+<pre><code>{
+}
+</code></pre>
+</li>
+<li>
+<p>Request body:</p>
+
+<pre><code>{
+    checkin : {
+        id: String
+    },
+    user_from : {
+        name : String,
+        hair_color : String,
+        gender : String,
+        interested_in : [String],
+        current_look : {
+            photo_url : String,
+            identifier: {
+                type : String,
+                brand : String,
+                color : String
+            }
+        }
+    },
+    user_to : {
+        social_id : String,
+        name : String,
+        hair_color : String,
+        gender : String,
+        interested_in : [String],
+        current_look : {
+            photo_url : String,
+            identifier: {
+                type : String,
+                brand : String,
+                color : String
+            }
+        }
+    },
+    social_venue : {
+        social_id : String,
+        name : String,
+        address : String
+    },
+    flirt_options : {
+        type: String,
+        text: String
+    }
+}
+</code></pre>
+</li>
+<li>
+<p>Request headers:</p>
+
+<pre><code>{
+    Content-Type : "application/json",
+    Accept : "application/json",
+    X-ZUMO-AUTH : "auth_token"
+}
+</code></pre>
+</li>
+<li>
+<p>Response:</p>
+
+<pre><code>{
+    success : Boolean
+}
+</code></pre>
+</li>
+<li>
+<p>Additional Info:</p>
+
+<ul>
+<li>user_from.social_id will be filled out by the server (current login)</li>
+<li>flirt_options.type is either simple, forward, or risky</li>
+<li>status will be enum_flirt_statuses.sent</li>
+<li>time will be current system time</li>
+<li>expiry will br set according to enum_expiries.flirt</li>
+<li>sends a push notification to the recipient.</li>
+<li>patch the checkin collection to add to sent_flirts</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul><ul>
+<li>
+<p><code>PATCH /api/flirt</code> : user accepts or rejects a flirt</p>
+
+<ol>
+<li>
+<p>Trigger:</p>
+
+<ul>
+<li>  user accepts a flirt</li>
+<li>  user rejects a flirt</li>
+</ul>
+</li>
+<li>
+<p>Request param:</p>
+
+<pre><code>{
+    id: 'MongoDB ObjectId'
+}
+</code></pre>
+</li>
+<li>
+<p>Request body:</p>
+
+<pre><code>{
+    action: 'accept or reject'
+}
+</code></pre>
+</li>
+<li>
+<p>Request headers:</p>
+
+<pre><code>{
+    Content-Type : "application/json",
+    Accept : "application/json",
+    X-ZUMO-AUTH : "auth_token"
+}
+</code></pre>
+</li>
+<li>
+<p>Response:</p>
+
+<pre><code>{
+    success : Boolean
+}
+</code></pre>
+</li>
+<li>Additional Info:
+
+<ul>
+<li>if  action == 'accept', change status=enum_flirt_statuses.accepted, create a connection, send a push notification to the other person.</li>
+<li>if  action == 'reject', change status=enum_flirt_statuses.rejected, send a push notification to the other person.</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul><ul>
+<li>
+<p><code>POST /api/hint</code> : sends a hint</p>
+
+<ol>
+<li>
+<p>Trigger:</p>
+
+<ul>
+<li>  user sends a hint to another user</li>
+</ul>
+</li>
+<li>
+<p>Request param:</p>
+
+<pre><code>{
+}
+</code></pre>
+</li>
+<li>
+<p>Request body:</p>
+
+<pre><code>{
+    user_from : {
+        name : String,
+        hair_color : String,
+        gender : String,
+        interested_in : [String],
+        current_look : {
+            photo_url : String,
+            identifier: {
+                type : String,
+                brand : String,
+                color : String
+            }
+        }
+    },
+    user_to : {
+        social_id : String,
+        name : String,
+        hair_color : String,
+        gender : String,
+        interested_in : [String],
+        current_look : {
+            photo_url : String,
+            identifier: {
+                type : String,
+                brand : String,
+                color : String
+            }
+        }
+    },
+    social_venue : {
+        social_id : String,
+        name : String,
+        address : String
+    }
+}
+</code></pre>
+</li>
+<li>
+<p>Request headers:</p>
+
+<pre><code>{
+    Content-Type : "application/json",
+    Accept : "application/json",
+    X-ZUMO-AUTH : "auth_token"
+}
+</code></pre>
+</li>
+<li>
+<p>Response:</p>
+
+<pre><code>{
+    success : Boolean
+}
+</code></pre>
+</li>
+<li>
+<p>Additional Info:</p>
+
+<ul>
+<li>user_from.social_id will be filled out by the server (current login)</li>
+<li>status will be enum_hint_statuses.sent</li>
+<li>time will be current system time</li>
+<li>expiry will br set according to enum_expiries.hint</li>
+<li>patch the checkin collection to add to sent_hint.</li>
+<li>run the connection algorithm (check if there is an un-expired hint from the other person in the same venue)</li>
+<li>if a connection is created, sends a push notification to both, otherwise send it to the recipient.</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul><ul>
+<li>
+<p><code>GET /api/connection</code> : get a list of connections</p>
+
+<ol>
+<li>
+<p>Trigger:</p>
+
+<ul>
+<li>  user open up the right menu.</li>
+<li>  user click on a connection.</li>
+</ul>
+</li>
+<li>
+<p>Request param:</p>
+
+<pre><code>{
+    id : 'optional, id of the connection, if provided the result array will have at most 1 element'
+}
+</code></pre>
+</li>
+<li>
+<p>Request headers:</p>
+
+<pre><code>{
+    Content-Type : "application/json",
+    Accept : "application/json",
+    X-ZUMO-AUTH : "auth_token"
+}
+</code></pre>
+</li>
+<li>
+<p>Response:</p>
+
+<pre><code>[{
+    users: [{
+        social_id : String,
+        name : String,
+        hair_color : String,
+        gender : String,
+        interested_in : [String],
+        current_look : {
+            photo_url : String,
+            identifier: {
+                type : String,
+                brand : String,
+                color : String
+            }
+        }
+    }],
+    social_venue : {
+        social_id : String,
+        name : String,
+        address : String
+    },
+    messages : [{
+        user :{
+            social_id : String
+        },
+        text: String,
+        time: Date
+    }],
+    keep_alive : {
+        flag : Boolean,
+        user :{
+            social_id : String
+        }
+    },
+    time : Date,
+    expiry : Date
+}]
+</code></pre>
+</li>
+<li>
+<p>Additional Info:</p>
+
+<ul>
+<li>  filter unexpired connection by current logged in user_id and connection_id (if provided)</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul><ul>
+<li>
+<p><code>PATCH /api/connection</code> : user sends a message(TODO: update expiry, and ask to keep connection alive)</p>
+
+<ol>
+<li>
+<p>Trigger:</p>
+
+<ul>
+<li>  user sends a message</li>
+</ul>
+</li>
+<li>
+<p>Request param:</p>
+
+<pre><code>{
+    id: 'MongoDB ObjectId'
+}
+</code></pre>
+</li>
+<li>
+<p>Request body:</p>
+
+<pre><code>{
+    message : {
+        text: String
+    }
+}
+</code></pre>
+</li>
+<li>
+<p>Request headers:</p>
+
+<pre><code>{
+    Content-Type : "application/json",
+    Accept : "application/json",
+    X-ZUMO-AUTH : "auth_token"
+}
+</code></pre>
+</li>
+<li>
+<p>Response:</p>
+
+<pre><code>{
+    success : Boolean
+}
+</code></pre>
+</li>
+<li>
+<p>Additional Info:</p>
+
+<ul>
+<li>message.user.social_id will be filled up by the server</li>
+<li>time will be current expiry time</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+      </section>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
