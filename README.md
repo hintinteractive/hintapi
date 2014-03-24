@@ -22,9 +22,27 @@ The details of the oAuth flow for Hint is described below,
 
 
 
-## Enums
+## Configurations
+These application configurations are loaded at the start (or restart) of the Hint server. Any change in these configurations requires a restart of the server to take effect,  (TODO) additionally the admins can call `GET api/config` to reload these without a server restart.
 
-- `enum_user_statuses` :
+### `enum_user_genders` :
+
+		{
+			male : 'male',
+			female : 'female',
+			other : 'other',
+			undefined : 'undefined'
+		}
+
+### `enum_user_hair_colors` :
+
+		{
+			light : 'light',
+			dark : 'dark',
+			undefined: 'undefined'
+		}
+
+### `enum_user_statuses` :
 
 		{
 			admin : 'admin',
@@ -34,14 +52,14 @@ The details of the oAuth flow for Hint is described below,
 			debug : 'debug'
 		}
 
-- `enum_hint_statuses` :
+### `enum_hint_statuses` :
 
 		{
 			sent : 'sent',
 			accepted : 'accepted'
 		}
 
-- `enum_flirt_statuses` :
+### `enum_flirt_statuses` :
 
 		{
 			sent : 'sent',
@@ -49,24 +67,9 @@ The details of the oAuth flow for Hint is described below,
 			rejected : 'rejected'
 		}
 
-- `enum_user_genders` :
 
-		{
-			male : 'male',
-			female : 'female',
-			other : 'other',
-			undefined : 'undefined'
-		}
 
-- `enum_user_hair_colors` :
-
-		{
-			light : 'light',
-			dark : 'dark',
-			undefined: 'undefined'
-		}
-
-- `enum_expiries` :
+### `enum_expiries` :
 
 		{
 			current_look : 24,
@@ -77,13 +80,13 @@ The details of the oAuth flow for Hint is described below,
 			hint: 24
 		}
 
-- `enum_flags` :
+### `enum_flags` :
 
 		{
 			collect_venue_category : true
 		}
 
-- `enum_defaults` :
+### `enum_defaults` :
 
 		{
 			venue_categoty: {
