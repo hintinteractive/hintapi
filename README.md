@@ -105,7 +105,8 @@ These application configurations are loaded at the start (or restart) of the Hin
 ## Models and Schemas
 Each of these models represent a collection in the database. If you come from a MVC background, then you can think of these Models as the MVC models. Each of these models, has a unique `_id` field. If you come of a SQL background, then you can think of `_id` as the primary key.
 
-### `api_access` : Record each API access
+### Model `api_access`
+- Records each API access
 - Collection name : `api_accesses`
 - Schema :
 
@@ -124,7 +125,8 @@ Each of these models represent a collection in the database. If you come from a 
 	- Added an entry to this collection every time a api end point is accessed.
 	- Heavy write operations and low read operations (only happens for analytics).
 
-### `venue_category` : types of venues and flirt options
+### Model `venue_category`
+- Records of types of venues and corresponding flirt options
 - Collection name : `venue_categories`
 - Schema :
 
@@ -145,7 +147,8 @@ Each of these models represent a collection in the database. If you come from a 
 	- Heavy read operations.
 	- Low write operations (normal), and medium write operations (when `enum_flags.collect_venue_category` is true).
 
-### `user` : the user info
+### Model `user`
+- The User info
 - Collection name : `users`
 - Schema :
 
@@ -168,7 +171,8 @@ Each of these models represent a collection in the database. If you come from a 
 	- `social_id` is used for identifying each	document.
 	-	Low read and write operations.
 
-### `event` : the event info
+### Model `event`
+- the event info and its flirt options
 - Collection name : `events`
 - Schema :
 
@@ -199,7 +203,8 @@ Each of these models represent a collection in the database. If you come from a 
 	-	`social_id` is used for identifying each document.
 	-	Low write operations, and medium read operations.
 
-### `checkin` : Checkin to a place
+### Model `checkin`
+- Records of user's checkin to places
 - Collection name : `checkins`
 - Schema :
 
@@ -258,7 +263,8 @@ Each of these models represent a collection in the database. If you come from a 
 	-	`_id` is used for identifying each document.
 	-	Heavy read and write operations.
 
-### `hint` : Send a hint
+### Model `hint`
+- Records of sent hints and their status
 - Collection name : `hints`
 - Schema :
 
@@ -310,7 +316,8 @@ Each of these models represent a collection in the database. If you come from a 
 	-	`_id` is used for identifying each document.
 	- Heavy write operations and medium read operations.
 
-### `flirt` : Send a flirt
+### Model `flirt`
+- Records of sent flirts and their status
 - Collection name : `flirts`
 - Schema :
 
@@ -367,7 +374,8 @@ Each of these models represent a collection in the database. If you come from a 
 	- Heavy write operations and medium read operations.
 
 
-### `connection` :
+### Model `connection`
+- Records of created connections and messages in those connections.
 - Collection name : `connections`
 - Schema :
 
@@ -424,7 +432,8 @@ To logoff, simply remove the hint_auth_token from the application cache and also
 
 The following API endpoints are available to the public:
 
-### `POST /login/facebook` : login the user to our system
+### API `POST /login/facebook`
+1. Desc: login the user to our system
 
 1. Trigger:
 	- Login:
@@ -469,7 +478,8 @@ The following API endpoints are available to the public:
 	-	When calling any api with auth_token, if you get 401 unauthorized then log off the user.
 	-	Make sure you use basic permission only when log in with the facebook sdk.
 
-### `GET /api/user` : get the current user info
+### API `GET /api/user`
+1. Desc: get the current user info
 
 1. Trigger:
 	-	After user login to the system (after action for `POST  /login/facebook` API call).
@@ -530,8 +540,8 @@ The following API endpoints are available to the public:
 		-	If the user exists but his status is inactive then update the database and make the status active.
 		-	Return user's info.
 
-### `PATCH /api/user` : update the user's info
-
+### API `PATCH /api/user`
+1. Desc: update the user's info
 1. Trigger:
 	-	User updates his info in the user settings page.
 	-	User uploads a photo (only if the url is different, trigger this call).
@@ -590,8 +600,8 @@ The following API endpoints are available to the public:
 	-	Provide the property you want to update in the request body (if a property is missing then it keeps its original value).
 	-	(Server side) The user id is extracted from the X-ZUMO-AUTH header.
 
-### `DELETE /api/user` : deactivite a user
-
+### API `DELETE /api/user`
+1. Desc: deactivite a user
 1. Trigger:
 	-	user clicks the deactivate account button.
 
@@ -629,8 +639,8 @@ The following API endpoints are available to the public:
 	-	(Server side) The user id is extracted from the X-ZUMO-AUTH header.
 
 
-### `GET /api/venue` : get a list of venues
-
+### API `GET /api/venue`
+1. Desc: get a list of venues
 1. Trigger:
 	-	User enters the Near By Places page.
 	-	User refresh the Near By Places page (by pulling down the listview)
@@ -713,8 +723,8 @@ The following API endpoints are available to the public:
 		-	Construct the response object from these info.
 
 
-### `POST /api/checkin` : checkin to a venue
-
+### API `POST /api/checkin`
+1. Desc: checkin to a venue
 1. Trigger:
 	-	user clicks the checkin button
 
@@ -801,8 +811,8 @@ The following API endpoints are available to the public:
 
 
 
-### `GET /api/checkin` : get a list of checkins for a venue
-
+### API `GET /api/checkin`
+1. Desc: get a list of checkins for a venue
 1. Trigger:
 	-	user comes to the "Who is Here?" landing page.
 	-	refresh of the "Who is Here?" landing page.
