@@ -436,12 +436,12 @@ The following API endpoints are available to the public:
 2. Request param:
 
 		{
-			access_token : "facebook_access_token"
 		}
 
 3. Request body:
 
 		{
+			access_token : "facebook_access_token"
 		}
 
 4. Request headers:
@@ -497,19 +497,23 @@ The following API endpoints are available to the public:
 5. Response:
 
 		{
-			id : String,
-			social_id : String,
-			name : String,
-			contact: {
-				email : String,
-				phone : String
-			},
-			hair_color : String,
-			gender : String,
-			interested_in : [String],
-			status : String,
-			black_list : [String],
-			photo_url: String
+		    "api_access": true,
+		    "result": {
+				"__v": 0,
+				"_id": "532f56d3152d0d3032e5af4c",
+				"social_id": "Facebook:100007978092636",
+				"name": "James Amgighjibfcf Lauwitz",
+				"contact": {
+						"email": "",
+						"phone": ""
+				},
+				"hair_color": "undefined",
+				"gender": "male",
+				"interested_in": []
+				"status": "active",
+				"photo_url": "https://graph.facebook.com/100007978092636/picture?width=340&height=340",
+				"black_list": []
+		    }
 		}
 
 6. After Action :
@@ -518,6 +522,9 @@ The following API endpoints are available to the public:
 	-	Update the user's info in the app memory.
 
 7. Additional Info:
+	-	The info you are looking for will typically be available in the `result` property of the response.
+	-	Igonre `api_access` and `result.__v` properties.
+	-	`_id` is the unique id of the document (sql equivalent of primary key). For users, we do not care about this key (we only care about `social_id`) and can be ignored.
 	-	(Server Side) Get the user from database from the userid embedded in the header.
 		-	If the user doesn't exists, call facebook with the access_token (embedded in the header) to get user's basic info and update the database with info from facebook.
 		-	If the user exists but his status is inactive then update the database and make the status active.
@@ -559,19 +566,23 @@ The following API endpoints are available to the public:
 5. Response: (updated user)
 
 		{
-			id : String,
-			social_id : String,
-			name : String,
-			contact: {
-				email : String,
-				phone : String
-			},
-			hair_color : String,
-			gender : String,
-			interested_in : [String],
-			status : String,
-			black_list : [String],
-			photo_url: String
+		    "api_access": true,
+		    "result": {
+				"__v": 0,
+				"_id": "532f56d3152d0d3032e5af4c",
+				"social_id": "Facebook:100007978092636",
+				"name": "James Amgighjibfcf Lauwitz",
+				"contact": {
+						"email": "",
+						"phone": ""
+				},
+				"hair_color": "undefined",
+				"gender": "male",
+				"interested_in": []
+				"status": "active",
+				"photo_url": "https://graph.facebook.com/100007978092636/picture?width=340&height=340",
+				"black_list": []
+		    }
 		}
 6. After Action :
 	-	Update the user's info in the app memory.
@@ -605,7 +616,10 @@ The following API endpoints are available to the public:
 5. Response:
 
 		{
-			success : Boolean
+		    "api_access": true,
+		    "result": {
+		        "success": true
+		    }
 		}
 
 6. After Action :
