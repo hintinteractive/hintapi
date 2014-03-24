@@ -1,43 +1,36 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
+
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Hint Api by hintinteractive</title>
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script src="javascripts/respond.js"></script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <!--[if lt IE 8]>
-    <link rel="stylesheet" href="stylesheets/ie.css">
-    <![endif]-->
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Hint Api : " />
 
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Hint Api</title>
   </head>
+
   <body>
-      <div id="header">
-        <nav>
-          <li class="fork"><a href="https://github.com/hintinteractive/hintapi">View On GitHub</a></li>
-          <li class="downloads"><a href="https://github.com/hintinteractive/hintapi/zipball/master">ZIP</a></li>
-          <li class="downloads"><a href="https://github.com/hintinteractive/hintapi/tarball/master">TAR</a></li>
-          <li class="title">DOWNLOADS</li>
-        </nav>
-      </div><!-- end header -->
 
-    <div class="wrapper">
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/hintinteractive/hintapi">View on GitHub</a>
 
-      <section>
-        <div id="title">
-          <h1>Hint Api</h1>
-          <p></p>
-          <hr>
-          <span class="credits left">Project maintained by <a href="https://github.com/hintinteractive">hintinteractive</a></span>
-          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
-        </div>
+          <h1 id="project_title">Hint Api</h1>
+          <h2 id="project_tagline"></h2>
 
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/hintinteractive/hintapi/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/hintinteractive/hintapi/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
         <p>This document specifies the backend designs for Hint and the REST API. The document is intended for frontend developers to refer.</p>
 
 <h2>
@@ -190,8 +183,8 @@
 <ul>
 <li>
 <code>_id</code> is used for identifying each document.</li>
-<li>Needed to analytics and does not affect the operations of Hint</li>
-<li>Add a entry to this collection every time a api end point is accessed.</li>
+<li>Needed for analytics and does not affect normal the operations of Hint</li>
+<li>Added an entry to this collection every time a api end point is accessed.</li>
 <li>Heavy write operations and low read operations (only happens for analytics).</li>
 </ul>
 </li>
@@ -702,8 +695,8 @@
 <p>After Action :</p>
 
 <ul>
-<li>  If the user status is <code>enum_user_statuses.banned</code>, show a message saying that he is banned from the app and log him out.</li>
-<li>  If the user status is <code>enum_user_statuses.admin</code>, show the admin panel otherwise hide the admin panel.</li>
+<li>  If the user status is <code>enum_user_statuses.banned</code>, show a message saying that he is banned from the app and log him out. (TODO: the server side validation of this is currently being built)</li>
+<li>  If the user status is <code>enum_user_statuses.admin</code>, show the admin panel otherwise hide the admin panel (TODO: the admin panel features are being decided).</li>
 <li>  Update the user's info in the app memory.</li>
 </ul>
 </li>
@@ -910,20 +903,23 @@
 <li>
 <p>Response:</p>
 
-<pre><code>[{
-    social_id : 'Facebook:fb_id',
-    name : 'name of the place',
-    address : 'address of the place',
-    distance: 'calculated distance in miles',
-    category: {
-        flirt_options : {
-            simple : 'simple flirt',
-            forward : 'forward flirt',
-            risky : 'risky flirt'
-        }
-        image : 'image link'
-    }
-}]
+<pre><code>{
+  "api_access": true,
+  "result": [{
+      "social_id": "Facebook:299653616750093",
+      "name": "Robert Moses",
+      "address": "870 Market Street, San Francisco, CA",
+      "distance": 0.07450498373084966,
+      "category": {
+          "flirt_options": {
+              "simple": "Hey, let's chat!",
+              "forward": "You're Hot!",
+              "risky": "Want to get out of here?"
+          },
+          "image": "the link"
+      }
+  }]
+}
 </code></pre>
 </li>
 <li>
@@ -1055,7 +1051,10 @@
 <p>Response:</p>
 
 <pre><code>{
-    success : Boolean
+        "api_access": true,
+        "result": {
+                "success": true
+        }
 }
 </code></pre>
 </li>
@@ -1064,68 +1063,18 @@
 
 <ul>
 <li>user.social_id is filled up by the server, all the other info will be available in the client.</li>
-<li>If the event object is present (social_venue is ignored), then the necessary info for the collection will be taken from the event object. However, the expiry can be no more than enum_expiries.event.</li>
-<li>If the event object is null, social_venue object will be used for the necessary info for the collection, the missing info will be taken from the enums.</li>
 <li>Trying to check into an event before its start time will generate an internal server error.</li>
 <li>The time field of the collection will be current system time.</li>
 <li>If one of event.social_venue.social_id and social_venue.social_id is not provided, then an internal server error will be generated.</li>
+<li>Server Side operations:
+
+<ul>
+<li>If the event object is present (social_venue is ignored), then the necessary info for the collection will be taken from the event object. However, the expiry can be no more than enum_expiries.event.</li>
+<li>If the event object is null, social_venue object will be used for the necessary info for the collection, the missing info will be taken from the enums.</li>
 <li>received_flirts and received_hints will be empty arrays.</li>
 </ul>
 </li>
-</ol><h3>
-<a name="patch-apicheckin--add-to-received_flirts-and-received_hints-array" class="anchor" href="#patch-apicheckin--add-to-received_flirts-and-received_hints-array"><span class="octicon octicon-link"></span></a><code>PATCH /api/checkin</code> : add to received_flirts and received_hints array</h3>
-
-<ol>
-<li>
-<p>Trigger:</p>
-
-<ul>
-<li>  user sends a hint</li>
-<li>  user sends a flirt</li>
 </ul>
-</li>
-<li>
-<p>Request param:</p>
-
-<pre><code>{
-    id: 'MongoDB ObjectId'
-}
-</code></pre>
-</li>
-<li>
-<p>Request body:</p>
-
-<pre><code>{
-    flirt:{
-        user:{
-          social_id : String
-        }
-    },
-    hint:{
-        user:{
-          social_id : String
-        }
-    }
-}
-</code></pre>
-</li>
-<li>
-<p>Request headers:</p>
-
-<pre><code>{
-    Content-Type : "application/json",
-    Accept : "application/json",
-    X-ZUMO-AUTH : "auth_token"
-}
-</code></pre>
-</li>
-<li>
-<p>Response:</p>
-
-<pre><code>{
-    success : Boolean
-}
-</code></pre>
 </li>
 </ol><h3>
 <a name="get-apicheckin--get-a-list-of-checkins-for-a-venue" class="anchor" href="#get-apicheckin--get-a-list-of-checkins-for-a-venue"><span class="octicon octicon-link"></span></a><code>GET /api/checkin</code> : get a list of checkins for a venue</h3>
@@ -1137,6 +1086,7 @@
 <ul>
 <li>  user comes to the "Who is Here?" landing page.</li>
 <li>  refresh of the "Who is Here?" landing page.</li>
+<li>  (TODO) user search for checkins.</li>
 </ul>
 </li>
 <li>
@@ -1144,10 +1094,10 @@
 
 <pre><code>{
     social_venue_id: 'Facebook:id',
-      event_social_id: 'facebook:id',
+    event_social_id: 'facebook:id',
     hair_color : 'optional: if not provided ignore',
-      interested_in : [String],
-      search : 'search string in identifier',
+    interested_in : [String],
+    search : 'search string in identifier',
     limit : 'number of results, default enum_defaults.checkin_search_results',
 }
 </code></pre>
@@ -1173,64 +1123,63 @@
 <li>
 <p>Response:</p>
 
-<pre><code>[{
-  user : {
-      social_id : String,
-      name : String,
-      hair_color : String,
-      gender : String,
-      interested_in : [String],
-      current_look : {
-          photo_url : String,
-          identifier: {
-              type : String,
-              brand : String,
-              color : String
-          }
-      }
-  },
-  event : {
-      social_id : String,
-      title : String
-  },
-  social_venue : {
-      social_id : String,
-      name : String,
-      address : String,
-      image : String
-  },
-  flirt_options : {
-      simple : String,
-      forward : String,
-      risky : String
-  },
-  time : Date,
-  expiry : Date,
-  received_flirts : [{
-      user:{
-          social_id : String
-      }
-  }],
-  received_hints : [{
-      user:{
-          social_id : String
-      }
-  }]
-}]
+<pre><code>{
+    "api_access": true,
+    "result": [{
+        user : {
+            social_id : String,
+            name : String,
+            hair_color : String,
+            gender : String,
+            interested_in : [String],
+            current_look : {
+                photo_url : String,
+                identifier: {
+                    type : String,
+                    brand : String,
+                    color : String
+                }
+            }
+        },
+        event : {
+            social_id : String,
+            title : String
+        },
+        social_venue : {
+            social_id : String,
+            name : String,
+            address : String,
+            image : String
+        },
+        flirt_options : {
+            simple : String,
+            forward : String,
+            risky : String
+        },
+        time : 'checkin time',
+        expiry : 'expiry time',
+        flirts : [{
+            user:{
+                social_id : String
+            }
+        }],
+        hints : [{
+            user:{
+                social_id : String
+            }
+        }]
+    }]
+}
 </code></pre>
 </li>
 <li>
 <p>Additional Info:</p>
 
 <ul>
-<li>  if event_social_id is provided, search with it, otherwise search checkins with social_venue_id, if none provided a 500 error is generated.</li>
-<li>  if limit parameter is not provided, then enum_defaults.checkin_search_results is used to determine how many checkins will be returned.
-
-<ul>
-<li>  if interested_in,hair_color,search are not provided then search all.</li>
-<li>  TODO: optimize the search</li>
-</ul>
-</li>
+<li>  If event_social_id is provided, search with it, otherwise search checkins with social_venue_id, if none provided a 500 error is generated.</li>
+<li>  (TODO) If limit parameter is not provided, then enum_defaults.checkin_search_results is used to determine how many checkins will be returned.</li>
+<li>  (TODO) If interested_in,hair_color,search are not provided then search all.</li>
+<li>  (TODO) Optimize the search.</li>
 </ul>
 </li>
 </ol><h3>
@@ -1313,7 +1262,10 @@
 <p>Response:</p>
 
 <pre><code>{
-    success : Boolean
+        "api_access": true,
+        "result": {
+                "success": true
+        }
 }
 </code></pre>
 </li>
@@ -1456,7 +1408,10 @@
 <p>Response:</p>
 
 <pre><code>{
-    success : Boolean
+        "api_access": true,
+        "result": {
+                "success": true
+        }
 }
 </code></pre>
 </li>
@@ -1595,7 +1550,10 @@
 <p>Response:</p>
 
 <pre><code>{
-    success : Boolean
+        "api_access": true,
+        "result": {
+                "success": true
+        }
 }
 </code></pre>
 </li>
@@ -1609,9 +1567,17 @@
 </li>
 </ol>
       </section>
-
     </div>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Hint Api maintained by <a href="https://github.com/hintinteractive">hintinteractive</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
     
+
   </body>
 </html>
