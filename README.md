@@ -120,8 +120,8 @@ Each of these models represent a collection in the database. If you come from a 
 
 - Additional Info:
 	- `_id` is used for identifying each document.
-	- Needed to analytics and does not affect the operations of Hint
-	- Add a entry to this collection every time a api end point is accessed.
+	- Needed for analytics and does not affect normal the operations of Hint
+	- Added an entry to this collection every time a api end point is accessed.
 	- Heavy write operations and low read operations (only happens for analytics).
 
 ### `venue_category` : types of venues and flirt options
@@ -517,8 +517,8 @@ The following API endpoints are available to the public:
 		}
 
 6. After Action :
-	-	If the user status is `enum_user_statuses.banned`, show a message saying that he is banned from the app and log him out.
-	-	If the user status is `enum_user_statuses.admin`, show the admin panel otherwise hide the admin panel.
+	-	If the user status is `enum_user_statuses.banned`, show a message saying that he is banned from the app and log him out. (TODO: the server side validation of this is currently being built)
+	-	If the user status is `enum_user_statuses.admin`, show the admin panel otherwise hide the admin panel (TODO: the admin panel features are being decided).
 	-	Update the user's info in the app memory.
 
 7. Additional Info:
@@ -660,20 +660,23 @@ The following API endpoints are available to the public:
 
 4. Response:
 
-		[{
-			social_id : 'Facebook:fb_id',
-			name : 'name of the place',
-			address : 'address of the place',
-			distance: 'calculated distance in miles',
-			category: {
-				flirt_options : {
-					simple : 'simple flirt',
-					forward : 'forward flirt',
-					risky : 'risky flirt'
-				}
-				image : 'image link'
-			}
-		}]
+		{
+		  "api_access": true,
+		  "result": [{
+		      "social_id": "Facebook:299653616750093",
+		      "name": "Robert Moses",
+		      "address": "870 Market Street, San Francisco, CA",
+		      "distance": 0.07450498373084966,
+		      "category": {
+		          "flirt_options": {
+		              "simple": "Hey, let's chat!",
+		              "forward": "You're Hot!",
+		              "risky": "Want to get out of here?"
+		          },
+		          "image": "the link"
+		      }
+		  }]
+		}
 
 5. Additional Info:
 	-	The response array will be sorted by distance.
@@ -780,73 +783,39 @@ The following API endpoints are available to the public:
 5. Response:
 
 		{
-			success : Boolean
+				"api_access": true,
+				"result": {
+						"success": true
+				}
 		}
 
 6. Additional Info:
 	- user.social_id is filled up by the server, all the other info will be available in the client.
-	- If the event object is present (social_venue is ignored), then the necessary info for the collection will be taken from the event object. However, the expiry can be no more than enum_expiries.event.
-	- If the event object is null, social_venue object will be used for the necessary info for the collection, the missing info will be taken from the enums.
 	- Trying to check into an event before its start time will generate an internal server error.
 	- The time field of the collection will be current system time.
 	- If one of event.social_venue.social_id and social_venue.social_id is not provided, then an internal server error will be generated.
-	- received_flirts and received_hints will be empty arrays.
+	- Server Side operations:
+		- If the event object is present (social_venue is ignored), then the necessary info for the collection will be taken from the event object. However, the expiry can be no more than enum_expiries.event.
+		- If the event object is null, social_venue object will be used for the necessary info for the collection, the missing info will be taken from the enums.
+		- received_flirts and received_hints will be empty arrays.
 
-### `PATCH /api/checkin` : add to received_flirts and received_hints array
 
-1. Trigger:
-	-	user sends a hint
-	-	user sends a flirt
-
-2. Request param:
-
-		{
-			id: 'MongoDB ObjectId'
-		}
-
-3. Request body:
-
-		{
-			flirt:{
-				user:{
-				  social_id : String
-				}
-			},
-			hint:{
-				user:{
-				  social_id : String
-				}
-			}
-		}
-
-4. Request headers:
-
-		{
-			Content-Type : "application/json",
-			Accept : "application/json",
-			X-ZUMO-AUTH : "auth_token"
-		}
-
-5. Response:
-
-		{
-			success : Boolean
-		}
 
 ### `GET /api/checkin` : get a list of checkins for a venue
 
 1. Trigger:
 	-	user comes to the "Who is Here?" landing page.
 	-	refresh of the "Who is Here?" landing page.
+	-	(TODO) user search for checkins.
 
 2. Request param:
 
 		{
 			social_venue_id: 'Facebook:id',
-              event_social_id: 'facebook:id',
+			event_social_id: 'facebook:id',
 			hair_color : 'optional: if not provided ignore',
-              interested_in : [String],
-              search : 'search string in identifier',
+			interested_in : [String],
+			search : 'search string in identifier',
 			limit : 'number of results, default enum_defaults.checkin_search_results',
 		}
 
@@ -866,56 +835,59 @@ The following API endpoints are available to the public:
 
 5. Response:
 
-		[{
-	      user : {
-	          social_id : String,
-	          name : String,
-	          hair_color : String,
-	          gender : String,
-	          interested_in : [String],
-	          current_look : {
-	              photo_url : String,
-	              identifier: {
-	                  type : String,
-	                  brand : String,
-	                  color : String
-	              }
-	          }
-	      },
-	      event : {
-	          social_id : String,
-	          title : String
-	      },
-	      social_venue : {
-	          social_id : String,
-	          name : String,
-	          address : String,
-	          image : String
-	      },
-	      flirt_options : {
-	          simple : String,
-	          forward : String,
-	          risky : String
-	      },
-	      time : Date,
-	      expiry : Date,
-	      received_flirts : [{
-	          user:{
-	              social_id : String
-	          }
-	      }],
-	      received_hints : [{
-	          user:{
-	              social_id : String
-	          }
-	      }]
-		}]
+		{
+			"api_access": true,
+			"result": [{
+				user : {
+				    social_id : String,
+				    name : String,
+				    hair_color : String,
+				    gender : String,
+				    interested_in : [String],
+				    current_look : {
+				        photo_url : String,
+				        identifier: {
+				            type : String,
+				            brand : String,
+				            color : String
+				        }
+				    }
+				},
+				event : {
+				    social_id : String,
+				    title : String
+				},
+				social_venue : {
+				    social_id : String,
+				    name : String,
+				    address : String,
+				    image : String
+				},
+				flirt_options : {
+				    simple : String,
+				    forward : String,
+				    risky : String
+				},
+				time : 'checkin time',
+				expiry : 'expiry time',
+				flirts : [{
+					user:{
+						social_id : String
+					}
+				}],
+				hints : [{
+					user:{
+						social_id : String
+					}
+				}]
+			}]
+		}
 
 5. Additional Info:
-	-	if event_social_id is provided, search with it, otherwise search checkins with social_venue_id, if none provided a 500 error is generated.
-	-	if limit parameter is not provided, then enum_defaults.checkin_search_results is used to determine how many checkins will be returned.
-      -   if interested_in,hair_color,search are not provided then search all.
-      -   TODO: optimize the search
+	-	If event_social_id is provided, search with it, otherwise search checkins with social_venue_id, if none provided a 500 error is generated.
+	-	(TODO) If limit parameter is not provided, then enum_defaults.checkin_search_results is used to determine how many checkins will be returned.
+	-	(TODO) If interested_in,hair_color,search are not provided then search all.
+	-	(TODO) Optimize the search.
 
 ### `POST /api/flirt` : sends a flirt
 
@@ -984,7 +956,10 @@ The following API endpoints are available to the public:
 5. Response:
 
 		{
-			success : Boolean
+				"api_access": true,
+				"result": {
+						"success": true
+				}
 		}
 
 6. Additional Info:
@@ -1091,7 +1066,10 @@ The following API endpoints are available to the public:
 5. Response:
 
 		{
-			success : Boolean
+				"api_access": true,
+				"result": {
+						"success": true
+				}
 		}
 
 6. Additional Info:
@@ -1196,7 +1174,10 @@ The following API endpoints are available to the public:
 5. Response:
 
 		{
-			success : Boolean
+				"api_access": true,
+				"result": {
+						"success": true
+				}
 		}
 
 6. Additional Info:
