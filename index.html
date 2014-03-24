@@ -161,11 +161,12 @@
 </code></pre>
 
 <h2>
-<a name="models" class="anchor" href="#models"><span class="octicon octicon-link"></span></a>Models</h2>
+<a name="models-and-schemas" class="anchor" href="#models-and-schemas"><span class="octicon octicon-link"></span></a>Models and Schemas</h2>
 
-<ul>
-<li>
-<p><code>api_access</code> :</p>
+<p>Each of these models represent a collection in the database. If you come from a MVC background, then you can think of these Models as the MVC models. Each of these models, has a unique <code>_id</code> field. If you come of a SQL background, then you can think of <code>_id</code> as the primary key.</p>
+
+<h3>
+<a name="api_access--record-each-api-access" class="anchor" href="#api_access--record-each-api-access"><span class="octicon octicon-link"></span></a><code>api_access</code> : Record each API access</h3>
 
 <ul>
 <li>Collection name : <code>api_accesses</code>
@@ -187,14 +188,15 @@
 <p>Additional Info:</p>
 
 <ul>
-<li>Add a entry to this collection every time a api end point is accessed.</li>
-<li>Write heavy, read only needs for analytics purpose.</li>
-</ul>
-</li>
-</ul>
-</li>
 <li>
-<p><code>venue_category</code> :</p>
+<code>_id</code> is used for identifying each document.</li>
+<li>Needed to analytics and does not affect the operations of Hint</li>
+<li>Add a entry to this collection every time a api end point is accessed.</li>
+<li>Heavy write operations and low read operations (only happens for analytics).</li>
+</ul>
+</li>
+</ul><h3>
+<a name="venue_category--types-of-venues-and-flirt-options" class="anchor" href="#venue_category--types-of-venues-and-flirt-options"><span class="octicon octicon-link"></span></a><code>venue_category</code> : types of venues and flirt options</h3>
 
 <ul>
 <li>Collection name : <code>venue_categories</code>
@@ -218,15 +220,15 @@
 <p>Additional Info:</p>
 
 <ul>
-<li>Search the collection with a list of social_category.id for each GET /api/venue call.</li>
-<li>Read heavy (normal situations).</li>
-<li>Read and Write heavy (when enum_flags.collect_venue_category is true)</li>
-</ul>
-</li>
-</ul>
-</li>
 <li>
-<p><code>user</code> :</p>
+<code>social_id</code> is used for identifying each document.</li>
+<li>For each <code>GET /api/venue</code> call,  search the collection with a list of <code>social_id</code> and add the result to the response.</li>
+<li>Heavy read operations.</li>
+<li>Low write operations (normal), and medium write operations (when <code>enum_flags.collect_venue_category</code> is true).</li>
+</ul>
+</li>
+</ul><h3>
+<a name="user--the-user-info" class="anchor" href="#user--the-user-info"><span class="octicon octicon-link"></span></a><code>user</code> : the user info</h3>
 
 <ul>
 <li>Collection name : <code>users</code>
@@ -250,12 +252,17 @@
 }
 </code></pre>
 </li>
-<li><h2>
-<a name="additional-info" class="anchor" href="#additional-info"><span class="octicon octicon-link"></span></a>Additional Info:</h2></li>
+<li>
+<p>Additional Info:</p>
+
+<ul>
+<li>
+<code>social_id</code> is used for identifying each  document.</li>
+<li>  Low read and write operations.</li>
 </ul>
 </li>
-<li>
-<p><code>event</code> :</p>
+</ul><h3>
+<a name="event--the-event-info" class="anchor" href="#event--the-event-info"><span class="octicon octicon-link"></span></a><code>event</code> : the event info</h3>
 
 <ul>
 <li>Collection name : <code>events</code>
@@ -287,12 +294,16 @@
 }
 </code></pre>
 </li>
-<li><h2>
-<a name="additional-info-1" class="anchor" href="#additional-info-1"><span class="octicon octicon-link"></span></a>Additional Info:</h2></li>
+<li>
+<p>Additional Info:</p>
+
+<ul>
+<li>  <code>social_id</code> is used for identifying each document.</li>
+<li>  Low write operations, and medium read operations.</li>
 </ul>
 </li>
-<li>
-<p><code>checkin</code> :</p>
+</ul><h3>
+<a name="checkin--checkin-to-a-place" class="anchor" href="#checkin--checkin-to-a-place"><span class="octicon octicon-link"></span></a><code>checkin</code> : Checkin to a place</h3>
 
 <ul>
 <li>Collection name : <code>checkins</code>
@@ -352,12 +363,16 @@
 }
 </code></pre>
 </li>
-<li><h2>
-<a name="additional-info-2" class="anchor" href="#additional-info-2"><span class="octicon octicon-link"></span></a>Additional Info:</h2></li>
+<li>
+<p>Additional Info:</p>
+
+<ul>
+<li>  <code>_id</code> is used for identifying each document.</li>
+<li>  Heavy read and write operations.</li>
 </ul>
 </li>
-<li>
-<p><code>hint</code> :</p>
+</ul><h3>
+<a name="hint--send-a-hint" class="anchor" href="#hint--send-a-hint"><span class="octicon octicon-link"></span></a><code>hint</code> : Send a hint</h3>
 
 <ul>
 <li>Collection name : <code>hints</code>
@@ -410,12 +425,16 @@
 }
 </code></pre>
 </li>
-<li><h2>
-<a name="additional-info-3" class="anchor" href="#additional-info-3"><span class="octicon octicon-link"></span></a>Additional Info:</h2></li>
+<li>
+<p>Additional Info:</p>
+
+<ul>
+<li>  <code>_id</code> is used for identifying each document.</li>
+<li>Heavy write operations and medium read operations.</li>
 </ul>
 </li>
-<li>
-<p><code>flirt</code> :</p>
+</ul><h3>
+<a name="flirt--send-a-flirt" class="anchor" href="#flirt--send-a-flirt"><span class="octicon octicon-link"></span></a><code>flirt</code> : Send a flirt</h3>
 
 <ul>
 <li>Collection name : <code>flirts</code>
@@ -472,12 +491,16 @@
 }
 </code></pre>
 </li>
-<li><h2>
-<a name="additional-info-4" class="anchor" href="#additional-info-4"><span class="octicon octicon-link"></span></a>Additional Info:</h2></li>
+<li>
+<p>Additional Info:</p>
+
+<ul>
+<li>  <code>_id</code> is used for identifying each document.</li>
+<li>Heavy write operations and medium read operations.</li>
 </ul>
 </li>
-<li>
-<p><code>connection</code> :</p>
+</ul><h3>
+<a name="connection-" class="anchor" href="#connection-"><span class="octicon octicon-link"></span></a><code>connection</code> :</h3>
 
 <ul>
 <li>Collection name : <code>connections</code>
@@ -524,16 +547,27 @@
 }
 </code></pre>
 </li>
-<li><h2>
-<a name="additional-info-5" class="anchor" href="#additional-info-5"><span class="octicon octicon-link"></span></a>Additional Info:</h2></li>
+<li>
+<p>Additional Info:</p>
+
+<ul>
+<li>  <code>_id</code> is used for identifying each document.</li>
+<li>Heavy read and write operations.</li>
 </ul>
 </li>
 </ul><h2>
-<a name="api-endpoints" class="anchor" href="#api-endpoints"><span class="octicon octicon-link"></span></a>API Endpoints</h2>
+<a name="api-specifications" class="anchor" href="#api-specifications"><span class="octicon octicon-link"></span></a>API Specifications</h2>
 
-<ul>
-<li>
-<p><code>POST /login/facebook</code> : login the user to our system</p>
+<p>As a frontend developer, you will be interested in this section. To start using these endpoints you need to have a valid <code>facebook_access_token</code> (or we call it <code>hint_authorization_grant</code>). You can get this access token by logging in the user through the facebook SDK of your client. However, if your facebook app is not registered with Hint, this <code>access_token</code> will be rejected.</p>
+
+<p>Except for <code>POST /login/facebook</code> API, all the other API endpoints require a hint_access_token/hint_auth_token to be embedded in the header, i.e., this actually means that the user is logged into the system. The <code>POST /login/facebook</code> API will give you the hint_access_token/hint_auth_token.</p>
+
+<p>To logoff, simply remove the hint_auth_token from the application cache and also trigger a facebook SDK logoff function. If you are using an Azure SDK then call the logoff function along with the facebook logoff function.</p>
+
+<p>The following API endpoints are available to the public:</p>
+
+<h3>
+<a name="post-loginfacebook--login-the-user-to-our-system" class="anchor" href="#post-loginfacebook--login-the-user-to-our-system"><span class="octicon octicon-link"></span></a><code>POST /login/facebook</code> : login the user to our system</h3>
 
 <ol>
 <li>Trigger:
@@ -555,7 +589,6 @@
 <p>Request param:</p>
 
 <pre><code>{
-    access_token : "facebook_access_token"
 }
 </code></pre>
 </li>
@@ -563,6 +596,7 @@
 <p>Request body:</p>
 
 <pre><code>{
+    access_token : "facebook_access_token"
 }
 </code></pre>
 </li>
@@ -603,11 +637,8 @@
 <li>  Make sure you use basic permission only when log in with the facebook sdk.</li>
 </ul>
 </li>
-</ol>
-</li>
-</ul><ul>
-<li>
-<p><code>GET /api/user</code> : get the current user info, if user doesn't exists call facebook and update user info</p>
+</ol><h3>
+<a name="get-apiuser--get-the-current-user-info" class="anchor" href="#get-apiuser--get-the-current-user-info"><span class="octicon octicon-link"></span></a><code>GET /api/user</code> : get the current user info</h3>
 
 <ol>
 <li>
@@ -647,19 +678,23 @@
 <p>Response:</p>
 
 <pre><code>{
-    id : String,
-    social_id : String,
-    name : String,
-    contact: {
-        email : String,
-        phone : String
-    },
-    hair_color : String,
-    gender : String,
-    interested_in : [String],
-    status : String,
-    black_list : [String],
-    photo_url: String
+    "api_access": true,
+    "result": {
+        "__v": 0,
+        "_id": "532f56d3152d0d3032e5af4c",
+        "social_id": "Facebook:100007978092636",
+        "name": "James Amgighjibfcf Lauwitz",
+        "contact": {
+                "email": "",
+                "phone": ""
+        },
+        "hair_color": "undefined",
+        "gender": "male",
+        "interested_in": []
+        "status": "active",
+        "photo_url": "https://graph.facebook.com/100007978092636/picture?width=340&amp;height=340",
+        "black_list": []
+    }
 }
 </code></pre>
 </li>
@@ -676,6 +711,9 @@
 <p>Additional Info:</p>
 
 <ul>
+<li>  The info you are looking for will typically be available in the <code>result</code> property of the response.</li>
+<li>  Igonre <code>api_access</code> and <code>result.__v</code> properties.</li>
+<li>  <code>_id</code> is the unique id of the document (sql equivalent of primary key). For users, we do not care about this key (we only care about <code>social_id</code>) and can be ignored.</li>
 <li>  (Server Side) Get the user from database from the userid embedded in the header.
 
 <ul>
@@ -686,11 +724,8 @@
 </li>
 </ul>
 </li>
-</ol>
-</li>
-</ul><ul>
-<li>
-<p><code>PATCH /api/user</code> : update the user's info</p>
+</ol><h3>
+<a name="patch-apiuser--update-the-users-info" class="anchor" href="#patch-apiuser--update-the-users-info"><span class="octicon octicon-link"></span></a><code>PATCH /api/user</code> : update the user's info</h3>
 
 <ol>
 <li>
@@ -738,19 +773,23 @@
 <p>Response: (updated user)</p>
 
 <pre><code>{
-    id : String,
-    social_id : String,
-    name : String,
-    contact: {
-        email : String,
-        phone : String
-    },
-    hair_color : String,
-    gender : String,
-    interested_in : [String],
-    status : String,
-    black_list : [String],
-    photo_url: String
+    "api_access": true,
+    "result": {
+        "__v": 0,
+        "_id": "532f56d3152d0d3032e5af4c",
+        "social_id": "Facebook:100007978092636",
+        "name": "James Amgighjibfcf Lauwitz",
+        "contact": {
+                "email": "",
+                "phone": ""
+        },
+        "hair_color": "undefined",
+        "gender": "male",
+        "interested_in": []
+        "status": "active",
+        "photo_url": "https://graph.facebook.com/100007978092636/picture?width=340&amp;height=340",
+        "black_list": []
+    }
 }
 </code></pre>
 </li>
@@ -767,11 +806,8 @@
 <li>  (Server side) The user id is extracted from the X-ZUMO-AUTH header.</li>
 </ul>
 </li>
-</ol>
-</li>
-</ul><ul>
-<li>
-<p><code>DELETE /api/user</code> : deactivite a user</p>
+</ol><h3>
+<a name="delete-apiuser--deactivite-a-user" class="anchor" href="#delete-apiuser--deactivite-a-user"><span class="octicon octicon-link"></span></a><code>DELETE /api/user</code> : deactivite a user</h3>
 
 <ol>
 <li>
@@ -809,7 +845,10 @@
 <p>Response:</p>
 
 <pre><code>{
-    success : Boolean
+    "api_access": true,
+    "result": {
+        "success": true
+    }
 }
 </code></pre>
 </li>
@@ -827,11 +866,8 @@
 <li>  (Server side) The user id is extracted from the X-ZUMO-AUTH header.</li>
 </ul>
 </li>
-</ol>
-</li>
-</ul><ul>
-<li>
-<p><code>GET /api/venue</code> : get a list of venues</p>
+</ol><h3>
+<a name="get-apivenue--get-a-list-of-venues" class="anchor" href="#get-apivenue--get-a-list-of-venues"><span class="octicon octicon-link"></span></a><code>GET /api/venue</code> : get a list of venues</h3>
 
 <ol>
 <li>Trigger:
@@ -936,11 +972,8 @@
 </li>
 </ul>
 </li>
-</ol>
-</li>
-</ul><ul>
-<li>
-<p><code>POST /api/checkin</code> : checkin to a venue</p>
+</ol><h3>
+<a name="post-apicheckin--checkin-to-a-venue" class="anchor" href="#post-apicheckin--checkin-to-a-venue"><span class="octicon octicon-link"></span></a><code>POST /api/checkin</code> : checkin to a venue</h3>
 
 <ol>
 <li>
@@ -1039,11 +1072,8 @@
 <li>received_flirts and received_hints will be empty arrays.</li>
 </ul>
 </li>
-</ol>
-</li>
-</ul><ul>
-<li>
-<p><code>PATCH /api/checkin</code> : add to received_flirts and received_hints array</p>
+</ol><h3>
+<a name="patch-apicheckin--add-to-received_flirts-and-received_hints-array" class="anchor" href="#patch-apicheckin--add-to-received_flirts-and-received_hints-array"><span class="octicon octicon-link"></span></a><code>PATCH /api/checkin</code> : add to received_flirts and received_hints array</h3>
 
 <ol>
 <li>
@@ -1097,11 +1127,8 @@
 }
 </code></pre>
 </li>
-</ol>
-</li>
-</ul><ul>
-<li>
-<p><code>GET /api/checkin</code> : get a list of checkins for a venue</p>
+</ol><h3>
+<a name="get-apicheckin--get-a-list-of-checkins-for-a-venue" class="anchor" href="#get-apicheckin--get-a-list-of-checkins-for-a-venue"><span class="octicon octicon-link"></span></a><code>GET /api/checkin</code> : get a list of checkins for a venue</h3>
 
 <ol>
 <li>
@@ -1117,10 +1144,10 @@
 
 <pre><code>{
     social_venue_id: 'Facebook:id',
-    event_social_id: 'facebook:id',
+      event_social_id: 'facebook:id',
     hair_color : 'optional: if not provided ignore',
-    interested_in : [String],
-    search : 'search string in identifier',
+      interested_in : [String],
+      search : 'search string in identifier',
     limit : 'number of results, default enum_defaults.checkin_search_results',
 }
 </code></pre>
@@ -1197,16 +1224,17 @@
 
 <ul>
 <li>  if event_social_id is provided, search with it, otherwise search checkins with social_venue_id, if none provided a 500 error is generated.</li>
-<li>  if limit parameter is not provided, then enum_defaults.checkin_search_results is used to determine how many checkins will be returned.</li>
+<li>  if limit parameter is not provided, then enum_defaults.checkin_search_results is used to determine how many checkins will be returned.
+
+<ul>
 <li>  if interested_in,hair_color,search are not provided then search all.</li>
 <li>  TODO: optimize the search</li>
 </ul>
 </li>
-</ol>
+</ul>
 </li>
-</ul><ul>
-<li>
-<p><code>POST /api/flirt</code> : sends a flirt</p>
+</ol><h3>
+<a name="post-apiflirt--sends-a-flirt" class="anchor" href="#post-apiflirt--sends-a-flirt"><span class="octicon octicon-link"></span></a><code>POST /api/flirt</code> : sends a flirt</h3>
 
 <ol>
 <li>
@@ -1302,11 +1330,8 @@
 <li>patch the checkin collection to add to sent_flirts</li>
 </ul>
 </li>
-</ol>
-</li>
-</ul><ul>
-<li>
-<p><code>PATCH /api/flirt</code> : user accepts or rejects a flirt</p>
+</ol><h3>
+<a name="patch-apiflirt--user-accepts-or-rejects-a-flirt" class="anchor" href="#patch-apiflirt--user-accepts-or-rejects-a-flirt"><span class="octicon octicon-link"></span></a><code>PATCH /api/flirt</code> : user accepts or rejects a flirt</h3>
 
 <ol>
 <li>
@@ -1351,20 +1376,17 @@
 }
 </code></pre>
 </li>
-<li>Additional Info:
+<li>
+<p>Additional Info:</p>
 
 <ul>
 <li>if  action == 'accept', change status=enum_flirt_statuses.accepted, create a connection, send a push notification to the other person.</li>
 <li>if  action == 'reject', change status=enum_flirt_statuses.rejected, send a push notification to the other person.</li>
 </ul>
 </li>
-</ol>
-</li>
-</ul><ul>
-<li>
-<p><code>POST /api/hint</code> : sends a hint</p>
-
-<ol>
+</ol><ul>
+<li><p><code>POST /api/hint</code> : sends a hint</p></li>
+</ul><ol>
 <li>
 <p>Trigger:</p>
 
@@ -1451,11 +1473,8 @@
 <li>if a connection is created, sends a push notification to both, otherwise send it to the recipient.</li>
 </ul>
 </li>
-</ol>
-</li>
-</ul><ul>
-<li>
-<p><code>GET /api/connection</code> : get a list of connections</p>
+</ol><h3>
+<a name="get-apiconnection--get-a-list-of-connections" class="anchor" href="#get-apiconnection--get-a-list-of-connections"><span class="octicon octicon-link"></span></a><code>GET /api/connection</code> : get a list of connections</h3>
 
 <ol>
 <li>
@@ -1533,11 +1552,8 @@
 <li>  filter unexpired connection by current logged in user_id and connection_id (if provided)</li>
 </ul>
 </li>
-</ol>
-</li>
-</ul><ul>
-<li>
-<p><code>PATCH /api/connection</code> : user sends a message(TODO: update expiry, and ask to keep connection alive)</p>
+</ol><h3>
+<a name="patch-apiconnection--user-sends-a-messagetodo-update-expiry-and-ask-to-keep-connection-alive" class="anchor" href="#patch-apiconnection--user-sends-a-messagetodo-update-expiry-and-ask-to-keep-connection-alive"><span class="octicon octicon-link"></span></a><code>PATCH /api/connection</code> : user sends a message(TODO: update expiry, and ask to keep connection alive)</h3>
 
 <ol>
 <li>
@@ -1592,8 +1608,6 @@
 </ul>
 </li>
 </ol>
-</li>
-</ul>
       </section>
 
     </div>
