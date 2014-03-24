@@ -159,9 +159,11 @@
 <p>Each of these models represent a collection in the database. If you come from a MVC background, then you can think of these Models as the MVC models. Each of these models, has a unique <code>_id</code> field. If you come of a SQL background, then you can think of <code>_id</code> as the primary key.</p>
 
 <h3>
-<a name="api_access--record-each-api-access" class="anchor" href="#api_access--record-each-api-access"><span class="octicon octicon-link"></span></a><code>api_access</code> : Record each API access</h3>
+<a name="model-api_access" class="anchor" href="#model-api_access"><span class="octicon octicon-link"></span></a>Model <code>api_access</code>
+</h3>
 
 <ul>
+<li>Records each API access</li>
 <li>Collection name : <code>api_accesses</code>
 </li>
 <li>
@@ -189,9 +191,11 @@
 </ul>
 </li>
 </ul><h3>
-<a name="venue_category--types-of-venues-and-flirt-options" class="anchor" href="#venue_category--types-of-venues-and-flirt-options"><span class="octicon octicon-link"></span></a><code>venue_category</code> : types of venues and flirt options</h3>
+<a name="model-venue_category" class="anchor" href="#model-venue_category"><span class="octicon octicon-link"></span></a>Model <code>venue_category</code>
+</h3>
 
 <ul>
+<li>Records of types of venues and corresponding flirt options</li>
 <li>Collection name : <code>venue_categories</code>
 </li>
 <li>
@@ -221,9 +225,11 @@
 </ul>
 </li>
 </ul><h3>
-<a name="user--the-user-info" class="anchor" href="#user--the-user-info"><span class="octicon octicon-link"></span></a><code>user</code> : the user info</h3>
+<a name="model-user" class="anchor" href="#model-user"><span class="octicon octicon-link"></span></a>Model <code>user</code>
+</h3>
 
 <ul>
+<li>The User info</li>
 <li>Collection name : <code>users</code>
 </li>
 <li>
@@ -255,9 +261,11 @@
 </ul>
 </li>
 </ul><h3>
-<a name="event--the-event-info" class="anchor" href="#event--the-event-info"><span class="octicon octicon-link"></span></a><code>event</code> : the event info</h3>
+<a name="model-event" class="anchor" href="#model-event"><span class="octicon octicon-link"></span></a>Model <code>event</code>
+</h3>
 
 <ul>
+<li>the event info and its flirt options</li>
 <li>Collection name : <code>events</code>
 </li>
 <li>
@@ -296,9 +304,11 @@
 </ul>
 </li>
 </ul><h3>
-<a name="checkin--checkin-to-a-place" class="anchor" href="#checkin--checkin-to-a-place"><span class="octicon octicon-link"></span></a><code>checkin</code> : Checkin to a place</h3>
+<a name="model-checkin" class="anchor" href="#model-checkin"><span class="octicon octicon-link"></span></a>Model <code>checkin</code>
+</h3>
 
 <ul>
+<li>Records of user's checkin to places</li>
 <li>Collection name : <code>checkins</code>
 </li>
 <li>
@@ -365,9 +375,11 @@
 </ul>
 </li>
 </ul><h3>
-<a name="hint--send-a-hint" class="anchor" href="#hint--send-a-hint"><span class="octicon octicon-link"></span></a><code>hint</code> : Send a hint</h3>
+<a name="model-hint" class="anchor" href="#model-hint"><span class="octicon octicon-link"></span></a>Model <code>hint</code>
+</h3>
 
 <ul>
+<li>Records of sent hints and their status</li>
 <li>Collection name : <code>hints</code>
 </li>
 <li>
@@ -427,9 +439,11 @@
 </ul>
 </li>
 </ul><h3>
-<a name="flirt--send-a-flirt" class="anchor" href="#flirt--send-a-flirt"><span class="octicon octicon-link"></span></a><code>flirt</code> : Send a flirt</h3>
+<a name="model-flirt" class="anchor" href="#model-flirt"><span class="octicon octicon-link"></span></a>Model <code>flirt</code>
+</h3>
 
 <ul>
+<li>Records of sent flirts and their status</li>
 <li>Collection name : <code>flirts</code>
 </li>
 <li>
@@ -493,9 +507,11 @@
 </ul>
 </li>
 </ul><h3>
-<a name="connection-" class="anchor" href="#connection-"><span class="octicon octicon-link"></span></a><code>connection</code> :</h3>
+<a name="model-connection" class="anchor" href="#model-connection"><span class="octicon octicon-link"></span></a>Model <code>connection</code>
+</h3>
 
 <ul>
+<li>Records of created connections and messages in those connections.</li>
 <li>Collection name : <code>connections</code>
 </li>
 <li>
@@ -560,10 +576,13 @@
 <p>The following API endpoints are available to the public:</p>
 
 <h3>
-<a name="post-loginfacebook--login-the-user-to-our-system" class="anchor" href="#post-loginfacebook--login-the-user-to-our-system"><span class="octicon octicon-link"></span></a><code>POST /login/facebook</code> : login the user to our system</h3>
+<a name="api-post-loginfacebook" class="anchor" href="#api-post-loginfacebook"><span class="octicon octicon-link"></span></a>API <code>POST /login/facebook</code>
+</h3>
 
 <ol>
-<li>Trigger:
+<li><p>Desc: login the user to our system</p></li>
+<li>
+<p>Trigger:</p>
 
 <ul>
 <li>Login:
@@ -631,9 +650,11 @@
 </ul>
 </li>
 </ol><h3>
-<a name="get-apiuser--get-the-current-user-info" class="anchor" href="#get-apiuser--get-the-current-user-info"><span class="octicon octicon-link"></span></a><code>GET /api/user</code> : get the current user info</h3>
+<a name="api-get-apiuser" class="anchor" href="#api-get-apiuser"><span class="octicon octicon-link"></span></a>API <code>GET /api/user</code>
+</h3>
 
 <ol>
+<li><p>Desc: get the current user info</p></li>
 <li>
 <p>Trigger:</p>
 
@@ -718,9 +739,11 @@
 </ul>
 </li>
 </ol><h3>
-<a name="patch-apiuser--update-the-users-info" class="anchor" href="#patch-apiuser--update-the-users-info"><span class="octicon octicon-link"></span></a><code>PATCH /api/user</code> : update the user's info</h3>
+<a name="api-patch-apiuser" class="anchor" href="#api-patch-apiuser"><span class="octicon octicon-link"></span></a>API <code>PATCH /api/user</code>
+</h3>
 
 <ol>
+<li>Desc: update the user's info</li>
 <li>
 <p>Trigger:</p>
 
@@ -800,9 +823,11 @@
 </ul>
 </li>
 </ol><h3>
-<a name="delete-apiuser--deactivite-a-user" class="anchor" href="#delete-apiuser--deactivite-a-user"><span class="octicon octicon-link"></span></a><code>DELETE /api/user</code> : deactivite a user</h3>
+<a name="api-delete-apiuser" class="anchor" href="#api-delete-apiuser"><span class="octicon octicon-link"></span></a>API <code>DELETE /api/user</code>
+</h3>
 
 <ol>
+<li>Desc: deactivite a user</li>
 <li>
 <p>Trigger:</p>
 
@@ -860,9 +885,11 @@
 </ul>
 </li>
 </ol><h3>
-<a name="get-apivenue--get-a-list-of-venues" class="anchor" href="#get-apivenue--get-a-list-of-venues"><span class="octicon octicon-link"></span></a><code>GET /api/venue</code> : get a list of venues</h3>
+<a name="api-get-apivenue" class="anchor" href="#api-get-apivenue"><span class="octicon octicon-link"></span></a>API <code>GET /api/venue</code>
+</h3>
 
 <ol>
+<li>Desc: get a list of venues</li>
 <li>Trigger:
 
 <ul>
@@ -969,9 +996,11 @@
 </ul>
 </li>
 </ol><h3>
-<a name="post-apicheckin--checkin-to-a-venue" class="anchor" href="#post-apicheckin--checkin-to-a-venue"><span class="octicon octicon-link"></span></a><code>POST /api/checkin</code> : checkin to a venue</h3>
+<a name="api-post-apicheckin" class="anchor" href="#api-post-apicheckin"><span class="octicon octicon-link"></span></a>API <code>POST /api/checkin</code>
+</h3>
 
 <ol>
+<li>Desc: checkin to a venue</li>
 <li>
 <p>Trigger:</p>
 
@@ -1077,9 +1106,11 @@
 </ul>
 </li>
 </ol><h3>
-<a name="get-apicheckin--get-a-list-of-checkins-for-a-venue" class="anchor" href="#get-apicheckin--get-a-list-of-checkins-for-a-venue"><span class="octicon octicon-link"></span></a><code>GET /api/checkin</code> : get a list of checkins for a venue</h3>
+<a name="api-get-apicheckin" class="anchor" href="#api-get-apicheckin"><span class="octicon octicon-link"></span></a>API <code>GET /api/checkin</code>
+</h3>
 
 <ol>
+<li>Desc: get a list of checkins for a venue</li>
 <li>
 <p>Trigger:</p>
 
