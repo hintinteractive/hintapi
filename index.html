@@ -38,106 +38,129 @@
           <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
         </div>
 
-        <h1>
-<a name="api-specification" class="anchor" href="#api-specification"><span class="octicon octicon-link"></span></a>API Specification</h1>
-
-<p>This document specifies the backend REST API and backend designs for Hint. The frontend developers can refer to this.</p>
+        <p>This document specifies the backend designs for Hint and the REST API. The document is intended for frontend developers to refer.</p>
 
 <h2>
-<a name="enums" class="anchor" href="#enums"><span class="octicon octicon-link"></span></a>Enums</h2>
+<a name="technologies-and-sdks" class="anchor" href="#technologies-and-sdks"><span class="octicon octicon-link"></span></a>Technologies and SDKs</h2>
+
+<p>Hint uses <a href="https://www.mongodb.org/">MongoDB</a> as its data source and <a href="http://nodejs.org/">Node.js</a> (<a href="http://expressjs.com/">Express.js</a>) as the backend server. It uses <a href="http://mongoosejs.com/">Mongoose</a> for the MongoDB object modeling. Hint backend is hosted on <a href="http://www.windowsazure.com/en-us/develop/mobile/">Windows Azure as a Mobile Sevice</a>. Hint backend is highly (horizontally) scalable, and secure (oAuth 2.0 flow).</p>
+
+<p>If you are building the client using Windows Phone Native, iOS Native, Android Native, Xamarin.iOS, Xamarin.Android, Sencha, or PhoneGap please refer to the <a href="http://www.windowsazure.com/en-us/documentation/articles/mobile-services-android-get-started/">officially supported SDKs</a> by Windows Azure. However, this document will give you sufficient information to build your app with any client side technology, if you do not want to use one of those SDKs.</p>
+
+<h2>
+<a name="oauth-20-flow" class="anchor" href="#oauth-20-flow"><span class="octicon octicon-link"></span></a>oAuth 2.0 Flow</h2>
+
+<p>Please refer to <a href="http://oauth.net/2/">oAuth 2.0 specifications</a> for more info. Please refer to <a href="http://blog.rfaisal.com/2014/03/01/oauth-flow-for-mobile-apps-with-an-external-identity-server/">this</a> blog post to know more about the oAuth flow that is used in Hint.</p>
+
+<p>For Hint,</p>
 
 <ul>
-<li>
-<p><code>enum_user_statuses</code> :</p>
+<li>  The user’s identity is verified by Facebook, i.e., external authentication.</li>
+<li>  The user’s access to a protected resource, i.e., an API endpoint, is determined by the Hint server, i.e., internal authorization. In other words, the resource server and the authorization server in the oAuth 2.0 specification is the same Hint server.</li>
+</ul><p>The details of the oAuth flow for Hint is described below,</p>
 
-<pre><code>{
-    admin : 'admin',
-    active : 'active',
-    inactive : 'inactive',
-    banned : 'banned',
-    debug : 'debug'
-}
+<ul>
+<li>  The client, i.e., the mobile app, calls facebook native sdk and verifies the users identity. On a successful verification, it receives an token from facebook. We will call it authorization_grant.</li>
+<li>  The client sends the authorization_grant to the Hint server for authorization. The Hint server has a trust relationship with facebook. So, it sends the authorization_grant to facebook. If facebook cannot verify the authorization_grant, it sends back 401 unauthorized to the Hint server, which it propagates to the client. If, however, facebook successfully verifies the authorization_grant, then it sends back the user info to the Hint server. The Hint server checks the permissions of the user (by querying the database) and generates a token. We will call it the access_token. A typical access_token contains the user’s identity, permissions, and an expiry time. The Hint server sends back this access_token to the client.</li>
+<li>  The client embed this access_token with each request for the protected resource, i.e., calling API endpoint. Depending on if the user is allowed to access the resource, he either gets it or receives 401 unauthorized.</li>
+</ul><p><img src="https://raw.githubusercontent.com/hintinteractive/hintapi/master/oauth_mobile_flow_hint.png" alt="alt text" title="Hint oAuth 2.0 flow"></p>
+
+<h2>
+<a name="configurations" class="anchor" href="#configurations"><span class="octicon octicon-link"></span></a>Configurations</h2>
+
+<p>These application configurations are loaded at the start (or restart) of the Hint server. Any change in these configurations requires a restart of the server to take effect,  (TODO) additionally the admins can call <code>GET api/config</code> to reload these without a server restart.</p>
+
+<h3>
+<a name="enum_user_genders-" class="anchor" href="#enum_user_genders-"><span class="octicon octicon-link"></span></a><code>enum_user_genders</code> :</h3>
+
+<pre><code>    {
+        male : 'male',
+        female : 'female',
+        other : 'other',
+        undefined : 'undefined'
+    }
 </code></pre>
-</li>
-<li>
-<p><code>enum_hint_statuses</code> :</p>
 
-<pre><code>{
-    sent : 'sent',
-    accepted : 'accepted'
-}
+<h3>
+<a name="enum_user_hair_colors-" class="anchor" href="#enum_user_hair_colors-"><span class="octicon octicon-link"></span></a><code>enum_user_hair_colors</code> :</h3>
+
+<pre><code>    {
+        light : 'light',
+        dark : 'dark',
+        undefined: 'undefined'
+    }
 </code></pre>
-</li>
-<li>
-<p><code>enum_flirt_statuses</code> :</p>
 
-<pre><code>{
-    sent : 'sent',
-    accepted : 'accepted',
-    rejected : 'rejected'
-}
+<h3>
+<a name="enum_user_statuses-" class="anchor" href="#enum_user_statuses-"><span class="octicon octicon-link"></span></a><code>enum_user_statuses</code> :</h3>
+
+<pre><code>    {
+        admin : 'admin',
+        active : 'active',
+        inactive : 'inactive',
+        banned : 'banned',
+        debug : 'debug'
+    }
 </code></pre>
-</li>
-<li>
-<p><code>enum_user_genders</code> :</p>
 
-<pre><code>{
-    male : 'male',
-    female : 'female',
-    other : 'other',
-    undefined : 'undefined'
-}
+<h3>
+<a name="enum_hint_statuses-" class="anchor" href="#enum_hint_statuses-"><span class="octicon octicon-link"></span></a><code>enum_hint_statuses</code> :</h3>
+
+<pre><code>    {
+        sent : 'sent',
+        accepted : 'accepted'
+    }
 </code></pre>
-</li>
-<li>
-<p><code>enum_user_hair_colors</code> :</p>
 
-<pre><code>{
-    light : 'light',
-    dark : 'dark',
-    undefined: 'undefined'
-}
+<h3>
+<a name="enum_flirt_statuses-" class="anchor" href="#enum_flirt_statuses-"><span class="octicon octicon-link"></span></a><code>enum_flirt_statuses</code> :</h3>
+
+<pre><code>    {
+        sent : 'sent',
+        accepted : 'accepted',
+        rejected : 'rejected'
+    }
 </code></pre>
-</li>
-<li>
-<p><code>enum_expiries</code> :</p>
 
-<pre><code>{
-    current_look : 24,
-    event: 24,
-    connection: 24,
-    checkin: 4,
-    flirt: 24,
-    hint: 24
-}
+<h3>
+<a name="enum_expiries-" class="anchor" href="#enum_expiries-"><span class="octicon octicon-link"></span></a><code>enum_expiries</code> :</h3>
+
+<pre><code>    {
+        current_look : 24,
+        event: 24,
+        connection: 24,
+        checkin: 4,
+        flirt: 24,
+        hint: 24
+    }
 </code></pre>
-</li>
-<li>
-<p><code>enum_flags</code> :</p>
 
-<pre><code>{
-    collect_venue_category : true
-}
+<h3>
+<a name="enum_flags-" class="anchor" href="#enum_flags-"><span class="octicon octicon-link"></span></a><code>enum_flags</code> :</h3>
+
+<pre><code>    {
+        collect_venue_category : true
+    }
 </code></pre>
-</li>
-<li>
-<p><code>enum_defaults</code> :</p>
 
-<pre><code>{
-    venue_categoty: {
-        flirt_options : {
-            simple:'',
-            forward:'',
-            risky:''
+<h3>
+<a name="enum_defaults-" class="anchor" href="#enum_defaults-"><span class="octicon octicon-link"></span></a><code>enum_defaults</code> :</h3>
+
+<pre><code>    {
+        venue_categoty: {
+            flirt_options : {
+                simple:'',
+                forward:'',
+                risky:''
+            },
+            image:''
         },
-        image:''
-    },
-    venue_search_results : 35,
-    checkin_search_results : 20
-}
+        venue_search_results : 35,
+        checkin_search_results : 20
+    }
 </code></pre>
-</li>
-</ul><h2>
+
+<h2>
 <a name="models" class="anchor" href="#models"><span class="octicon octicon-link"></span></a>Models</h2>
 
 <ul>
