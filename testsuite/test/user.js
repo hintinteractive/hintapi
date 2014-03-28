@@ -5,7 +5,7 @@ var should = require('chai').should(),
 var hint_auth_token  = null;
 
 describe('Authenticate', function() {
-  it('gets hint auth token', function(done) {
+  it('login the user and gets hint auth token', function(done) {
     api.post('/login/facebook')
 	.send({
     		access_token : config.facebook_access_token
@@ -28,7 +28,7 @@ describe('Authenticate', function() {
 });
 
 describe('GET /api/user', function() {
-  it('gets hint auth token', function(done) {
+  it('gets the user info', function(done) {
     if(!hint_auth_token) done("Not Authenticated");
     api.get('/api/user')
     .set('Content-Type', 'application/json')
@@ -58,6 +58,73 @@ describe('GET /api/user', function() {
 	res.body.should.have.deep.property('result.black_list')
 		.and.be.an.instanceof(Array);
       if(config.verbose) console.log("GET /api/user response : " + JSON.stringify(res.body));
+      done();
+    });
+  });
+
+});
+
+
+describe('PATCH /api/user', function() {
+  it('patches the name', function(done) {
+    if(!hint_auth_token) done("Not Authenticated");
+    var newName = 'Test Name'+ Date.now();
+    api.patch('/api/user')
+    .send({
+           name : newName
+     })
+    .set('Content-Type', 'application/json')
+    .set('Accept','application/json')
+    .set('X-ZUMO-AUTH',hint_auth_token)
+    .expect(200)
+    .expect('Content-Type', /json/)
+    .end(function(err, res) {
+      if (err) return done(err);
+      res.body.should.have.property('api_access').and.be.true;
+      res.body.should.have.deep.property('result.name').and.equal(newName);
+      if(config.verbose) console.log("PATCH /api/user response (name): " + JSON.stringify(res.body));
+      done();
+    });
+  });
+ it('patches the email', function(done) {
+    if(!hint_auth_token) done("Not Authenticated");
+    var newValue = Date.now()+'@hintinteractive.com';
+    api.patch('/api/user')
+    .send({
+           contact : {email: newValue}
+     })
+    .set('Content-Type', 'application/json')
+    .set('Accept','application/json')
+    .set('X-ZUMO-AUTH',hint_auth_token)
+    .expect(200)
+    .expect('Content-Type', /json/)
+    .end(function(err, res) {
+      if (err) return done(err);
+      res.body.should.have.property('api_access').and.be.true;
+      res.body.should.have.deep.property('result.contact.email').and.equal(newValue);
+      res.body.should.have.deep.property('result.contact.phone');
+      if(config.verbose) console.log("PATCH /api/user response (name): " + JSON.stringify(res.body));
+      done();
+    });
+  });
+  it('patches the phone', function(done) {
+    if(!hint_auth_token) done("Not Authenticated");
+    var newValue = '+1-'+Date.now();
+    api.patch('/api/user')
+    .send({
+           contact : {phone: newValue}
+     })
+    .set('Content-Type', 'application/json')
+    .set('Accept','application/json')
+    .set('X-ZUMO-AUTH',hint_auth_token)
+    .expect(200)
+    .expect('Content-Type', /json/)
+    .end(function(err, res) {
+      if (err) return done(err);
+      res.body.should.have.property('api_access').and.be.true;
+      res.body.should.have.deep.property('result.contact.phone').and.equal(newValue);
+      res.body.should.have.deep.property('result.contact.email');
+      if(config.verbose) console.log("PATCH /api/user response (name): " + JSON.stringify(res.body));
       done();
     });
   });
