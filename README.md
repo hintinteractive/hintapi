@@ -9,13 +9,13 @@ If you are building the client using Windows Phone Native, iOS Native, Android N
 Please refer to [oAuth 2.0 specifications](http://oauth.net/2/) for more info. Please refer to [this](http://blog.rfaisal.com/2014/03/01/oauth-flow-for-mobile-apps-with-an-external-identity-server/) blog post to know more about the oAuth flow that is used in Hint.
 
 For Hint,
--	The user’s identity is verified by Facebook, i.e., external authentication.
--	The user’s access to a protected resource, i.e., an API endpoint, is determined by the Hint server, i.e., internal authorization. In other words, the resource server and the authorization server in the oAuth 2.0 specification is the same Hint server.
+-	The user's identity is verified by Facebook, i.e., external authentication.
+-	The user's access to a protected resource, i.e., an API endpoint, is determined by the Hint server, i.e., internal authorization. In other words, the resource server and the authorization server in the oAuth 2.0 specification is the same Hint server.
 
 The details of the oAuth flow for Hint is described below,
 
 -	The client, i.e., the mobile app, calls facebook native sdk and verifies the users identity. On a successful verification, it receives an token from facebook. We will call it authorization_grant.
--	The client sends the authorization_grant to the Hint server for authorization. The Hint server has a trust relationship with facebook. So, it sends the authorization_grant to facebook. If facebook cannot verify the authorization_grant, it sends back 401 unauthorized to the Hint server, which it propagates to the client. If, however, facebook successfully verifies the authorization_grant, then it sends back the user info to the Hint server. The Hint server checks the permissions of the user (by querying the database) and generates a token. We will call it the access_token. A typical access_token contains the user’s identity, permissions, and an expiry time. The Hint server sends back this access_token to the client.
+-	The client sends the authorization_grant to the Hint server for authorization. The Hint server has a trust relationship with facebook. So, it sends the authorization_grant to facebook. If facebook cannot verify the authorization_grant, it sends back 401 unauthorized to the Hint server, which it propagates to the client. If, however, facebook successfully verifies the authorization_grant, then it sends back the user info to the Hint server. The Hint server checks the permissions of the user (by querying the database) and generates a token. We will call it the access_token. A typical access_token contains the user's identity, permissions, and an expiry time. The Hint server sends back this access_token to the client.
 -	The client embed this access_token with each request for the protected resource, i.e., calling API endpoint. Depending on if the user is allowed to access the resource, he either gets it or receives 401 unauthorized.
 
 ![alt text](https://raw.githubusercontent.com/hintinteractive/hintapi/master/oauth_mobile_flow_hint.png "Hint oAuth 2.0 flow")
@@ -598,6 +598,8 @@ The following API endpoints are available to the public:
 	-	Update the user's info in the app memory.
 7. Additional Info:
 	-	Provide the property you want to update in the request body (if a property is missing then it keeps its original value).
+	-	Trying to update __v, _id, social_id, or, black_list will generate an internal server error.
+	-	Any property that is not part of the schema will be ignored.
 	-	(Server side) The user id is extracted from the X-ZUMO-AUTH header.
 
 ### API `DELETE /api/user`
