@@ -1031,6 +1031,9 @@ The following API endpoints are available to the public:
 3. Request body:
 
 		{
+			checkin : {
+				id: String
+			},
 			user_from : {
 				name : String,
 				hair_color : String,
