@@ -889,6 +889,98 @@ The following API endpoints are available to the public:
 	- message.user.social_id will be filled up by the server
 	- time will be current expiry time
 
+
+### `GET /api/event` : get a list of events
+
+1. Trigger:
+	-	user goes to the my events page.
+	-	user refreshes the my events page.
+	-	user clicks on a event and views it
+
+2. Request param:
+
+		{
+			social_id : 'optional, the social id of the event, if provided the result array will have at most 1 element'
+		}
+
+3. Request headers:
+
+		{
+			Content-Type : "application/json",
+			Accept : "application/json",
+			X-ZUMO-AUTH : "auth_token"
+		}
+
+4. Response:
+
+		[{
+			social_id: { type: String, index: { unique: true}},
+			title : String,
+			social_venue: {
+				social_id: String,
+				name : String,
+				address : String,
+				category: {
+					image: String
+				}
+			},
+			owners:[{
+				user :{
+					_id : String,
+					social_id : String
+				}
+			}],
+			start : Date,
+			expiry : Date,
+			flirt_options : {
+				simple : String,
+				forward : String,
+				risky : String
+			},
+			rsvp :{ //only if social_id is provided in the request param
+				rsvp_status : "attending, declined, maybe, or noreply",
+				attending_count : Number,
+				declined_count : Number,
+				maybe_count : Number,
+				noreply_count : Number
+			}
+		}]
+
+5. Additional Info:
+
+### `GET /api/event/friends` : get user's frined list with the rsvp_status of a event.
+
+1. Trigger:
+	-	user goes to the my events page.
+	-	user refreshes the my events page.
+	-	user clicks on a event and views it
+
+2. Request param:
+
+		{
+			social_id : 'required, the social id of the event, if no provided generate a error',
+			search : 'search the name of friends'
+		}
+
+3. Request headers:
+
+		{
+			Content-Type : "application/json",
+			Accept : "application/json",
+			X-ZUMO-AUTH : "auth_token"
+		}
+
+4. Response:
+
+		[{
+			social_id: { type: String, index: { unique: true}},
+			name : String,
+			image : String,
+			rsvp_status : "attending, declined, maybe, or noreply"
+		}]
+
+5. Additional Info:
+
 	
 ## Models and Schemas
 Each of these models represent a collection in the database. If you come from a MVC background, then you can think of these Models as the MVC models. Each of these models, has a unique `_id` field. If you come of a SQL background, then you can think of `_id` as the primary key.
