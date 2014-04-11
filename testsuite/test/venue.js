@@ -49,6 +49,8 @@ describe('GET /api/venue', function () {
                 	res.body.result[i].should.have.property('social_id').and.have.string('Facebook:');
                 	res.body.result[i].should.have.property('name');
                 	res.body.result[i].should.have.property('address');
+                	res.body.result[i].should.have.property('lat').and.be.a('number');
+                	res.body.result[i].should.have.property('lng').and.be.a('number');
                 	res.body.result[i].should.have.property('distance').and.be.below(1);
                 	res.body.result[i].should.have.deep.property('category.flirt_options.simple');
                 	res.body.result[i].should.have.deep.property('category.flirt_options.forward');

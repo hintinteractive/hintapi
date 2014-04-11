@@ -369,6 +369,8 @@ The following API endpoints are available to the public:
 		      "name": "Robert Moses",
 		      "address": "870 Market Street, San Francisco, CA",
 		      "distance": 0.07450498373084966,
+		      "lat": "the-lat",
+		      "lng": "the-long",
 		      "category": {
 		          "flirt_options": {
 		              "simple": "Hey, let's chat!",
