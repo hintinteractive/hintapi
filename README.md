@@ -451,7 +451,9 @@ The following API endpoints are available to the public:
 			        social_id: String,
 			        name : String,
 			        address : String,
-			        image : String
+				category: {
+			        	image : String //not yet changed
+				}
 			    },
 			    start : Date,
 			    expiry : Date,
