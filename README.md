@@ -900,7 +900,8 @@ The following API endpoints are available to the public:
 2. Request param:
 
 		{
-			social_id : 'optional, the social id of the event, if provided the result array will have at most 1 element'
+			social_id : 'optional, the social id of the event, if provided the result array will have at most 1 element',
+			search : 'search string for public events only, all my events are always shown, currently not used'
 		}
 
 3. Request headers:
@@ -916,6 +917,7 @@ The following API endpoints are available to the public:
 		[{
 			social_id: { type: String, index: { unique: true}},
 			title : String,
+			description: String,
 			social_venue: {
 				social_id: String,
 				name : String,
@@ -947,19 +949,19 @@ The following API endpoints are available to the public:
 		}]
 
 5. Additional Info:
+	- (TODO) the search will include nearby public events, (TODO) add lat, lng to the venues
+
 
 ### `GET /api/event/friends` : get user's frined list with the rsvp_status of a event.
 
 1. Trigger:
-	-	user goes to the my events page.
-	-	user refreshes the my events page.
-	-	user clicks on a event and views it
+	-	user clicks on invite friends to events
 
 2. Request param:
 
 		{
 			social_id : 'required, the social id of the event, if no provided generate a error',
-			search : 'search the name of friends'
+			search : 'search the name of friends, currently not used'
 		}
 
 3. Request headers:
@@ -980,6 +982,122 @@ The following API endpoints are available to the public:
 		}]
 
 5. Additional Info:
+
+
+- `POST /api/event` : add a new event
+
+1. Trigger:
+	-	user creates a new event
+
+2. Request param:
+
+		{
+		}
+
+3. Request body:
+
+		{
+			title : String,
+			social_venue: {
+				social_id: String,
+				name : String,
+				address : String,
+				category: {
+					image: String
+				}
+			},
+			owners:[{
+				user :{
+					_id : String,
+					social_id : String
+				}
+			}],
+			start : Date,
+			expiry : Date,
+			flirt_options : {
+				simple : String,
+				forward : String,
+				risky : String
+			},
+			privacy : String
+		}
+
+4. Request headers:
+
+		{
+			Content-Type : "application/json",
+			Accept : "application/json",
+			X-ZUMO-AUTH : "auth_token"
+		}
+
+5. Response:
+
+		{
+				"api_access": true,
+				"result": {
+						"success": true
+				}
+		}
+
+6. Additional Info:
+
+### `PATCH /api/event` : user updates an event
+
+1. Trigger:
+	-	user updates an event
+
+2. Request param:
+
+		{
+			id: 'MongoDB ObjectId'
+		}
+
+3. Request body:
+
+		{
+			title : String,
+			social_venue: {
+				social_id: String,
+				name : String,
+				address : String,
+				category: {
+					image: String
+				}
+			},
+			owners:[{
+				user :{
+					_id : String,
+					social_id : String
+				}
+			}],
+			start : Date,
+			expiry : Date,
+			flirt_options : {
+				simple : String,
+				forward : String,
+				risky : String
+			},
+			privacy : String
+		}
+
+4. Request headers:
+
+		{
+			Content-Type : "application/json",
+			Accept : "application/json",
+			X-ZUMO-AUTH : "auth_token"
+		}
+
+5. Response:
+
+		{
+				"api_access": true,
+				"result": {
+						"success": true
+				}
+		}
+
+6. Additional Info:
 
 	
 ## Models and Schemas
@@ -1062,6 +1180,7 @@ Each of these models represent a collection in the database. If you come from a 
 		{
 			social_id: { type: String, index: { unique: true}},
 			title : String,
+			description: String,
 			social_venue: {
 				social_id: String,
 				name : String,
@@ -1082,7 +1201,8 @@ Each of these models represent a collection in the database. If you come from a 
 				simple : String,
 				forward : String,
 				risky : String
-			}
+			},
+			privacy : String
 		}
 
 - Additional Info:
