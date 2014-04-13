@@ -25,6 +25,17 @@ The details of the oAuth flow for Hint is described below,
 ## Configurations
 These application configurations are loaded at the start (or restart) of the Hint server. Any change in these configurations requires a restart of the server to take effect,  (TODO) additionally the admins can call `GET api/config` to reload these without a server restart.
 
+### `enum_internal_error_codes` :
+
+		{
+			unregistered_app : 'H001',
+			facebook_error : 'H002',
+			db_access_error : 'H003',
+			user_banned : 'H004'
+		}
+
+
+
 ### `enum_devices` :
 
 		{
@@ -57,7 +68,8 @@ These application configurations are loaded at the start (or restart) of the Hin
 			active : 'active',
 			inactive : 'inactive',
 			banned : 'banned',
-			debug : 'debug'
+			debug : 'debug',
+			test : 'test'
 		}
 
 ### `enum_hint_statuses` :
@@ -115,13 +127,27 @@ These application configurations are loaded at the start (or restart) of the Hin
 ## API Specifications
 As a frontend developer, you will be interested in this section. To start using these endpoints you need to have a valid `facebook_access_token` (or we call it `hint_authorization_grant`). You can get this access token by logging in the user through the facebook SDK of your client. However, if your facebook app is not registered with Hint, this `access_token` will be rejected.
 
-Except for `POST /login/facebook` API, all the other API endpoints require a hint_access_token/hint_auth_token to be embedded in the header, i.e., this actually means that the user is logged into the system. The `POST /login/facebook` API will give you the hint_access_token/hint_auth_token.
+Except for `POST /api/login/facebook` API, all the other API endpoints require a hint_access_token/hint_auth_token to be embedded in the header, i.e., this actually means that the user is logged into the system. The `POST /login/facebook` API will give you the hint_access_token/hint_auth_token.
 
 To logoff, simply remove the hint_auth_token from the application cache and also trigger a facebook SDK logoff function. If you are using an Azure SDK then call the logoff function along with the facebook logoff function.
 
 The following API endpoints are available to the public:
 
-### API `POST /login/facebook`
+### Error Response:
+
+1. Desc: any type of system error
+
+2. Response:
+		{
+			code : 500, /*Standard HTTP error code*/
+			error : "Internal Server Error", /*Standard HTTP error code details*/
+			error_obj : { /*optional*/
+					internal_error_code : 'H001', /*defined by enum_internal_error_codes*/
+					message : 'Your facebook app is not registered with us.' /*the useful error msg*/
+			}
+		}
+
+### API `POST /api/login/facebook`
 1. Desc: login the user to our system
 
 1. Trigger:
@@ -139,7 +165,8 @@ The following API endpoints are available to the public:
 3. Request body:
 
 		{
-			access_token : "facebook_access_token"
+			access_token : "facebook_access_token",
+			device : "enum_devices" /*to be filled by the client SDK*/
 		}
 
 4. Request headers:
@@ -677,6 +704,99 @@ The following API endpoints are available to the public:
 	- sends a push notification to the recipient.
 	- patch the checkin collection to add to sent_flirts
 
+### API `GET /api/flirt`
+1. Desc: get a list of flirts for a user
+1. Trigger:
+	-	user comes to the right menu.
+	-	user refresh the right menu.
+
+2. Request param:
+
+		{
+
+		}
+
+3. Request body:
+
+		{
+
+		}
+
+4. Request headers:
+
+		{
+			Content-Type : "application/json",
+			Accept : "application/json",
+			X-ZUMO-AUTH : "auth_token"
+		}
+
+5. Response:
+
+		{
+			"api_access": true,
+			"result": [{
+				_id : ObjectId,
+				checkin : {
+					_id: ObjectId
+				},
+				user_from : {
+					_id : ObjectId,
+					social_id : String,
+					name : String,
+					hair_color : String,
+					gender : String,
+					interested_in : [String],
+					current_look : {
+						photo_url : String,
+						identifier: {
+							type : String,
+							brand : String,
+							color : String
+						}
+					}
+				},
+				user_to : {
+					_id : ObjectId,
+					social_id : String,
+					name : String,
+					hair_color : String,
+					gender : String,
+					interested_in : [String],
+					current_look : {
+						photo_url : String,
+						identifier: {
+							type : String,
+							brand : String,
+							color : String
+						}
+					}
+				},
+				social_venue : {
+					social_id : String,
+					name : String,
+					address : String,
+					lat : Number,
+					lng : Number,
+					category: {
+						image: String
+					}
+				},
+				flirt_options : {
+					type: String,
+					text: String
+				},
+				status : String,
+				time : {type: Date, "default": Date.now},
+				expiry : Date
+			}]
+		}
+
+5. Additional Info:
+	-	If event_social_id is provided, search with it, otherwise search checkins with social_venue_id, if none provided a 500 error is generated.
+	-	(TODO) If limit parameter is not provided, then enum_defaults.checkin_search_results is used to determine how many checkins will be returned.
+	-	(TODO) If interested_in,hair_color,search are not provided then search all.
+	-	(TODO) Optimize the search.
+
 ### `PATCH /api/flirt` : user accepts or rejects a flirt
 
 1. Trigger:
@@ -1102,343 +1222,3 @@ The following API endpoints are available to the public:
 		}
 
 6. Additional Info:
-
-	
-## Models and Schemas
-Each of these models represent a collection in the database. If you come from a MVC background, then you can think of these Models as the MVC models. Each of these models, has a unique `_id` field. If you come of a SQL background, then you can think of `_id` as the primary key.
-
-### Model `api_access`
-- Records each API access
-- Collection name : `api_accesses`
-- Schema :
-
-		{
-			user: {
-				_id: String,
-				social_id: String
-			},
-			app_id : String,
-			api_name: String,
-			'method': {type: String, "default": 'GET'},
-			access_time: {type: Date, "default": Date.now},
-			device: {type: String, "default": 'undefined'}
-		}
-
-- Additional Info:
-	- `_id` is used for identifying each document.
-	- Needed for analytics and does not affect normal the operations of Hint
-	- Added an entry to this collection every time a api end point is accessed.
-	- Heavy write operations and low read operations (only happens for analytics).
-
-### Model `venue_category`
-- Records of types of venues and corresponding flirt options
-- Collection name : `venue_categories`
-- Schema :
-
-		{
-			social_id : { type: String, index: { unique: true}},
-			name : String,
-			flirt_options : {
-				simple : String,
-				forward : String,
-				risky : String
-			},
-			image: String
-		}
-
-- Additional Info:
-	- `social_id` is used for identifying each document.
-	- For each `GET /api/venue` call,  search the collection with a list of `social_id` and add the result to the response.
-	- Heavy read operations.
-	- Low write operations (normal), and medium write operations (when `enum_flags.collect_venue_category` is true).
-
-### Model `user`
-- The User info
-- Collection name : `users`
-- Schema :
-
-		{
-			social_id : { type: String, index: { unique: true}},
-			name : String,
-			contact: {
-				email : String,
-				phone : String
-			},
-			hair_color : String,
-			gender : String,
-			interested_in : [String],
-			status : String,
-			black_list : [String],
-			photo_url: String
-		}
-
-- Additional Info:
-	- `social_id` is used for identifying each	document.
-	-	Low read and write operations.
-
-### Model `event`
-- the event info and its flirt options
-- Collection name : `events`
-- Schema :
-
-		{
-			social_id: { type: String, index: { unique: true}},
-			title : String,
-			description: String,
-			social_venue: {
-				social_id: String,
-				name : String,
-				address : String,
-				category: {
-					image: String
-				}
-			},
-			owners:[{
-				user :{
-					_id : String,
-					social_id : String
-				}
-			}],
-			start : Date,
-			expiry : Date,
-			flirt_options : {
-				simple : String,
-				forward : String,
-				risky : String
-			},
-			privacy : String
-		}
-
-- Additional Info:
-	-	`social_id` is used for identifying each document.
-	-	Low write operations, and medium read operations.
-
-### Model `checkin`
-- Records of user's checkin to places
-- Collection name : `checkins`
-- Schema :
-
-		{
-		    user : {
-		        social_id : String,
-		        name : String,
-		        hair_color : String,
-		        gender : String,
-		        interested_in : [String],
-		        current_look : {
-		            photo_url : String,
-		            identifier: {
-		                type : String,
-		                brand : String,
-		                color : String
-		            }
-		        }
-		    },
-		    event : {
-		    	_id : String,
-		        social_id : String,
-		        title : String
-		    },
-		    social_venue : {
-		        social_id : String,
-		        name : String,
-		        address : String,
-		        category: {
-					image: String
-				}
-		    },
-		    flirt_options : {
-		        simple : String,
-		        forward : String,
-		        risky : String
-		    },
-		    time : {type: Date, "default": Date.now},
-		    expiry : Date,
-		    flirts : {
-		    	type: [{
-			        user:{
-			            social_id : String,
-			            _id : String
-			        }
-			    }],
-			    "default": []
-			},
-		  hints : {
-		    	type: [{
-			        user:{
-			            social_id : String,
-			            _id : String
-			        }
-			    }],
-			    "default": []
-			}
-		}
-
-- Additional Info:
-	-	`_id` is used for identifying each document.
-	-	Heavy read and write operations.
-
-### Model `hint`
-- Records of sent hints and their status
-- Collection name : `hints`
-- Schema :
-
-		{
-			checkin : {
-				_id: String
-			},
-			user_from : {
-				social_id : String,
-				name : String,
-				hair_color : String,
-				gender : String,
-				interested_in : [String],
-				current_look : {
-					photo_url : String,
-					identifier: {
-						type : String,
-						brand : String,
-						color : String
-					}
-				}
-			},
-			user_to : {
-				_id : String,
-				social_id : String,
-				name : String,
-				hair_color : String,
-				gender : String,
-				interested_in : [String],
-				current_look : {
-					photo_url : String,
-					identifier: {
-						type : String,
-						brand : String,
-						color : String
-					}
-				}
-			},
-			social_venue : {
-				social_id : String,
-				name : String,
-				address : String
-			},
-			status : String,
-			time : {type: Date, "default": Date.now},
-			expiry : Date
-		}
-
-- Additional Info:
-	-	`_id` is used for identifying each document.
-	- Heavy write operations and medium read operations.
-
-### Model `flirt`
-- Records of sent flirts and their status
-- Collection name : `flirts`
-- Schema :
-
-		{
-			checkin : {
-				_id: String
-			},
-			user_from : {
-				social_id : String,
-				name : String,
-				hair_color : String,
-				gender : String,
-				interested_in : [String],
-				current_look : {
-					photo_url : String,
-					identifier: {
-						type : String,
-						brand : String,
-						color : String
-					}
-				}
-			},
-			user_to : {
-				_id : String,
-				social_id : String,
-				name : String,
-				hair_color : String,
-				gender : String,
-				interested_in : [String],
-				current_look : {
-					photo_url : String,
-					identifier: {
-						type : String,
-						brand : String,
-						color : String
-					}
-				}
-			},
-			social_venue : {
-				social_id : String,
-				name : String,
-				address : String
-			},
-			flirt_options : {
-				type: String,
-				text: String
-			},
-			status : String,
-			time : {type: Date, "default": Date.now},
-			expiry : Date
-		}
-
-- Additional Info:
-	-	`_id` is used for identifying each document.
-	- Heavy write operations and medium read operations.
-
-
-### Model `connection`
-- Records of created connections and messages in those connections.
-- Collection name : `connections`
-- Schema :
-
-		{
-			users: [{
-				_id : String,
-				social_id : String,
-				name : String,
-				hair_color : String,
-				gender : String,
-				interested_in : [String],
-				current_look : {
-					photo_url : String,
-					identifier: {
-						type : String,
-						brand : String,
-						color : String
-					}
-				}
-			}],
-			social_venue : {
-				social_id : String,
-				name : String,
-				address : String
-			},
-			messages : [{
-				user :{
-					_id : String,
-					social_id : String
-				},
-				text: String,
-				time: Date
-			}],
-			keep_alive : {
-				flag : Boolean,
-				user :{
-					_id :String,
-					social_id : String
-				}
-			},
-			time : Date,
-			expiry : Date
-		}
-
-- Additional Info:
-	-	`_id` is used for identifying each document.
-	- Heavy read and write operations.
-
-	
