@@ -31,7 +31,10 @@ These application configurations are loaded at the start (or restart) of the Hin
 			unregistered_app : 'H001',
 			facebook_error : 'H002',
 			db_access_error : 'H003',
-			user_banned : 'H004'
+			user_banned : 'H004',
+			unregistered_user : 'H005',
+			session_expired : 'H006',
+			bad_request : 'H007'
 		}
 
 
@@ -87,6 +90,12 @@ These application configurations are loaded at the start (or restart) of the Hin
 			rejected : 'rejected'
 		}
 
+## `enum_event_privacies`:
+		{
+				open:'OPEN',
+				secret: 'SECRET',
+				friends:'FRIENDS'
+		}
 
 
 ### `enum_expiries` :
@@ -193,6 +202,11 @@ The following API endpoints are available to the public:
 	-	auth_token is valid for 30 days.
 	-	When calling any api with auth_token, if you get 401 unauthorized then log off the user.
 	-	Make sure you use basic permission only when log in with the facebook sdk.
+	-	(Server Side) Get the user from database by facebook user id.
+		-	If the user doesn't exists, call facebook with the access_token (embedded in the header) to get user's basic info and update the database with info from facebook.
+		-	If the user exists but his status is inactive then update the database and make the status active.
+		-	If the user exists but his status is banned then return 401.
+		-	Return user's info.
 
 ### API `GET /api/user`
 1. Desc: get the current user info
@@ -237,7 +251,6 @@ The following API endpoints are available to the public:
 				"gender": "male",
 				"interested_in": []
 				"status": "active",
-				"photo_url": "https://graph.facebook.com/100007978092636/picture?width=340&height=340",
 				"black_list": []
 		    }
 		}
@@ -251,10 +264,7 @@ The following API endpoints are available to the public:
 	-	The info you are looking for will typically be available in the `result` property of the response.
 	-	Igonre `api_access` and `result.__v` properties.
 	-	`_id` is the unique id of the document (sql equivalent of primary key). For users, we do not care about this key (we only care about `social_id`) and can be ignored.
-	-	(Server Side) Get the user from database from the userid embedded in the header.
-		-	If the user doesn't exists, call facebook with the access_token (embedded in the header) to get user's basic info and update the database with info from facebook.
-		-	If the user exists but his status is inactive then update the database and make the status active.
-		-	Return user's info.
+
 
 ### API `PATCH /api/user`
 1. Desc: update the user's info
@@ -277,8 +287,7 @@ The following API endpoints are available to the public:
 			},
 			hair_color : String,
 			gender : String,
-			interested_in : [String],
-			photo_url: String
+			interested_in : [String]
 		}
 
 4. Request headers:
@@ -347,7 +356,7 @@ The following API endpoints are available to the public:
 		    "api_access": true,
 		    "result": {
 		        "success": true,
-		        "_id" : "the id of the user just deactivated"
+		        "_id" : "the id of the user just deactivated" //TODO: not yet implemented
 		    }
 		}
 
@@ -443,6 +452,213 @@ The following API endpoints are available to the public:
 		-	If the category is not found and enum_flags.collect_venue_category is true, then update the venue_categories collection with enum_defaults.venue_categoty for this category and return it.  
 		-	Construct the response object from these info.
 
+### `GET /api/event` : get a list of events
+
+1. Trigger:
+	-	user goes to the my events page.
+	-	user refreshes the my events page.
+	-	user clicks on a event and views it
+
+2. Request param:
+
+		{
+			social_id : 'optional, the social id of the event, if provided the result array will have at most 1 element',
+			search : 'search string for public events only, all my events are always shown, currently not used',
+			lat : 'current lat',
+			lng: 'current lng'
+		}
+
+3. Request headers:
+
+		{
+			Content-Type : "application/json",
+			Accept : "application/json",
+			X-ZUMO-AUTH : "auth_token"
+		}
+
+4. Response:
+
+		[{
+			social_id: { type: String, index: { unique: true}},
+			title : String,
+			description: String,
+			social_venue: {
+				social_id: String,
+				name : String,
+				address : String,
+				category: {
+					image: String
+				}
+			},
+			owners:[{
+				user :{
+					_id : String,
+					social_id : String
+				}
+			}],
+			start : Date,
+			expiry : Date,
+			flirt_options : {
+				simple : String,
+				forward : String,
+				risky : String
+			},
+			rsvp :{ //only if social_id is provided in the request param
+				rsvp_status : "attending, declined, maybe, or noreply",
+				attending_count : Number,
+				declined_count : Number,
+				maybe_count : Number,
+				noreply_count : Number
+			}
+		}]
+
+5. Additional Info:
+	- (TODO) the search will include nearby public events, (TODO) add lat, lng to the venues
+
+
+### `GET /api/event/friend` : get user's frined list with the rsvp_status of a event.
+
+1. Trigger:
+	-	user clicks on invite friends to events
+
+2. Request param:
+
+		{
+			social_id : 'required, the social id of the event, if no provided generate a error',
+			search : 'search the name of friends, currently not used'
+		}
+
+3. Request headers:
+
+		{
+			Content-Type : "application/json",
+			Accept : "application/json",
+			X-ZUMO-AUTH : "auth_token"
+		}
+
+4. Response:
+
+		[{
+			social_id: { type: String, index: { unique: true}},
+			name : String,
+			image : String,
+			rsvp_status : "attending, declined, maybe, or noreply"
+		}]
+
+5. Additional Info:
+
+
+- `POST /api/event` : add a new event
+
+1. Trigger:
+	-	user creates a new event
+
+2. Request param:
+
+		{
+		}
+
+3. Request body:
+
+		{
+			name : String,
+			description: String,
+			venue: {
+				social_id: String,
+				name : String,
+				address : String,
+				lat : Number,
+				lng : Number,
+				category: {
+					image: String
+				}
+			},
+			start : Number,
+			expiry : Number,
+			flirt_options : {
+				simple : String,
+				forward : String,
+				risky : String
+			},
+			privacy : String
+		}
+
+4. Request headers:
+
+		{
+			Content-Type : "application/json",
+			Accept : "application/json",
+			X-ZUMO-AUTH : "auth_token"
+		}
+
+5. Response:
+
+		{
+				"api_access": true,
+				"result": {
+						"success": true
+				}
+		}
+
+6. Additional Info:
+
+### `PATCH /api/event` : user updates an event
+
+1. Trigger:
+	-	user updates an event
+
+2. Request param:
+
+		{
+			id: 'MongoDB ObjectId'
+		}
+
+3. Request body:
+
+		{
+			title : String,
+			social_venue: {
+				social_id: String,
+				name : String,
+				address : String,
+				category: {
+					image: String
+				}
+			},
+			owners:[{
+				user :{
+					_id : String,
+					social_id : String
+				}
+			}],
+			start : Date,
+			expiry : Date,
+			flirt_options : {
+				simple : String,
+				forward : String,
+				risky : String
+			},
+			privacy : String
+		}
+
+4. Request headers:
+
+		{
+			Content-Type : "application/json",
+			Accept : "application/json",
+			X-ZUMO-AUTH : "auth_token"
+		}
+
+5. Response:
+
+		{
+				"api_access": true,
+				"result": {
+						"success": true
+				}
+		}
+
+6. Additional Info:
 
 ### API `POST /api/checkin`
 1. Desc: checkin to a venue
@@ -478,9 +694,9 @@ The following API endpoints are available to the public:
 			        social_id: String,
 			        name : String,
 			        address : String,
-				category: {
-			        	image : String //not yet changed
-				}
+							category: {
+						        	image : String //not yet changed
+							}
 			    },
 			    start : Date,
 			    expiry : Date,
@@ -1012,213 +1228,3 @@ The following API endpoints are available to the public:
 6. Additional Info:
 	- message.user.social_id will be filled up by the server
 	- time will be current expiry time
-
-
-### `GET /api/event` : get a list of events
-
-1. Trigger:
-	-	user goes to the my events page.
-	-	user refreshes the my events page.
-	-	user clicks on a event and views it
-
-2. Request param:
-
-		{
-			social_id : 'optional, the social id of the event, if provided the result array will have at most 1 element',
-			search : 'search string for public events only, all my events are always shown, currently not used'
-		}
-
-3. Request headers:
-
-		{
-			Content-Type : "application/json",
-			Accept : "application/json",
-			X-ZUMO-AUTH : "auth_token"
-		}
-
-4. Response:
-
-		[{
-			social_id: { type: String, index: { unique: true}},
-			title : String,
-			description: String,
-			social_venue: {
-				social_id: String,
-				name : String,
-				address : String,
-				category: {
-					image: String
-				}
-			},
-			owners:[{
-				user :{
-					_id : String,
-					social_id : String
-				}
-			}],
-			start : Date,
-			expiry : Date,
-			flirt_options : {
-				simple : String,
-				forward : String,
-				risky : String
-			},
-			rsvp :{ //only if social_id is provided in the request param
-				rsvp_status : "attending, declined, maybe, or noreply",
-				attending_count : Number,
-				declined_count : Number,
-				maybe_count : Number,
-				noreply_count : Number
-			}
-		}]
-
-5. Additional Info:
-	- (TODO) the search will include nearby public events, (TODO) add lat, lng to the venues
-
-
-### `GET /api/event/friends` : get user's frined list with the rsvp_status of a event.
-
-1. Trigger:
-	-	user clicks on invite friends to events
-
-2. Request param:
-
-		{
-			social_id : 'required, the social id of the event, if no provided generate a error',
-			search : 'search the name of friends, currently not used'
-		}
-
-3. Request headers:
-
-		{
-			Content-Type : "application/json",
-			Accept : "application/json",
-			X-ZUMO-AUTH : "auth_token"
-		}
-
-4. Response:
-
-		[{
-			social_id: { type: String, index: { unique: true}},
-			name : String,
-			image : String,
-			rsvp_status : "attending, declined, maybe, or noreply"
-		}]
-
-5. Additional Info:
-
-
-- `POST /api/event` : add a new event
-
-1. Trigger:
-	-	user creates a new event
-
-2. Request param:
-
-		{
-		}
-
-3. Request body:
-
-		{
-			title : String,
-			social_venue: {
-				social_id: String,
-				name : String,
-				address : String,
-				category: {
-					image: String
-				}
-			},
-			owners:[{
-				user :{
-					_id : String,
-					social_id : String
-				}
-			}],
-			start : Date,
-			expiry : Date,
-			flirt_options : {
-				simple : String,
-				forward : String,
-				risky : String
-			},
-			privacy : String
-		}
-
-4. Request headers:
-
-		{
-			Content-Type : "application/json",
-			Accept : "application/json",
-			X-ZUMO-AUTH : "auth_token"
-		}
-
-5. Response:
-
-		{
-				"api_access": true,
-				"result": {
-						"success": true
-				}
-		}
-
-6. Additional Info:
-
-### `PATCH /api/event` : user updates an event
-
-1. Trigger:
-	-	user updates an event
-
-2. Request param:
-
-		{
-			id: 'MongoDB ObjectId'
-		}
-
-3. Request body:
-
-		{
-			title : String,
-			social_venue: {
-				social_id: String,
-				name : String,
-				address : String,
-				category: {
-					image: String
-				}
-			},
-			owners:[{
-				user :{
-					_id : String,
-					social_id : String
-				}
-			}],
-			start : Date,
-			expiry : Date,
-			flirt_options : {
-				simple : String,
-				forward : String,
-				risky : String
-			},
-			privacy : String
-		}
-
-4. Request headers:
-
-		{
-			Content-Type : "application/json",
-			Accept : "application/json",
-			X-ZUMO-AUTH : "auth_token"
-		}
-
-5. Response:
-
-		{
-				"api_access": true,
-				"result": {
-						"success": true
-				}
-		}
-
-6. Additional Info:

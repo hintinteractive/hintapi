@@ -1,50 +1,36 @@
-var should = require('chai').should(),
+var colors = require('colors'),
+	should = require('chai').should(),
     supertest = require('supertest'),
-    api = supertest('https://hint.azure-mobile.net'),
-    config = require('../config');
-var hint_auth_token = null;
+    config = require('../config'),
+    api = supertest(config.api_url),
+    common = require('./common');
+
+var commonObj = {};
 
 describe('Authenticate', function () {
-    it('login the user and gets hint auth token', function (done) {
-        api.post('/login/facebook')
-            .send({
-                access_token: config.facebook_access_token
-            })
-            .set('Content-Type', 'application/json')
-            .set('Accept', 'application/json')
-            .expect(200)
-            .expect('Content-Type', /json/)
-            .end(function (err, res) {
-                if (err) return done(err);
-                res.body.should.have.deep.property('user.userId')
-                    .and.have.string('Facebook:');
-                res.body.should.have.property('authenticationToken');
-                hint_auth_token = res.body.authenticationToken;
-                if (config.verbose) console.log("Hint Access Token : " + hint_auth_token);
-                done();
-            });
-    });
-
+    it('login the user and gets hint auth token', common.getAuthToken(commonObj, "auth_token"));
 });
 
 describe('GET /api/venue', function () {
     it('gets a list of nearby venues', function (done) {
-        if (!hint_auth_token) done("Not Authenticated");
+        if (!commonObj['auth_token']) done("Not Authenticated");
         api.get('/api/venue')
         	.query({ 
         		lat: 37.78583526611328,
         		lng: -122.40641784667969,
-        		radius: 1
+        		radius: 1,
+        		limit : 2
         	})
             .set('Content-Type', 'application/json')
             .set('Accept', 'application/json')
-            .set('X-ZUMO-AUTH', hint_auth_token)
+            .set('X-ZUMO-AUTH', commonObj['auth_token'])
             .expect(200)
             .expect('Content-Type', /json/)
             .end(function (err, res) {
                 if (err) return done(err);
                 res.body.should.have.property('api_access').and.be.true;
                 res.body.should.have.property('result').and.be.an.instanceof(Array);
+                res.body.result.should.have.length(2);
                 for(var i=0;i<res.body.result.length;i++){
                 	res.body.result[i].should.have.property('social_id').and.have.string('Facebook:');
                 	res.body.result[i].should.have.property('name');
@@ -58,7 +44,7 @@ describe('GET /api/venue', function () {
                 	res.body.result[i].should.have.deep.property('category.image');
                 }
                 
-                if (config.verbose) console.log("GET /api/user response : " + JSON.stringify(res.body));
+                if (config.verbose) console.log("GET /api/venue response :".underline.green, JSON.stringify(res.body));
                 done();
             });
     });

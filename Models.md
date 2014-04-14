@@ -96,6 +96,47 @@ Each of these models represent a collection in the database. If you come from a 
   - Heavy read operations.
   - Low write operations (normal), and medium write operations (when `enum_flags.collect_venue_category` is true).
 
+### Model `event`
+- the event info and its flirt options
+- Collection name : `events`
+- Schema :
+
+    {
+      /*_id : ObjectId,*/
+      social_id: { type: String, index: { unique: true}},
+      name : String,
+      description: String,
+      venue: {
+        social_id: String,
+        name : String,
+        address : String,
+        lat : Number,
+        lng : Number,
+        category: {
+          image: String
+        }
+      },
+      owners:[{
+        user :{
+          _id : ObjectId,
+          social_id : String
+        }
+      }],
+      start : Date,
+      expiry : Date,
+      flirt_options : {
+        simple : String,
+        forward : String,
+        risky : String
+      },
+      privacy : String
+    }
+
+- Additional Info:
+  -	`social_id` is used for identifying each document.
+  -	Low write operations, and medium read operations.  
+
+
 
 ### Model `checkin`
 - Records of user's checkin to places
@@ -167,45 +208,6 @@ Each of these models represent a collection in the database. If you come from a 
   -	Heavy read and write operations.
 
 
-### Model `event`
-- the event info and its flirt options
-- Collection name : `events`
-- Schema :
-
-    {
-      /*_id : ObjectId,*/
-      social_id: { type: String, index: { unique: true}},
-      name : String,
-      description: String,
-      venue: {
-        social_id: String,
-        name : String,
-        address : String,
-        lat : Number,
-        lng : Number,
-        category: {
-          image: String
-        }
-      },
-      owners:[{
-        user :{
-          _id : ObjectId,
-          social_id : String
-        }
-      }],
-      start : Date,
-      expiry : Date,
-      flirt_options : {
-        simple : String,
-        forward : String,
-        risky : String
-      },
-      privacy : String
-    }
-
-- Additional Info:
-  -	`social_id` is used for identifying each document.
-  -	Low write operations, and medium read operations.  
 
 
 
