@@ -129,7 +129,8 @@ Each of these models represent a collection in the database. If you come from a 
         forward : String,
         risky : String
       },
-      privacy : String
+      privacy : String,
+      status : {type: String, "default": "created"}
     }
 
 - Additional Info:

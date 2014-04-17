@@ -89,6 +89,13 @@ These application configurations are loaded at the start (or restart) of the Hin
 			accepted : 'accepted',
 			rejected : 'rejected'
 		}
+		
+### `enum_event_statuses` :
+
+		{
+			created : 'created',
+			deleted : 'deleted'
+		}
 
 ## `enum_event_privacies`:
 		{
