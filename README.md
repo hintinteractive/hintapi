@@ -523,7 +523,7 @@ The following API endpoints are available to the public:
 	- (TODO) the search will include nearby public events, (TODO) add lat, lng to the venues
 
 
-### `GET /api/event/friend` : get user's frined list with the rsvp_status of a event.
+### `GET /api/event/friend` : get user's frined list who are not invited to an event of a event.
 
 1. Trigger:
 	-	user clicks on invite friends to events
@@ -548,8 +548,7 @@ The following API endpoints are available to the public:
 		[{
 			social_id: { type: String, index: { unique: true}},
 			name : String,
-			image : String,
-			rsvp_status : "attending, declined, maybe, or noreply"
+			image : String
 		}]
 
 5. Additional Info:
