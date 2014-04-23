@@ -554,6 +554,79 @@ The following API endpoints are available to the public:
 5. Additional Info:
 
 
+### `POST /api/event/friend` : user invites  friends to an event
+
+1. Trigger:
+	-	user invites  friend to an eventt
+
+2. Request param:
+
+		{
+		}
+
+3. Request body:
+
+		{
+			social_id : String,
+			friends: ['Facebook:12345','Facebook:34234234']
+		}
+
+4. Request headers:
+
+		{
+			Content-Type : "application/json",
+			Accept : "application/json",
+			X-ZUMO-AUTH : "auth_token"
+		}
+
+5. Response:
+
+		{
+				"api_access": true,
+				"result": {
+						"success": true
+				}
+		}
+
+6. Additional Info:
+
+
+### `POST /api/event/rsvp` : rsvp to an event
+
+1. Trigger:
+	-	user rsvp to an event
+
+2. Request param:
+
+		{
+		}
+
+3. Request body:
+
+		{
+			social_id : String, //event id
+			rsvp: String //attending, maybe, or declined
+		}
+
+4. Request headers:
+
+		{
+			Content-Type : "application/json",
+			Accept : "application/json",
+			X-ZUMO-AUTH : "auth_token"
+		}
+
+5. Response:
+
+		{
+				"api_access": true,
+				"result": {
+						"success": true
+				}
+		}
+
+
+
 - `POST /api/event` : add a new event
 
 1. Trigger:
