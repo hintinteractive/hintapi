@@ -1288,6 +1288,86 @@ The following API endpoints are available to the public:
 	- run the connection algorithm (check if there is an un-expired hint from the other person in the same venue)
 	- if a connection is created, sends a push notification to both, otherwise send it to the recipient.
 
+
+### API `GET /api/hint`
+1. Desc: get a list of hints for a user (if the hint is sent to the user then it is kept anonymous)
+1. Trigger:
+	-	user comes to the right menu.
+	-	user refresh the right menu.
+
+2. Request param:
+
+		{
+
+		}
+
+3. Request body:
+
+		{
+
+		}
+
+4. Request headers:
+
+		{
+			Content-Type : "application/json",
+			Accept : "application/json",
+			X-ZUMO-AUTH : "auth_token"
+		}
+
+5. Response:
+
+		{
+			"api_access": true,
+			"result": [{
+				checkin : {
+					id: String
+				},
+				user_from : {
+					social_id : String, 
+					name : String, 
+					hair_color : String, 
+					gender : String, 
+					interested_in : [String],
+					current_look : {
+						photo_url : String, 
+						identifier: {
+							type : String, 
+							brand : String, 
+							color : String
+						}
+					}
+				},
+				user_to : {
+					social_id : String, 
+					name : String, 
+					hair_color : String, 
+					gender : String, 
+					interested_in : [String],
+					current_look : {
+						photo_url : String, 
+						identifier: {
+							type : String, 
+							brand : String, 
+							color : String
+						}
+					}
+				},
+				social_venue : {
+					social_id : String, 
+					name : String, 
+					address : String
+				},
+				status : String,
+				time : {type: Date, "default": Date.now},
+				expiry : Date
+			}]
+		}
+
+5. Additional Info:
+
+
+
 ### `GET /api/connection` : get a list of connections
 
 1. Trigger:
