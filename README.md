@@ -560,7 +560,7 @@ The following API endpoints are available to the public:
 	- (TODO) the search will include nearby public events, (TODO) add lat, lng to the venues
 
 
-### `GET /api/event/friend` : get user's frined list with the rsvp_status of a event.
+### `GET /api/event/friend` : get user's frined list who are not invited to an event of a event.
 
 1. Trigger:
 	-	user clicks on invite friends to events
@@ -585,11 +585,83 @@ The following API endpoints are available to the public:
 		[{
 			social_id: { type: String, index: { unique: true}},
 			name : String,
-			image : String,
-			rsvp_status : "attending, declined, maybe, or noreply"
+			image : String
 		}]
 
 5. Additional Info:
+
+
+### `POST /api/event/friend` : user invites  friends to an event
+
+1. Trigger:
+	-	user invites  friend to an eventt
+
+2. Request param:
+
+		{
+		}
+
+3. Request body:
+
+		{
+			social_id : String,
+			friends: ['Facebook:12345','Facebook:34234234']
+		}
+
+4. Request headers:
+
+		{
+			Content-Type : "application/json",
+			Accept : "application/json",
+			X-ZUMO-AUTH : "auth_token"
+		}
+
+5. Response:
+
+		{
+				"api_access": true,
+				"result": {
+						"success": true
+				}
+		}
+
+6. Additional Info:
+
+
+### `POST /api/event/rsvp` : rsvp to an event
+
+1. Trigger:
+	-	user rsvp to an event
+
+2. Request param:
+
+		{
+		}
+
+3. Request body:
+
+		{
+			social_id : String, //event id
+			rsvp: String //attending, maybe, or declined
+		}
+
+4. Request headers:
+
+		{
+			Content-Type : "application/json",
+			Accept : "application/json",
+			X-ZUMO-AUTH : "auth_token"
+		}
+
+5. Response:
+
+		{
+				"api_access": true,
+				"result": {
+						"success": true
+				}
+		}
+
 
 
 - `POST /api/event` : add a new event
