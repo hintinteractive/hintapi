@@ -89,7 +89,7 @@ These application configurations are loaded at the start (or restart) of the Hin
 			accepted : 'accepted',
 			rejected : 'rejected'
 		}
-		
+
 ### `enum_event_statuses` :
 
 		{
@@ -246,19 +246,19 @@ The following API endpoints are available to the public:
 		{
 		    "api_access": true,
 		    "result": {
-				"__v": 0,
-				"_id": "532f56d3152d0d3032e5af4c",
-				"social_id": "Facebook:100007978092636",
-				"name": "James Amgighjibfcf Lauwitz",
-				"contact": {
-						"email": "",
-						"phone": ""
-				},
-				"hair_color": "undefined",
-				"gender": "male",
-				"interested_in": []
-				"status": "active",
-				"black_list": []
+					"__v": 0,
+					"_id": "532f56d3152d0d3032e5af4c",
+					"social_id": "Facebook:100007978092636",
+					"name": "James Amgighjibfcf Lauwitz",
+					"contact": {
+							"email": "",
+							"phone": ""
+					},
+					"hair_color": "undefined",
+					"gender": "male",
+					"interested_in": []
+					"status": "active",
+					"black_list": []
 		    }
 		}
 
@@ -310,20 +310,20 @@ The following API endpoints are available to the public:
 		{
 		    "api_access": true,
 		    "result": {
-				"__v": 0,
-				"_id": "532f56d3152d0d3032e5af4c",
-				"social_id": "Facebook:100007978092636",
-				"name": "James Amgighjibfcf Lauwitz",
-				"contact": {
-						"email": "",
-						"phone": ""
-				},
-				"hair_color": "undefined",
-				"gender": "male",
-				"interested_in": []
-				"status": "active",
-				"photo_url": "https://graph.facebook.com/100007978092636/picture?width=340&height=340",
-				"black_list": []
+					"__v": 0,
+					"_id": "532f56d3152d0d3032e5af4c",
+					"social_id": "Facebook:100007978092636",
+					"name": "James Amgighjibfcf Lauwitz",
+					"contact": {
+							"email": "",
+							"phone": ""
+					},
+					"hair_color": "undefined",
+					"gender": "male",
+					"interested_in": []
+					"status": "active",
+					"photo_url": "https://graph.facebook.com/100007978092636/picture?width=340&height=340",
+					"black_list": []
 		    }
 		}
 6. After Action :
@@ -372,6 +372,43 @@ The following API endpoints are available to the public:
 
 7. Additional Info:
 	-	(Server side) The user id is extracted from the X-ZUMO-AUTH header.
+
+
+### API `GET /api/user/sas`
+1. Desc: get the sas url to upload a photo
+
+1. Trigger:
+	-	User checksin to a venue and he has a new photo
+
+2. Request param:
+
+		{
+		}
+
+3. Request body:
+
+		{
+		}
+
+4. Request headers:
+
+		{
+			Content-Type : "application/json",
+			Accept : "application/json",
+			X-ZUMO-AUTH : "auth_token"
+		}
+
+5. Response:
+
+		{
+		    "api_access": true,
+		    "result": {
+					"sasQueryUrl": "the url to upload a photo by PUT",
+					"imageUri": "the link of the photo after it is uploaded"
+		    }
+		}
+
+
 
 
 ### API `GET /api/venue`
@@ -844,6 +881,52 @@ The following API endpoints are available to the public:
 	-	(TODO) If limit parameter is not provided, then enum_defaults.checkin_search_results is used to determine how many checkins will be returned.
 	-	(TODO) If interested_in,hair_color,search are not provided then search all.
 	-	(TODO) Optimize the search.
+	
+### API `GET /api/checkin/clothing`
+1. Desc: get a list of brands and items for clothing
+1. Trigger:
+	-	user opens up the Update your look dialog
+
+2. Request param:
+
+		{
+
+		}
+
+3. Request body:
+
+		{
+
+		}
+
+4. Request headers:
+
+		{
+			Content-Type : "application/json",
+			Accept : "application/json",
+			X-ZUMO-AUTH : "auth_token"
+		}
+
+5. Response:
+
+		{
+			"api_access": true,
+			"result": {
+		        "items": [
+		            {
+		                "_id": "535d6ebd230b871238b15a7a",
+		                "name": "Belt"
+		            }],
+		         "brands": [{
+		         		 "_id": "535d6eb5230b871238b15a1f",
+                		 "name": "Hurley"
+		         	}]
+		     }
+		}
+
+
+
+
 
 ### `POST /api/flirt` : sends a flirt
 
