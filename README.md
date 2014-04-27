@@ -1210,7 +1210,7 @@ The following API endpoints are available to the public:
 	- if  action == 'accept', change status=enum_flirt_statuses.accepted, create a connection, send a push notification to the other person.
 	- if  action == 'reject', change status=enum_flirt_statuses.rejected, send a push notification to the other person.
 
-- `POST /api/hint` : sends a hint
+### `POST /api/hint` : sends a hint
 
 1. Trigger:
 	-	user sends a hint to another user
