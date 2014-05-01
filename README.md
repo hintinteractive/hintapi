@@ -739,6 +739,43 @@ The following API endpoints are available to the public:
 
 6. Additional Info:
 
+
+### `DELETE /api/event` : user deletes an event
+
+1. Trigger:
+	-	user deletes an event
+
+2. Request param:
+
+		{
+			social_id: 'Facebook:id'
+		}
+
+3. Request body:
+
+		{
+		}
+
+4. Request headers:
+
+		{
+			Content-Type : "application/json",
+			Accept : "application/json",
+			X-ZUMO-AUTH : "auth_token"
+		}
+
+5. Response:
+
+		{
+				"api_access": true,
+				"result": {
+						"success": true
+				}
+		}
+
+6. Additional Info:
+
+
 ### API `POST /api/checkin`
 1. Desc: checkin to a venue
 1. Trigger:
