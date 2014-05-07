@@ -1,5 +1,5 @@
 This document is meant for the apps that are going to be built on Hint REST API. The document is intended for frontend developers to refer.
-
+ 
 ## Technologies and SDKs
 Hint uses [MongoDB](https://www.mongodb.org/) as its data source and [Node.js](http://nodejs.org/) ([Express.js](http://expressjs.com/)) as the backend server. Hint backend is hosted on [Windows Azure](http://www.windowsazure.com/en-us/develop/mobile/). Hint backend is highly (horizontally) scalable, and secure (oAuth 2.0 flow).
 
