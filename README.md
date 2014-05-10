@@ -137,7 +137,11 @@ These application configurations are loaded at the start (or restart) of the Hin
 			checkin_search_results : 20
 		}
 
-
+### `enum_push_device_statuses` :
+		{
+		    active : 'active',
+		    uninstalled : 'uninstalled'
+		}
 
 
 ## API Specifications
@@ -1470,3 +1474,41 @@ The following API endpoints are available to the public:
 6. Additional Info:
 	- message.user.social_id will be filled up by the server
 	- time will be current expiry time
+	
+	
+### `POST /api/push_device` : register a device for push notification
+
+1. Trigger:
+	-	user installs the app
+
+2. Request param:
+
+		{
+		}
+
+3. Request body:
+
+		{
+			app: {
+				name: String,
+				version: String
+			}
+		}
+
+4. Request headers:
+
+		{
+			Content-Type : "application/json",
+			Accept : "application/json",
+			X-ZUMO-AUTH : "auth_token"
+		}
+
+5. Response:
+
+		{
+				"api_access": true,
+				"result": {
+						"success": true
+				}
+		}
+
