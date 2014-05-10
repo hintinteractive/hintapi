@@ -1,5 +1,5 @@
 This document is meant for the apps that are going to be built on Hint REST API. The document is intended for frontend developers to refer.
-
+ 
 ## Technologies and SDKs
 Hint uses [MongoDB](https://www.mongodb.org/) as its data source and [Node.js](http://nodejs.org/) ([Express.js](http://expressjs.com/)) as the backend server. Hint backend is hosted on [Windows Azure](http://www.windowsazure.com/en-us/develop/mobile/). Hint backend is highly (horizontally) scalable, and secure (oAuth 2.0 flow).
 
@@ -779,6 +779,43 @@ The following API endpoints are available to the public:
 		}
 
 6. Additional Info:
+
+
+### `DELETE /api/event` : user deletes an event
+
+1. Trigger:
+	-	user deletes an event
+
+2. Request param:
+
+		{
+			social_id: 'Facebook:id'
+		}
+
+3. Request body:
+
+		{
+		}
+
+4. Request headers:
+
+		{
+			Content-Type : "application/json",
+			Accept : "application/json",
+			X-ZUMO-AUTH : "auth_token"
+		}
+
+5. Response:
+
+		{
+				"api_access": true,
+				"result": {
+						"success": true
+				}
+		}
+
+6. Additional Info:
+
 
 ### API `POST /api/checkin`
 1. Desc: checkin to a venue
