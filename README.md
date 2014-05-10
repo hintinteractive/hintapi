@@ -144,6 +144,12 @@ These application configurations are loaded at the start (or restart) of the Hin
 		}
 
 
+### `enum_push_device_environments` :
+		{
+		    production : 'production',
+		    sandbox : 'sandbox'
+		}
+
 ## API Specifications
 As a frontend developer, you will be interested in this section. To start using these endpoints you need to have a valid `facebook_access_token` (or we call it `hint_authorization_grant`). You can get this access token by logging in the user through the facebook SDK of your client. However, if your facebook app is not registered with Hint, this `access_token` will be rejected.
 
@@ -1513,7 +1519,7 @@ The following API endpoints are available to the public:
 	- time will be current expiry time
 	
 	
-### `POST /api/push_device` : register a device for push notification
+### `PUT /api/push_device` : register a device for push notification
 
 1. Trigger:
 	-	user installs the app
@@ -1529,7 +1535,52 @@ The following API endpoints are available to the public:
 			app: {
 				name: String,
 				version: String
-			}
+			},
+			device:{
+				guid : String, //required
+				token: String, //required
+				name: String,
+				model: String,
+				os: {
+					version : String
+				}
+			},
+			environment : String // production or sandbox
+		}
+
+4. Request headers:
+
+		{
+			Content-Type : "application/json",
+			Accept : "application/json",
+			X-ZUMO-AUTH : "auth_token"
+		}
+
+5. Response:
+
+		{
+				"api_access": true,
+				"result": {
+						"success": true
+				}
+		}
+
+
+### `DELETE /api/push_device` : unregister a device for push notification
+
+1. Trigger:
+	-	user uninstalls the app
+
+2. Request param:
+
+		{
+			device_guid : String
+		}
+
+3. Request body:
+
+		{
+			
 		}
 
 4. Request headers:
