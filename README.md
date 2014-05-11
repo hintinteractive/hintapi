@@ -149,6 +149,12 @@ These application configurations are loaded at the start (or restart) of the Hin
 		    production : 'production',
 		    sandbox : 'sandbox'
 		}
+		
+### `enum_push_device_push_types` :
+		{
+		    apns : 'apns',
+		    gcm : 'gcm'
+		}
 
 ## API Specifications
 As a frontend developer, you will be interested in this section. To start using these endpoints you need to have a valid `facebook_access_token` (or we call it `hint_authorization_grant`). You can get this access token by logging in the user through the facebook SDK of your client. However, if your facebook app is not registered with Hint, this `access_token` will be rejected.
