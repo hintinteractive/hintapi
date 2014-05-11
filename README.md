@@ -1549,6 +1549,9 @@ The following API endpoints are available to the public:
 				model: String,
 				os: {
 					version : String
+				},
+				push: {
+					type: String // apns or gcm
 				}
 			},
 			environment : String // production or sandbox
