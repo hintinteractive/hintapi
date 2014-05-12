@@ -155,6 +155,14 @@ These application configurations are loaded at the start (or restart) of the Hin
 		    apns : 'apns',
 		    gcm : 'gcm'
 		}
+		
+### `enum_push_device_notification_types` :
+		{
+		    flirt : 'flirt', //flirt is received
+		    hint : 'hint',  //hint is received
+		    connection : 'connection',  //connection is created, sent to both parties
+		    message : 'message',  //message is received
+		}
 
 ## API Specifications
 As a frontend developer, you will be interested in this section. To start using these endpoints you need to have a valid `facebook_access_token` (or we call it `hint_authorization_grant`). You can get this access token by logging in the user through the facebook SDK of your client. However, if your facebook app is not registered with Hint, this `access_token` will be rejected.
@@ -1609,3 +1617,24 @@ The following API endpoints are available to the public:
 				}
 		}
 
+
+### Push Notifications : 
+
+1. Trigger:
+	-	user receives a hint, flirt, message.
+	-	a connection is created (both users get notified)
+
+
+2. Notification body for ios:
+
+		{
+			alert : 'the text to show',
+			type : 'determined by enum_push_device_notification_types'
+		}
+
+3. Notification body for android:
+
+		{
+			message : 'the text to show',
+			type : 'determined by enum_push_device_notification_types'
+		}
