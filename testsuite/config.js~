@@ -1,0 +1,3 @@
+exports.api_url = 'https://hint.azure-mobile.net';
+exports.facebook_access_token = 'CAAHn34BO0R0BAGDt91fDjNBTJ4NjMd7ODv5y2TMxFHzUPZBbBcKgHCHNVx3AcjOlMTtizBcmcKv2ZC2AN5vSpimDkCPhKfSi33ZCjLfwR41QWVc71sndYT2BduTYhUNCtm5ACFVngGy37lyZAixvZC1HfydCdUJ9thEkqKlD3hoYfuU5o4ZCPkKLPHnnzyCrYSegg0aKVVDgZDZD';
+exports.verbose = true;
