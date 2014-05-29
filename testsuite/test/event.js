@@ -350,7 +350,7 @@ describe('DELETE /api/event',function() {
 			
 			});
 		
-});
+	});
 	
 	
 });
