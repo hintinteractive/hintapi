@@ -688,7 +688,7 @@ The following API endpoints are available to the public:
 
 
 
-- `POST /api/event` : add a new event
+### `POST /api/event` : add a new event
 
 1. Trigger:
 	-	user creates a new event
