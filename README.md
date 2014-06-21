@@ -750,7 +750,7 @@ The following API endpoints are available to the public:
 2. Request param:
 
 		{
-			id: 'MongoDB ObjectId'
+			
 		}
 
 3. Request body:
@@ -758,7 +758,7 @@ The following API endpoints are available to the public:
 		{
 			title : String,
 			social_venue: {
-				social_id: String,
+				social_id: String, //needed for update
 				name : String,
 				address : String,
 				category: {
