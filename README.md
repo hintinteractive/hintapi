@@ -756,9 +756,10 @@ The following API endpoints are available to the public:
 3. Request body:
 
 		{
+			social_id: String, //needed for update
 			title : String,
 			social_venue: {
-				social_id: String, //needed for update
+				social_id: String, 
 				name : String,
 				address : String,
 				category: {
