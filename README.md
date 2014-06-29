@@ -575,8 +575,9 @@ The following API endpoints are available to the public:
 				rsvp_status : "attending, declined, maybe, or noreply",
 				attending_count : Number,
 				declined_count : Number,
-				maybe_count : Number,
-				noreply_count : Number
+				unsure_count : Number,
+				not_replied_count : Number,
+				all_members_count": Number
 			}
 		}]
 
