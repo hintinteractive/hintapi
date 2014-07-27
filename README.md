@@ -939,6 +939,7 @@ The following API endpoints are available to the public:
 2. Request param:
 
 		{
+			id : 'MongoDB unique checkin id, if provided all the other parameters are ignored'
 			social_venue_id: 'Facebook:id',
 			event_social_id: 'facebook:id',
 			hair_color : 'optional: if not provided ignore',
@@ -998,6 +999,7 @@ The following API endpoints are available to the public:
 				},
 				time : 'checkin time',
 				expiry : 'expiry time',
+				is_expired : 'true or false, only available when id is provided',
 				flirts : [{
 					user:{
 						social_id : String
