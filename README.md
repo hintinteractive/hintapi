@@ -999,7 +999,7 @@ The following API endpoints are available to the public:
 				},
 				time : 'checkin time',
 				expiry : 'expiry time',
-				is_expired : 'true or false, only available when id is provided',
+				has_expired : 'true or false, only available when id is provided',
 				flirts : [{
 					user:{
 						social_id : String
