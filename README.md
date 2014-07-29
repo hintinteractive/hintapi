@@ -913,7 +913,53 @@ The following API endpoints are available to the public:
 		{
 				"api_access": true,
 				"result": {
-						"success": true
+					success : true,
+					user : {
+						name : String,
+						hair_color : String,
+						gender : String,
+						interested_in : [String],
+						current_look : {
+							photo_url : String,
+							identifier: {
+								type : String,
+								brand : String,
+								color : String
+							}
+						}
+					},
+					event : {
+					    social_id: String,
+					    title : String,
+					    social_venue: {
+					        social_id: String,
+					        name : String,
+					        address : String,
+						category: {
+					        	image : String //not yet changed
+						}
+					    },
+					    start : Date,
+					    expiry : Date,
+					    flirt_options : {
+					        simple : String,
+					        forward : String,
+					        risky : String
+					    }
+					},
+					social_venue : {
+					   social_id : 'Facebook:fb_id',
+					   name : 'name of the place',
+					   address : 'address of the place',
+					   category: {
+					       flirt_options : {
+					           simple : 'simple flirt',
+					           forward : 'forward flirt',
+					           risky : 'risky flirt'
+					       }
+					       image : 'image link'
+					   }
+					}
 				}
 		}
 
