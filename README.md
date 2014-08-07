@@ -705,7 +705,7 @@ The following API endpoints are available to the public:
 			name : String,
 			description: String,
 			venue: {
-				social_id: String,
+				social_id: String, //Optional: if not provided create a event with venue.name as a string.
 				name : String,
 				address : String,
 				lat : Number,
@@ -760,7 +760,7 @@ The following API endpoints are available to the public:
 			social_id: String, //needed for update
 			title : String,
 			social_venue: {
-				social_id: String, 
+				social_id: String, //Optional: if not provided create a event with venue.name as a string.
 				name : String,
 				address : String,
 				category: {
