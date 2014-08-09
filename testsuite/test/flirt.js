@@ -6,13 +6,17 @@ var colors = require('colors'),
     common = require('./common');
 
 var commonObj = {};
+var commonObj2 = {};
 
 describe('Authenticate', function () {
     it('login the user and gets hint auth token', common.getAuthToken(commonObj, "auth_token"));
+    it('login the user2 and gets hint auth token', common.getAuthToken2(commonObj2, "auth_token"));
 });
 
-var _u_to_socail_id = 'Facebook:100007978092636';
-var _u_name = 'test name';
+var _u_to_socail_id = 'Facebook:167391403431617';
+var _u_to_name = 'user2';
+var _u_from_social_id = 'Facebook:151152225055029';
+var _u_from_name = 'user1';
 var _u_hair_color = 'dark';
 var _u_gender = 'male';
 var _u_interested_in = ['male','female'];
@@ -35,7 +39,7 @@ describe('POST /api/flirt', function () {
      		   id: _v_social_id
   			},
 			user_from:{
-				name : _u_name,
+				name : _u_from_name,
 				hair_color : _u_hair_color,
 				gender : _u_gender,
 				interested_in : _u_interested_in,
@@ -50,7 +54,7 @@ describe('POST /api/flirt', function () {
 			},
 			user_to:{
 				social_id: _u_to_socail_id,
-				name : _u_name,
+				name : _u_to_name,
 				hair_color : _u_hair_color,
 				gender : _u_gender,
 				interested_in : _u_interested_in,
@@ -88,9 +92,6 @@ describe('POST /api/flirt', function () {
 			 done();
 		 });
 	 });
-	 
-	 
-
 });
 
 describe('GET /api/flirt',function() {

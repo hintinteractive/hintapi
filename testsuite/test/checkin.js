@@ -300,3 +300,5 @@ describe('GET /api/checkin/clothing',function() {
 	
 });
 
+
+

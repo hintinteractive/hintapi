@@ -13,6 +13,16 @@ describe('Authenticate', function () {
     it('login the user2 and gets hint auth token', common.getAuthToken2(commonObj2, "auth_token"));
 });
 
+var _c_lat = 23.812052;
+var _c_lng = 90.422147;
+
+var _v_social_id ;
+var _v_name ;
+var _v_address ;
+
+var _hint_id;
+var _connection_id;
+
 var _u_to_social_id = 'Facebook:167391403431617';
 var _u_to_name = 'user2';
 var _u_from_social_id = 'Facebook:151152225055029';
@@ -25,15 +35,58 @@ var _u_type = 'belt';
 var _u_brand = 'nike';
 var _u_color = 'red';
 
-var _v_social_id= "Facebook:294747040690002";
-var _v_name = "Be what's possible";
-var _v_address = "2 folsom st., San Francisco, CA, United States";
 
-var _c_id  ;
-var _hint_id;
-var _connection_id;
+/*
+	Getting venue
+*/
+describe('GET /api/venue', function () {
+    it('gets a list of nearby venues', function (done) {
+        if (!commonObj['auth_token']) done("Not Authenticated");
+        api.get('/api/venue')
+        	.query({ 
+        		lat: _c_lat,
+        		lng: _c_lng,
+        		radius: 1,
+        		limit : 2
+        	})
+            .set('Content-Type', 'application/json')
+            .set('Accept', 'application/json')
+            .set('X-ZUMO-AUTH', commonObj['auth_token'])
+            .expect(200)
+            .expect('Content-Type', /json/)
+            .end(function (err, res) {
+                if (err) return done(err);
+                res.body.should.have.property('api_access').and.be.true;
+                res.body.should.have.property('result').and.be.an.instanceof(Array);
+                res.body.result.should.have.length(2);
+                for(var i=0;i<res.body.result.length;i++){
+                	res.body.result[i].should.have.property('social_id').and.have.string('Facebook:');
+                	res.body.result[i].should.have.property('name');
+                	res.body.result[i].should.have.property('address');
+                	res.body.result[i].should.have.property('lat').and.be.a('number');
+                	res.body.result[i].should.have.property('lng').and.be.a('number');
+                	res.body.result[i].should.have.property('distance').and.be.below(1);
+                	res.body.result[i].should.have.deep.property('category.flirt_options.simple');
+                	res.body.result[i].should.have.deep.property('category.flirt_options.forward');
+                	res.body.result[i].should.have.deep.property('category.flirt_options.risky');
+                	res.body.result[i].should.have.deep.property('category.image');
 
-// First user check in
+                	_v_social_id = res.body.result[i].social_id;
+                	_v_name = res.body.result[i].name;
+                	_v_address = res.body.result[i].address;
+                	
+                	break;
+                }
+                
+                if (config.verbose) console.log("GET /api/venue response :".underline.green, JSON.stringify(res.body));
+               	done();         
+            });
+    });
+});
+
+/*
+	First user check in
+*/
 describe('POST /api/checkin', function () {
 	 it('checkin in a place', function (done) {
 		 if (!commonObj['auth_token']) done("Not Authenticated");
@@ -83,10 +136,10 @@ describe('POST /api/checkin', function () {
 		 });
 	 });
 });
-//First user checkin end
 
-
-//Second user checkin start
+/*
+	Second user checkin start
+*/
 describe('POST /api/checkin', function () {
 	 it('checkin in a place', function (done) {
 		 if (!commonObj2['auth_token']) done("Not Authenticated");
@@ -135,14 +188,10 @@ describe('POST /api/checkin', function () {
 			 done();
 		 });
 	 });
-	 
-	 
-
 });
-//Second user checkin end
 
 /*
-	First user
+	First user post hint
 */
 describe('POST /api/hint', function () {
 	 it('post hint', function (done) {
@@ -210,14 +259,16 @@ describe('POST /api/hint', function () {
 
 			_hint_id = res.body.result._id;
 
-			 if (config.verbose) console.log("POST /api/hint response:".underline.green ,
+			 if (config.verbose) console.log("POST /api/hint response for user1:".underline.green ,
 					 JSON.stringify(res.body));
 			 done();
 		});
 	});
 });
 
-
+/*
+	First user get hint
+*/
 describe('GET /api/hint',function() {
 	
 	it('get hint',function (done) {
@@ -269,23 +320,17 @@ describe('GET /api/hint',function() {
 					res.body.result[i].should.have.deep.property('time');	
 					res.body.result[i].should.have.deep.property('expiry');
 
-					if (config.verbose) console.log("GET /api/hint response :".underline.green, JSON.stringify(res.body.result[i]));
+					if (config.verbose) console.log("GET /api/hint response for user 1:".underline.green, JSON.stringify(res.body.result[i]));
 					done();
 				}					
-			}
-			
-			
-				 
+			}	 
 		});
-		
 	});
-	
 });
 
 /*
-	Second user
+	Second user Get hint
 */
-
 describe('GET /api/hint',function() {
 	
 	it('get hint',function (done) {
@@ -330,16 +375,14 @@ describe('GET /api/hint',function() {
 					if (config.verbose) console.log("GET /api/hint response for user2:".underline.green, JSON.stringify(res.body.result[i]));
 					done();
 				}					
-			}
-			
-			
-				 
+			}	 
 		});
-		
 	});
-	
 });
 
+/*
+	Second user Post Hint
+*/
 describe('POST /api/hint', function () {
 	 it('post hint', function (done) {
 		 if (!commonObj2['auth_token']) done("Not Authenticated");
@@ -391,7 +434,7 @@ describe('POST /api/hint', function () {
 	 	.expect(200)
 		.expect('Content-Type', /json/)
 		.end(function (err, res) {
-			 if (err) return done(err);
+			if (err) return done(err);
 			 
 			res.body.should.have.property('api_access').and.be.true;
 			res.body.should.have.deep.property('result.success').and.be.true;
@@ -407,18 +450,16 @@ describe('POST /api/hint', function () {
 
 			_connection_id = res.body.result.connection._id;
 
-			
-			 if (config.verbose) console.log("POST /api/hint response for user2:".underline.green ,
+			if (config.verbose) console.log("POST /api/hint response for user2:".underline.green ,
 				 JSON.stringify(res.body));
 			 done();
 		});
 	});
 });
-//console.log(_connection_id);
-/*
-	Check connection
-*/
 
+/*
+	First user GET connection
+*/
 describe('GET /api/connection',function() {
 	
 	it('get connection',function (done) {
@@ -437,19 +478,48 @@ describe('GET /api/connection',function() {
 			for(var i=0;i<res.body.result.length;i++){
 				if(res.body.result[i]._id  == _connection_id){
 
-					
+					res.body.result[i].should.have.property('users').and.be.an.instanceof(Array);
+					for(var j=0;j<res.body.result[i].users.length;j++){
+						res.body.result[i].should.have.deep.property('_id');
 
-					if (config.verbose) console.log("GET /api/hint response for user1:".underline.green, JSON.stringify(res.body.result[i]));
+						res.body.result[i].users[j].should.have.deep.property('social_id').and.have.string('Facebook:');
+						res.body.result[i].users[j].should.have.deep.property('name');
+						res.body.result[i].users[j].should.have.deep.property('hair_color');
+						res.body.result[i].users[j].should.have.deep.property('gender');
+						res.body.result[i].users[j].should.have.deep.property('interested_in').and.be.an.instanceof(Array);
+						res.body.result[i].users[j].should.have.deep.property('current_look.photo_url');
+						res.body.result[i].users[j].should.have.deep.property('current_look.identifier.type');
+						res.body.result[i].users[j].should.have.deep.property('current_look.identifier.brand');
+						res.body.result[i].users[j].should.have.deep.property('current_look.identifier.color');
+					}
+					
+					res.body.result[i].should.have.property('messages').and.be.an.instanceof(Array);
+					for(var j=0;j<res.body.result[i].messages.length;j++){
+						res.body.result[i].messages[j].should.have.deep.property('user.social_id').and.have.string('Facebook:');
+						res.body.result[i].messages[j].should.have.deep.property('text');
+						res.body.result[i].messages[j].should.have.deep.property('time');
+					}
+
+					res.body.result[i].should.have.deep.property('social_venue.social_id').and.have.string('Facebook:');
+					res.body.result[i].should.have.deep.property('social_venue.name');
+					res.body.result[i].should.have.deep.property('social_venue.address');
+
+					res.body.result[i].should.have.deep.property('keep_alive.flag');
+					
+					res.body.result[i].should.have.deep.property('time');	
+					res.body.result[i].should.have.deep.property('expiry');
+
+					if (config.verbose) console.log("GET /api/connection response for user1:".underline.green, JSON.stringify(res.body.result[i]));
 					done();
 				}					
-			}
-				 
+			}	 
 		});
-		
 	});
-	
 });
 
+/*
+	Second user GET Connection
+*/
 describe('GET /api/connection',function() {
 	
 	it('get connection',function (done) {
@@ -468,15 +538,201 @@ describe('GET /api/connection',function() {
 			for(var i=0;i<res.body.result.length;i++){
 				if(res.body.result[i]._id  == _connection_id){
 
-					
+					res.body.result[i].should.have.property('users').and.be.an.instanceof(Array);
+					for(var j=0;j<res.body.result[i].users.length;j++){
+						res.body.result[i].should.have.deep.property('_id');
 
-					if (config.verbose) console.log("GET /api/hint response for user2:".underline.green, JSON.stringify(res.body.result[i]));
+						res.body.result[i].users[j].should.have.deep.property('social_id').and.have.string('Facebook:');
+						res.body.result[i].users[j].should.have.deep.property('name');
+						res.body.result[i].users[j].should.have.deep.property('hair_color');
+						res.body.result[i].users[j].should.have.deep.property('gender');
+						res.body.result[i].users[j].should.have.deep.property('interested_in').and.be.an.instanceof(Array);
+						res.body.result[i].users[j].should.have.deep.property('current_look.photo_url');
+						res.body.result[i].users[j].should.have.deep.property('current_look.identifier.type');
+						res.body.result[i].users[j].should.have.deep.property('current_look.identifier.brand');
+						res.body.result[i].users[j].should.have.deep.property('current_look.identifier.color');
+					}
+					
+					res.body.result[i].should.have.property('messages').and.be.an.instanceof(Array);
+					for(var j=0;j<res.body.result[i].messages.length;j++){
+						res.body.result[i].messages[j].should.have.deep.property('user.social_id').and.have.string('Facebook:');
+						res.body.result[i].messages[j].should.have.deep.property('text');
+						res.body.result[i].messages[j].should.have.deep.property('time');
+					}
+
+					res.body.result[i].should.have.deep.property('social_venue.social_id').and.have.string('Facebook:');
+					res.body.result[i].should.have.deep.property('social_venue.name');
+					res.body.result[i].should.have.deep.property('social_venue.address');
+
+					res.body.result[i].should.have.deep.property('keep_alive.flag');
+					
+					res.body.result[i].should.have.deep.property('time');	
+					res.body.result[i].should.have.deep.property('expiry');	
+
+					if (config.verbose) console.log("GET /api/connection response for user2:".underline.green, JSON.stringify(res.body.result[i]));
 					done();
 				}					
 			}
+		});
+	});
+});
+
+/*
+	First user PATCH connection
+*/
+describe('PATCH /api/connection',function() {
+	
+	it('patch connection',function (done) {
+		if (!commonObj['auth_token']) done("Not Authenticated");
+		
+		api.patch('/api/connection')
+		.query({
+			id : _connection_id
+		})
+		.send({
+			message : {
+    	  	  text: 'user 1 say hi'
+    		}
+		})
+		.set('Content-Type', 'application/json')
+		.set('Accept', 'application/json')
+		.set('X-ZUMO-AUTH', commonObj['auth_token'])
+		.expect(200)
+		.expect('Content-Type', /json/)
+		.end(function (err, res) {
+			if (err) return done(err);
+		
+			res.body.should.have.property('api_access').and.be.true;
+			res.body.should.have.deep.property('result.success').and.be.true;
+			res.body.result.should.have.property('users').and.be.an.instanceof(Array);
+			res.body.result.should.have.property('messages').and.be.an.instanceof(Array);
+			res.body.result.should.have.deep.property('social_venue.social_id').and.have.string('Facebook:');
+			res.body.result.should.have.deep.property('social_venue.name');
+			res.body.result.should.have.deep.property('social_venue.address');
+			res.body.result.should.have.deep.property('_id');
+			res.body.result.should.have.deep.property('keep_alive.flag');
+			res.body.result.should.have.deep.property('time');	
+			res.body.result.should.have.deep.property('expiry');
+			
+			if (config.verbose) console.log("PATCH /api/connection response for user1:".underline.green, JSON.stringify(res.body));
+			done();
 				 
 		});
-		
 	});
+});
+
+/*
+	Second user PATCH Connection
+*/
+describe('PATCH /api/connection',function() {
 	
+	it('patch connection',function (done) {
+		if (!commonObj2['auth_token']) done("Not Authenticated");
+		
+		api.patch('/api/connection')
+		.query({
+			id : _connection_id
+		})
+		.send({
+			message : {
+    	  	  text: 'user 2 say hi'
+    		}
+		})
+		.set('Content-Type', 'application/json')
+		.set('Accept', 'application/json')
+		.set('X-ZUMO-AUTH', commonObj2['auth_token'])
+		.expect(200)
+		.expect('Content-Type', /json/)
+		.end(function (err, res) {
+			if (err) return done(err);
+		
+			res.body.should.have.property('api_access').and.be.true;
+			res.body.should.have.deep.property('result.success').and.be.true;
+			res.body.result.should.have.property('users').and.be.an.instanceof(Array);
+			res.body.result.should.have.property('messages').and.be.an.instanceof(Array);
+			res.body.result.should.have.deep.property('social_venue.social_id').and.have.string('Facebook:');
+			res.body.result.should.have.deep.property('social_venue.name');
+			res.body.result.should.have.deep.property('social_venue.address');
+			res.body.result.should.have.deep.property('_id');
+			res.body.result.should.have.deep.property('keep_alive.flag');
+			res.body.result.should.have.deep.property('time');	
+			res.body.result.should.have.deep.property('expiry');
+
+			
+			if (config.verbose) console.log("PATCH /api/connection response for user2:".underline.green, JSON.stringify(res.body));
+			done();
+				 
+		});
+	});
+});
+
+/*
+	First user GET Single connection
+*/
+describe('GET /api/connection',function() {
+	
+	it('get connection',function (done) {
+		if (!commonObj['auth_token']) done("Not Authenticated");
+		
+		api.get('/api/connection')
+		.query({
+			id: _connection_id
+		})
+		.set('Content-Type', 'application/json')
+		.set('Accept', 'application/json')
+		.set('X-ZUMO-AUTH', commonObj['auth_token'])
+		.expect(200)
+		.expect('Content-Type', /json/)
+		.end(function (err, res) {
+			if (err) return done(err);
+			
+			res.body.should.have.property('api_access').and.be.true;
+			res.body.result.should.have.property('users').and.be.an.instanceof(Array);
+			res.body.result.should.have.property('messages').and.be.an.instanceof(Array);
+			res.body.result.should.have.deep.property('social_venue');
+			res.body.result.should.have.deep.property('_id');
+			res.body.result.should.have.deep.property('keep_alive.flag');
+			res.body.result.should.have.deep.property('time');	
+			res.body.result.should.have.deep.property('expiry');
+
+			if (config.verbose) console.log("GET /api/connection response for user1:".underline.green, JSON.stringify(res.body));
+			done();	
+			
+		});
+	});
+});
+
+/*
+	Second user GET Single Connection
+*/
+describe('GET /api/connection',function() {
+	
+	it('get connection',function (done) {
+		if (!commonObj2['auth_token']) done("Not Authenticated");
+		
+		api.get('/api/connection')
+		.query({
+			id: _connection_id
+		})
+		.set('Content-Type', 'application/json')
+		.set('Accept', 'application/json')
+		.set('X-ZUMO-AUTH', commonObj2['auth_token'])
+		.expect(200)
+		.expect('Content-Type', /json/)
+		.end(function (err, res) {
+			if (err) return done(err);
+			
+			res.body.should.have.property('api_access').and.be.true;
+			res.body.result.should.have.property('users').and.be.an.instanceof(Array);
+			res.body.result.should.have.property('messages').and.be.an.instanceof(Array);
+			res.body.result.should.have.deep.property('social_venue');
+			res.body.result.should.have.deep.property('_id');
+			res.body.result.should.have.deep.property('keep_alive.flag');
+			res.body.result.should.have.deep.property('time');	
+			res.body.result.should.have.deep.property('expiry');	
+		
+			if (config.verbose) console.log("GET /api/connection response for user2:".underline.green, JSON.stringify(res.body));
+			done();	
+		});
+	});
 });
