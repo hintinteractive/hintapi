@@ -594,7 +594,9 @@ The following API endpoints are available to the public:
 
 		{
 			social_id : 'required, the social id of the event, if no provided generate a error',
-			search : 'search the name of friends, currently not used'
+			search : 'search the name of friends, currently not used',
+			photo_width : 'int, optional: the width of the friend profile image',
+			photo_height : 'int, optional: the height of the friend profile image',
 		}
 
 3. Request headers:
