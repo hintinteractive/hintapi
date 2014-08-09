@@ -1202,7 +1202,7 @@ The following API endpoints are available to the public:
 2. Request param:
 
 		{
-
+			'status' : 'sent or accepted or rejected' //Optional, if provided filter the result by status
 		}
 
 3. Request body:
@@ -1409,7 +1409,7 @@ The following API endpoints are available to the public:
 2. Request param:
 
 		{
-
+			'status' : 'sent or accepted' //Optional, if provided filter the result by status
 		}
 
 3. Request body:
