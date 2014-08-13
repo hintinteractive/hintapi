@@ -1,5 +1,5 @@
-TESTS = test/hint-with-venue-checkin.js
+TESTS = test/hint-with-event-checkin.js
 test:
-	mocha --timeout 25000 --reporter nyan $(TESTS)
+	mocha --timeout 15000 --reporter nyan $(TESTS)
 
 .PHONY: test

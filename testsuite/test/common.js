@@ -3,7 +3,7 @@ var colors = require('colors'),
     supertest = require('supertest'),
     config = require('../config'),
     api = supertest(config.api_url);
-exports.getAuthToken = function(obj, property, printAuthToken){
+exports.getAuthToken = function(obj, property, userId ,printAuthToken){
 	return function (done) {
         api.post('/api/login/facebook')
             .send({
@@ -20,13 +20,14 @@ exports.getAuthToken = function(obj, property, printAuthToken){
                     .and.have.string('Facebook:');
                 res.body.should.have.property('authenticationToken');
                 obj[property] = res.body.authenticationToken;
+                obj[userId] = res.body.user.userId;
                 if (printAuthToken) console.log("Hint Auth Token :".underline.green , obj[property]);
                 done();
             });
     }
 };
 
-exports.getAuthToken2 = function(obj, property, printAuthToken){
+exports.getAuthToken2 = function(obj, property, userId ,printAuthToken){
     return function (done) {
         api.post('/api/login/facebook')
             .send({
@@ -43,6 +44,7 @@ exports.getAuthToken2 = function(obj, property, printAuthToken){
                     .and.have.string('Facebook:');
                 res.body.should.have.property('authenticationToken');
                 obj[property] = res.body.authenticationToken;
+                obj[userId] = res.body.user.userId;
                 if (printAuthToken) console.log("Hint Auth Token :".underline.green , obj[property]);
                 done();
             });
