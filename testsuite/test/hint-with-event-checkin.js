@@ -10,6 +10,7 @@ var commonObj2 = {};
 
 var _u1_social_id;
 var _u2_social_id;
+
 describe('Authenticate', function () {
     it('login the user and gets hint auth token', common.getAuthToken(commonObj, "auth_token", "userId"));
     it('login the user2 and gets hint auth token', common.getAuthToken2(commonObj2, "auth_token", "userId"));
@@ -26,7 +27,7 @@ var _hint_id;
 var _connection_id;
 
 var _event_id;
-var _event_id2;
+//var _event_id2;
 var _f_event_start, _f_event_expiry;
 var _s_event_start, _s_event_expiry;
 
@@ -844,7 +845,7 @@ describe('GET /api/hint',function() {
 
 /*
 	Second user Get hint
-*//*
+*/
 describe('GET /api/hint',function() {
 	
 	it('get hint',function (done) {

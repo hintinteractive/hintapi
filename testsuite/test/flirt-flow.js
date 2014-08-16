@@ -15,7 +15,7 @@ describe('Authenticate', function () {
     it('login the user2 and gets hint auth token', common.getAuthToken2(commonObj2, "auth_token", "userId"));
 });
 
-var _c_lat = 23.812052;
+var _c_lat = 23.81205;
 var _c_lng = 90.422147;
 
 var _v_social_id ;
@@ -23,6 +23,9 @@ var _v_name ;
 var _v_address ;
 
 var _flirt_id = [];
+
+var _flirt_id1;
+var _flirt_id2;
 var _connection_id;
 
 var _event_id;
@@ -99,10 +102,11 @@ describe('GET /api/venue', function () {
                 	_v_name = res.body.result[i].name;
                 	_v_address = res.body.result[i].address;
                 	
-                	break;
+                	//break;
                 }
                 
                 if (config.verbose) console.log("GET /api/venue response :".underline.green, JSON.stringify(res.body));
+                console.log(_v_social_id);
                	done();         
             });
     });
@@ -454,11 +458,25 @@ describe('POST /api/flirt', function () {
 		 .expect(200)
 		 .expect('Content-Type', /json/)
 		 .end(function (err, res) {
-			 if (err) return done(err);
-			 res.body.should.have.property('api_access').and.be.true;
-			 res.body.should.have.deep.property('result.success').and.be.true;
-			 if (config.verbose) console.log("POST /api/flirt response user1 :".underline.green ,
-					 JSON.stringify(res.body));
+			if (err){
+				//console.log(res);
+			return done(err)};
+			res.body.should.have.property('api_access').and.be.true;
+			res.body.should.have.deep.property('result.success').and.be.true;
+			res.body.result.should.have.deep.property('_id');
+			res.body.result.should.have.deep.property('checkin.id');
+			res.body.result.should.have.deep.property('user_from');
+			res.body.result.should.have.deep.property('user_to');
+			res.body.result.should.have.deep.property('social_venue');
+			res.body.result.should.have.deep.property('flirt_options');
+			res.body.result.should.have.deep.property('status');		
+			res.body.result.should.have.deep.property('time');	
+			res.body.result.should.have.deep.property('expiry');
+			
+			_flirt_id1 = res.body.result._id;
+
+			if (config.verbose) console.log("POST /api/flirt response user1 :".underline.green ,
+					JSON.stringify(res.body));
 			 done();
 		 });
 	 });
@@ -517,11 +535,23 @@ describe('POST /api/flirt', function () {
 		 .expect(200)
 		 .expect('Content-Type', /json/)
 		 .end(function (err, res) {
-			 if (err) return done(err);
-			 res.body.should.have.property('api_access').and.be.true;
-			 res.body.should.have.deep.property('result.success').and.be.true;
-			 if (config.verbose) console.log("POST /api/flirt response user1 :".underline.green ,
-					 JSON.stringify(res.body));
+			if (err) return done(err);
+			res.body.should.have.property('api_access').and.be.true;
+			res.body.should.have.deep.property('result.success').and.be.true;
+			res.body.result.should.have.deep.property('_id');
+			res.body.result.should.have.deep.property('checkin.id');
+			res.body.result.should.have.deep.property('user_from');
+			res.body.result.should.have.deep.property('user_to');
+			res.body.result.should.have.deep.property('social_venue');
+			res.body.result.should.have.deep.property('flirt_options');
+			res.body.result.should.have.deep.property('status');		
+			res.body.result.should.have.deep.property('time');	
+			res.body.result.should.have.deep.property('expiry');
+
+			_flirt_id2 = res.body.result._id;
+
+			if (config.verbose) console.log("POST /api/flirt response user1 :".underline.green ,
+					JSON.stringify(res.body));
 			 done();
 		 });
 	 });
@@ -551,47 +581,49 @@ describe('GET /api/flirt',function() {
 			res.body.should.have.property('result').and.be.an.instanceof(Array);
 			
 			for(var i=0;i<res.body.result.length;i++){
-				res.body.result[i].should.have.deep.property('_id');
-				res.body.result[i].should.have.deep.property('checkin.id');
-				
-				//res.body.result[i].should.have.deep.property('user_from._id');
-				res.body.result[i].should.have.deep.property('user_from.social_id').and.have.string('Facebook:');
-				res.body.result[i].should.have.deep.property('user_from.name');
-				res.body.result[i].should.have.deep.property('user_from.hair_color');
-				res.body.result[i].should.have.deep.property('user_from.gender');
-				res.body.result[i].should.have.deep.property('user_from.interested_in').and.be.an.instanceof(Array);
-				//res.body.result[i].should.have.deep.property('user_from.current_look');
-				//res.body.result[i].should.have.deep.property('user_from.current_look.identifier');
-				// res.body.result[i].should.have.deep.property('user_from.current_look.identifier.type');
-				// res.body.result[i].should.have.deep.property('user_from.current_look.identifier.brand');
-				// res.body.result[i].should.have.deep.property('user_from.current_look.identifier.color');
 
-				res.body.result[i].should.have.deep.property('user_to.social_id').and.have.string('Facebook:');
-				res.body.result[i].should.have.deep.property('user_to.name');
-				res.body.result[i].should.have.deep.property('user_to.hair_color');
-				res.body.result[i].should.have.deep.property('user_to.gender');
-				res.body.result[i].should.have.deep.property('user_to.interested_in').and.be.an.instanceof(Array);
+				if(res.body.result[i]._id == _flirt_id1 | res.body.result[i]._id == _flirt_id2){
+					res.body.result[i].should.have.deep.property('_id');
+					res.body.result[i].should.have.deep.property('checkin.id');
+					
+					//res.body.result[i].should.have.deep.property('user_from._id');
+					res.body.result[i].should.have.deep.property('user_from.social_id').and.have.string('Facebook:');
+					res.body.result[i].should.have.deep.property('user_from.name');
+					res.body.result[i].should.have.deep.property('user_from.hair_color');
+					res.body.result[i].should.have.deep.property('user_from.gender');
+					res.body.result[i].should.have.deep.property('user_from.interested_in').and.be.an.instanceof(Array);
+					res.body.result[i].should.have.deep.property('user_from.current_look');
+					//res.body.result[i].should.have.deep.property('user_from.current_look.identifier');
+					// res.body.result[i].should.have.deep.property('user_from.current_look.identifier.type');
+					// res.body.result[i].should.have.deep.property('user_from.current_look.identifier.brand');
+					// res.body.result[i].should.have.deep.property('user_from.current_look.identifier.color');
 
-				res.body.result[i].should.have.deep.property('social_venue.social_id').and.have.string('Facebook:');
-				res.body.result[i].should.have.deep.property('social_venue.name');
-				res.body.result[i].should.have.deep.property('social_venue.address');
-				
+					res.body.result[i].should.have.deep.property('user_to.social_id').and.have.string('Facebook:');
+					res.body.result[i].should.have.deep.property('user_to.name');
+					res.body.result[i].should.have.deep.property('user_to.hair_color');
+					res.body.result[i].should.have.deep.property('user_to.gender');
+					res.body.result[i].should.have.deep.property('user_to.interested_in').and.be.an.instanceof(Array);
 
-				//res.body.result[i].should.have.deep.property('flirt_options.type');
-				//res.body.result[i].should.have.deep.property('flirt_options.text');
+					res.body.result[i].should.have.deep.property('social_venue.social_id').and.have.string('Facebook:');
+					res.body.result[i].should.have.deep.property('social_venue.name');
+					res.body.result[i].should.have.deep.property('social_venue.address');
+					
 
-				res.body.result[i].should.have.deep.property('status');		
-				res.body.result[i].should.have.deep.property('time');	
-				res.body.result[i].should.have.deep.property('expiry');			
+					res.body.result[i].should.have.deep.property('flirt_options');
+					//res.body.result[i].should.have.deep.property('flirt_options.text');
+
+					res.body.result[i].should.have.deep.property('status');		
+					res.body.result[i].should.have.deep.property('time');	
+					res.body.result[i].should.have.deep.property('expiry');
+
+					if (config.verbose) console.log("GET /api/flirt response for user1:".underline.green, JSON.stringify(res.body.result[i]));
+					
+				}
+							
 			}
-			
-			if (config.verbose) console.log("GET /api/flirt response for user1:".underline.green, JSON.stringify(res.body));
-			done();
-				 
+			done();	 
 		});
-		
 	});
-	
 });
 
 /*
@@ -618,21 +650,16 @@ describe('GET /api/flirt',function() {
 			res.body.should.have.property('result').and.be.an.instanceof(Array);
 			
 			for(var i=0,j=0 ;i<res.body.result.length;i++){
-				if(res.body.result[i].user_from.social_id == _u1_social_id){
+				if(res.body.result[i]._id == _flirt_id1 | res.body.result[i]._id == _flirt_id2){
 					res.body.result[i].should.have.deep.property('_id');
 					res.body.result[i].should.have.deep.property('checkin.id');
 					
-					//res.body.result[i].should.have.deep.property('user_from._id');
 					res.body.result[i].should.have.deep.property('user_from.social_id').and.have.string('Facebook:');
 					res.body.result[i].should.have.deep.property('user_from.name');
 					res.body.result[i].should.have.deep.property('user_from.hair_color');
 					res.body.result[i].should.have.deep.property('user_from.gender');
 					res.body.result[i].should.have.deep.property('user_from.interested_in').and.be.an.instanceof(Array);
-					//res.body.result[i].should.have.deep.property('user_from.current_look');
-					//res.body.result[i].should.have.deep.property('user_from.current_look.identifier');
-					// res.body.result[i].should.have.deep.property('user_from.current_look.identifier.type');
-					// res.body.result[i].should.have.deep.property('user_from.current_look.identifier.brand');
-					// res.body.result[i].should.have.deep.property('user_from.current_look.identifier.color');
+					res.body.result[i].should.have.deep.property('user_from.current_look');
 
 					res.body.result[i].should.have.deep.property('user_to.social_id').and.have.string('Facebook:');
 					res.body.result[i].should.have.deep.property('user_to.name');
@@ -644,24 +671,15 @@ describe('GET /api/flirt',function() {
 					res.body.result[i].should.have.deep.property('social_venue.name');
 					res.body.result[i].should.have.deep.property('social_venue.address');
 					
-
-					//res.body.result[i].should.have.deep.property('flirt_options.type');
-					//res.body.result[i].should.have.deep.property('flirt_options.text');
-
+					res.body.result[i].should.have.deep.property('flirt_options');
 					res.body.result[i].should.have.deep.property('status');		
 					res.body.result[i].should.have.deep.property('time');	
 					res.body.result[i].should.have.deep.property('expiry');	
-
+					if (config.verbose) console.log("GET /api/flirt response for user2:".underline.green, JSON.stringify(res.body.result[i]));
 					
-					_flirt_id[j] = res.body.result[i]._id;
-					j++;
-				}
-						
+				}			
 			}
-			
-			if (config.verbose) console.log("GET /api/flirt response for user2:".underline.green, JSON.stringify(res.body));
 			done();
-				 
 		});
 	});
 });
@@ -676,7 +694,7 @@ describe('PATCH /api/flirt',function() {
 		
 		api.patch('/api/flirt')
 		.query({
-			id : _flirt_id [_flirt_id.length - 1]
+			id : _flirt_id1
 		})
 		.send({
 			action : 'accept'
@@ -715,14 +733,14 @@ describe('PATCH /api/flirt',function() {
 		
 		api.patch('/api/flirt')
 		.query({
-			id : _flirt_id [_flirt_id.length - 2]
+			id : _flirt_id2
 		})
 		.send({
 			action : 'reject'
 		})
 		.set('Content-Type', 'application/json')
 		.set('Accept', 'application/json')
-		.set('X-ZUMO-AUTH', commonObj2['auth_token'])
+		.set('X-ZUMO-AUTH', 	['auth_token'])
 		.expect(200)
 		.expect('Content-Type', /json/)
 		.end(function (err, res) {
@@ -760,7 +778,7 @@ describe('PATCH /api/connection',function() {
 		.set('Accept', 'application/json')
 		.set('X-ZUMO-AUTH', commonObj['auth_token'])
 		.expect(200)
-		.expect('Content-Type', /json/)
+		//.expect('Content-Type', /json/)
 		.end(function (err, res) {
 			if (err) return done(err);
 		

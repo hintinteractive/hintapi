@@ -10,6 +10,7 @@ var commonObj2 = {};
 
 var _u1_social_id ;
 var _u2_social_id;
+
 describe('Authenticate', function () {
     it('login the user and gets hint auth token', common.getAuthToken(commonObj, "auth_token","userId"));
     it('login the user2 and gets hint auth token', common.getAuthToken2(commonObj2, "auth_token", "userId"));
@@ -164,7 +165,7 @@ describe('POST /api/checkin', function () {
 
 /*
 	First user GET check in
-*//*
+*/
 describe('GET /api/checkin',function() {
 	it('get chekin',function (done) {
 		if (!commonObj['auth_token']) done("Not Authenticated");
@@ -185,36 +186,25 @@ describe('GET /api/checkin',function() {
 			res.body.should.have.property('result').and.be.an.instanceof(Array);
 					
 			for(var i=0;i<res.body.result.length;i++){
-				if(res.body.result[i].user.social_id == _u1_social_id){
+				res.body.result[i].should.have.deep.property('user.social_id').and.have.string('Facebook:');
+				res.body.result[i].should.have.deep.property('user.name');
+				res.body.result[i].should.have.deep.property('user.hair_color');
+				res.body.result[i].should.have.deep.property('user.gender'); 
+				res.body.result[i].should.have.deep.property('user.interested_in').and.be.an.instanceof(Array);
+				res.body.result[i].should.have.deep.property('user.current_look');
+
+				res.body.result[i].should.have.deep.property('social_venue');
+				res.body.result[i].should.have.deep.property('social_venue.social_id').and.have.string('Facebook:');
+				res.body.result[i].should.have.deep.property('social_venue.name');
+				res.body.result[i].should.have.deep.property('social_venue.address');
 					
-					res.body.result[i].should.have.deep.property('user.social_id').and.have.string('Facebook:');
-					res.body.result[i].should.have.deep.property('user.name');
-					res.body.result[i].should.have.deep.property('user.hair_color');
-					res.body.result[i].should.have.deep.property('user.gender'); 
-					res.body.result[i].should.have.deep.property('user.interested_in').and.be.an.instanceof(Array);
-					res.body.result[i].should.have.deep.property('user.current_look.photo_url');
-					res.body.result[i].should.have.deep.property('user.current_look.identifier.type');
-					res.body.result[i].should.have.deep.property('user.current_look.identifier.brand');
-					res.body.result[i].should.have.deep.property('user.current_look.identifier.color');
+				res.body.result[i].should.have.deep.property('flirt_options');
+				
+				res.body.result[i].should.have.deep.property('time');
+				res.body.result[i].should.have.deep.property('expiry');
 					
-					res.body.result[i].should.have.deep.property('social_venue');
-					res.body.result[i].should.have.deep.property('social_venue.social_id').and.have.string('Facebook:');
-					res.body.result[i].should.have.deep.property('social_venue.name');
-					res.body.result[i].should.have.deep.property('social_venue.address');
-					
-					res.body.result[i].should.have.deep.property('flirt_options.simple');
-					res.body.result[i].should.have.deep.property('flirt_options.forward');
-					res.body.result[i].should.have.deep.property('flirt_options.risky');
-					
-					res.body.result[i].should.have.deep.property('time');
-					res.body.result[i].should.have.deep.property('expiry');
-					
-					res.body.result[i].should.have.deep.property('flirts').and.be.an.instanceof(Array);
-					res.body.result[i].should.have.deep.property('hints').and.be.an.instanceof(Array);
-					
-					if (config.verbose) console.log("GET /api/checkin response for user1 :".underline.green, JSON.stringify(res.body.result[i]));
-					done();	
-				}
+				res.body.result[i].should.have.deep.property('flirts').and.be.an.instanceof(Array);
+				res.body.result[i].should.have.deep.property('hints').and.be.an.instanceof(Array);
 			}
 			if (config.verbose) console.log("GET /api/checkin response for user1 :".underline.green, JSON.stringify(res.body));
 				done();	 
@@ -224,7 +214,7 @@ describe('GET /api/checkin',function() {
 
 /*
 	Second user checkin start
-*//*
+*/
 describe('POST /api/checkin', function () {
 	 it('checkin in a place', function (done) {
 		 if (!commonObj2['auth_token']) done("Not Authenticated");
@@ -266,20 +256,19 @@ describe('POST /api/checkin', function () {
 		 .expect('Content-Type', /json/)
 		 .end(function (err, res) {
 			
-			//console.log(res);
-			 if (err) return done(err);
-			 //res.body.should.have.property('api_access').and.be.true;
-			 //res.body.should.have.deep.property('result.success').and.be.true;
+			if (err) return done(err);
+			res.body.should.have.property('api_access').and.be.true;
+			res.body.should.have.deep.property('result.success').and.be.true;
 			 if (config.verbose) console.log("POST /api/checkin response for user2:".underline.green ,
 					 JSON.stringify(res.body));
-			 //done();
+			 done();
 		 });
 	 });
 });
 
 /*
 	Second user GET check in
-*//*
+*/
 describe('GET /api/checkin',function() {
 	it('get chekin',function (done) {
 		if (!commonObj2['auth_token']) done("Not Authenticated");
@@ -300,39 +289,28 @@ describe('GET /api/checkin',function() {
 			res.body.should.have.property('result').and.be.an.instanceof(Array);
 					
 			for(var i=0;i<res.body.result.length;i++){
-				if(res.body.result[i].user.social_id == _u2_social_id){
+				res.body.result[i].should.have.deep.property('user.social_id').and.have.string('Facebook:');
+				res.body.result[i].should.have.deep.property('user.name');
+				res.body.result[i].should.have.deep.property('user.hair_color');
+				res.body.result[i].should.have.deep.property('user.gender'); 
+				res.body.result[i].should.have.deep.property('user.interested_in').and.be.an.instanceof(Array);
+				res.body.result[i].should.have.deep.property('user.current_look');
+
+				res.body.result[i].should.have.deep.property('social_venue');
+				res.body.result[i].should.have.deep.property('social_venue.social_id').and.have.string('Facebook:');
+				res.body.result[i].should.have.deep.property('social_venue.name');
+				res.body.result[i].should.have.deep.property('social_venue.address');
 					
-					res.body.result[i].should.have.deep.property('user.social_id').and.have.string('Facebook:');
-					res.body.result[i].should.have.deep.property('user.name');
-					res.body.result[i].should.have.deep.property('user.hair_color');
-					res.body.result[i].should.have.deep.property('user.gender'); 
-					res.body.result[i].should.have.deep.property('user.interested_in').and.be.an.instanceof(Array);
-					res.body.result[i].should.have.deep.property('user.current_look.photo_url');
-					res.body.result[i].should.have.deep.property('user.current_look.identifier.type');
-					res.body.result[i].should.have.deep.property('user.current_look.identifier.brand');
-					res.body.result[i].should.have.deep.property('user.current_look.identifier.color');
+				res.body.result[i].should.have.deep.property('flirt_options');
+				
+				res.body.result[i].should.have.deep.property('time');
+				res.body.result[i].should.have.deep.property('expiry');
 					
-					res.body.result[i].should.have.deep.property('social_venue');
-					res.body.result[i].should.have.deep.property('social_venue.social_id').and.have.string('Facebook:');
-					res.body.result[i].should.have.deep.property('social_venue.name');
-					res.body.result[i].should.have.deep.property('social_venue.address');
-					
-					res.body.result[i].should.have.deep.property('flirt_options.simple');
-					res.body.result[i].should.have.deep.property('flirt_options.forward');
-					res.body.result[i].should.have.deep.property('flirt_options.risky');
-					
-					res.body.result[i].should.have.deep.property('time');
-					res.body.result[i].should.have.deep.property('expiry');
-					
-					res.body.result[i].should.have.deep.property('flirts').and.be.an.instanceof(Array);
-					res.body.result[i].should.have.deep.property('hints').and.be.an.instanceof(Array);
-					
-					if (config.verbose) console.log("GET /api/checkin response for user2 :".underline.green, JSON.stringify(res.body.result[i]));
-					done();	
-				}
+				res.body.result[i].should.have.deep.property('flirts').and.be.an.instanceof(Array);
+				res.body.result[i].should.have.deep.property('hints').and.be.an.instanceof(Array);
 			}	 
 			if (config.verbose) console.log("GET /api/checkin response for user2 :".underline.green, JSON.stringify(res.body));
-					done();	
+			done();	
 		});
 	});	
 });
@@ -471,7 +449,7 @@ describe('GET /api/hint',function() {
 
 /*
 	Second user Get hint
-*//*
+*/
 describe('GET /api/hint',function() {
 	
 	it('get hint',function (done) {
@@ -517,8 +495,7 @@ describe('GET /api/hint',function() {
 					done();
 				}					
 			}	
-			if (config.verbose) console.log("GET /api/hint response for user2:".underline.green, JSON.stringify(res.body));
-					done();
+			
 		});
 	});
 });
