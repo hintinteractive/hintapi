@@ -1,4 +1,5 @@
-TESTS = test/hint-with-event-checkin.js
+TESTS = test/hint
+.js
 test:
 	mocha --timeout 15000 --reporter nyan $(TESTS)
 

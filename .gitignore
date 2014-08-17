@@ -2,3 +2,4 @@
 .project
 testsuite/config.js
 .buildpath
+testsuite/node_modules/.bin/*
