@@ -574,7 +574,7 @@ describe('POST /api/checkin', function () {
 					forward : 'hi',
 					risky : 'hi'
 				},
-				social_venue : {
+				venue : {
 					social_id : _v_social_id,
 					name : _v_name,
 					address : _v_address,
@@ -656,7 +656,7 @@ describe('POST /api/checkin', function () {
 					forward : 'hi',
 					risky : 'hi'
 				},
-				social_venue : {
+				venue : {
 					social_id : _v_social_id,
 					name : _v_name,
 					address : _v_address,
@@ -749,7 +749,7 @@ describe('POST /api/hint', function () {
 			social_venue : {
 				social_id : _v_social_id,
 				name : _v_name,
-				address : _v_address,
+				address : _v_address
 				 
 			}
 		})
@@ -836,9 +836,11 @@ describe('GET /api/hint',function() {
 					res.body.result[i].should.have.deep.property('expiry');
 
 					if (config.verbose) console.log("GET /api/hint response for user 1:".underline.green, JSON.stringify(res.body.result[i]));
-					done();
+					break;
+					
 				}					
-			}	 
+			}
+			done();
 		});
 	});
 });
@@ -888,9 +890,12 @@ describe('GET /api/hint',function() {
 					res.body.result[i].should.have.deep.property('expiry');
 
 					if (config.verbose) console.log("GET /api/hint response for user2:".underline.green, JSON.stringify(res.body.result[i]));
-					done();
-				}					
-			}	 
+					break;
+					
+				}
+				
+			}
+			done();
 		});
 	});
 });
@@ -950,7 +955,7 @@ describe('POST /api/hint', function () {
 		.expect('Content-Type', /json/)
 		.end(function (err, res) {
 			if (err) return done(err);
-			 
+			
 			res.body.should.have.property('api_access').and.be.true;
 			res.body.should.have.deep.property('result.success').and.be.true;
 			res.body.should.have.deep.property('result.status');
