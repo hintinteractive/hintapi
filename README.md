@@ -113,7 +113,8 @@ These application configurations are loaded at the start (or restart) of the Hin
 			connection: 24,
 			checkin: 4,
 			flirt: 24,
-			hint: 24
+			hint: 24,
+			jwt : 24
 		}
 
 ### `enum_flags` :
@@ -206,7 +207,8 @@ The following API endpoints are available to the public:
 
 		{
 			access_token : "facebook_access_token",
-			device : "enum_devices" /*to be filled by the client SDK*/
+			device : "enum_devices", /*to be filled by the client SDK*/
+			lifeTimeHrs: "24", /*must be less than equal to fb access_token's expiry. If not provided use enum_expiries.jwt*/
 		}
 
 4. Request headers:
